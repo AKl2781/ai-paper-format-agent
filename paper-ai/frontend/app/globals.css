@@ -392,41 +392,53 @@ p {
 }
 
 .doc-preview {
-  max-height: 680px;
+  max-height: 72vh;
   overflow: auto;
-  padding: 42px;
+  padding: 46px 54px;
   border: 1px solid #dbe3ee;
   border-radius: 8px;
   background: #ffffff;
   box-shadow: inset 0 0 0 1px rgba(15, 23, 42, 0.02);
   color: #111827;
-  line-height: 1.8;
+  line-height: 1.85;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
 }
 
 .doc-preview h1 {
-  margin: 0 0 22px;
+  margin: 0 0 28px;
   text-align: center;
   font-size: 26px;
+  line-height: 1.45;
 }
 
 .doc-preview h2 {
-  margin: 22px 0 10px;
+  margin: 30px 0 12px;
+  padding-bottom: 8px;
+  border-bottom: 1px solid #e5eaf1;
   font-size: 20px;
+  line-height: 1.5;
 }
 
 .doc-preview h3 {
-  margin: 18px 0 8px;
+  margin: 24px 0 10px;
   font-size: 17px;
+  line-height: 1.5;
 }
 
 .doc-preview h4 {
-  margin: 14px 0 6px;
+  margin: 18px 0 8px;
   font-size: 15px;
+  line-height: 1.5;
 }
 
 .doc-preview p {
-  margin: 0 0 10px;
+  margin: 0 0 12px;
   text-indent: 2em;
+}
+
+.doc-preview .docx-body {
+  line-height: 1.9;
 }
 
 .doc-preview .align-center {
@@ -442,18 +454,57 @@ p {
   text-align: justify;
 }
 
+.docx-references {
+  margin-top: 12px;
+  padding: 14px 16px;
+  border: 1px solid #e5eaf1;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.doc-preview .docx-reference-heading {
+  margin-top: 34px;
+}
+
+.doc-preview .docx-reference-item {
+  margin-bottom: 8px;
+  padding-left: 2em;
+  text-indent: -2em;
+  font-size: 14px;
+  line-height: 1.7;
+}
+
+.docx-table-wrap {
+  max-width: 100%;
+  overflow-x: auto;
+  margin: 18px 0;
+}
+
 .docx-table {
   width: 100%;
-  margin: 16px 0;
   border-collapse: collapse;
+  background: #ffffff;
+  font-size: 14px;
 }
 
+.docx-table th,
 .docx-table td {
-  padding: 8px;
+  padding: 9px 10px;
   border: 1px solid #cbd5e1;
+  text-align: left;
+  vertical-align: top;
+  line-height: 1.55;
 }
 
-.preview-loading {
+.docx-table th {
+  background: #eef4fb;
+  color: #162033;
+  font-weight: 800;
+}
+
+.preview-loading,
+.preview-status,
+.preview-error {
   display: grid;
   min-height: 220px;
   place-items: center;
@@ -461,6 +512,29 @@ p {
   border-radius: 8px;
   background: #ffffff;
   color: #56657a;
+}
+
+.preview-status {
+  min-height: auto;
+  padding: 12px;
+  border-style: solid;
+  background: #eef7ff;
+  color: #1f4b99;
+  font-weight: 800;
+}
+
+.preview-error {
+  min-height: auto;
+  justify-items: start;
+  gap: 6px;
+  padding: 14px;
+  border-color: #fecaca;
+  background: #fff7f7;
+  color: #b42318;
+}
+
+.preview-error span {
+  color: #7f1d1d;
 }
 
 .module-card {
@@ -605,6 +679,7 @@ p {
   }
 
   .doc-preview {
+    max-height: 68vh;
     padding: 22px;
   }
 }

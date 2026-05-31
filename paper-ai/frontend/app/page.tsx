@@ -86,6 +86,7 @@ export default function Home() {
   const [confirmedNonPaper, setConfirmedNonPaper] = useState(false);
   const [result, setResult] = useState<AgentResult | null>(null);
   const [preview, setPreview] = useState<PreviewResult | null>(null);
+  const [previewError, setPreviewError] = useState("");
   const [message, setMessage] = useState("");
   const [running, setRunning] = useState(false);
   const [classifying, setClassifying] = useState(false);
@@ -111,6 +112,7 @@ export default function Home() {
     setConfirmedNonPaper(false);
     setResult(null);
     setPreview(null);
+    setPreviewError("");
     if (!file) {
       setMessage("");
       return;
@@ -162,6 +164,7 @@ export default function Home() {
 
     setRunning(true);
     setPreview(null);
+    setPreviewError("");
     setResult(null);
     setMessage("论文修改 Agent 正在自主处理文档...");
     try {
@@ -180,8 +183,8 @@ export default function Home() {
       setResult(data);
       setClassification(data.classification);
       setMessage("Agent 修改完成，正在生成在线预览。");
-      await loadPreview(data.filename);
-      setMessage("Agent 修改完成，已生成修改报告和在线预览。");
+      const previewReady = await loadPreview(data.filename);
+      setMessage(previewReady ? "Agent 修改完成，已生成修改报告和在线预览。" : "Agent 修改完成，修改报告和下载文件已生成，在线预览暂不可用。");
     } catch {
       setMessage("Agent 启动失败，请确认后端服务正在运行。");
     } finally {
@@ -189,18 +192,25 @@ export default function Home() {
     }
   }
 
-  async function loadPreview(filename: string) {
+  async function loadPreview(filename: string): Promise<boolean> {
     setPreviewLoading(true);
+    setPreviewError("");
     try {
       const response = await fetch(`${API_BASE}/preview/${encodeURIComponent(filename)}`);
       const data = await response.json();
       if (!response.ok) {
-        setMessage(data.detail ?? "在线预览生成失败。");
-        return;
+        const detail = data.detail ?? "在线预览生成失败。";
+        setPreviewError(detail);
+        setMessage(detail);
+        return false;
       }
       setPreview(data);
+      return true;
     } catch {
-      setMessage("在线预览生成失败，请稍后重试。");
+      const detail = "在线预览生成失败，请稍后重试。";
+      setPreviewError(detail);
+      setMessage(detail);
+      return false;
     } finally {
       setPreviewLoading(false);
     }
@@ -253,7 +263,7 @@ export default function Home() {
             <div className="completion-strip">
               <span>Agent修改完成</span>
               <span>已生成修改报告</span>
-              <span>{preview ? "已生成在线预览" : "正在生成在线预览"}</span>
+              <span>{preview ? "已生成在线预览" : previewError ? "在线预览暂不可用" : "正在生成在线预览"}</span>
             </div>
 
             <ScoreOverview result={result} />
@@ -261,9 +271,17 @@ export default function Home() {
             <section className="preview-panel">
               <div className="section-title">
                 <span>在线预览</span>
-                <strong>{preview?.title ?? "预览生成中"}</strong>
+                <strong>{preview?.title ?? (previewError ? "预览暂不可用" : "预览生成中")}</strong>
               </div>
-              {preview ? <article className="doc-preview" dangerouslySetInnerHTML={{ __html: preview.html }} /> : <div className="preview-loading">正在生成修改后的论文预览...</div>}
+              {previewLoading ? <div className="preview-status">正在生成修改后的论文预览...</div> : null}
+              {previewError ? (
+                <div className="preview-error">
+                  <strong>在线预览生成失败</strong>
+                  <span>{previewError}</span>
+                </div>
+              ) : null}
+              {preview ? <article className="doc-preview" dangerouslySetInnerHTML={{ __html: preview.html }} /> : null}
+              {!preview && !previewError ? <div className="preview-loading">正在生成修改后的论文预览...</div> : null}
             </section>
 
             <ScoreModules title="本地规则评分" items={result.after_analysis.report.local_breakdown} />
