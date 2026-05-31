@@ -19,7 +19,20 @@ type ScoreBreakdown = {
   ai_used: boolean;
   ai_added_value: string[];
 };
+type ReferenceCheck = {
+  has_reference_section: boolean;
+  reference_count: number;
+  citation_count: number;
+  reference_numbers: number[];
+  citation_numbers: number[];
+  missing_reference_numbers: number[];
+  uncited_reference_numbers: number[];
+  duplicate_reference_numbers: number[];
+  numbering_gaps: number[];
+  issues: string[];
+};
 type Analysis = {
+  reference_check?: ReferenceCheck;
   report: {
     score: number;
     summary: string;
@@ -286,6 +299,7 @@ export default function Home() {
 
             <ScoreModules title="本地规则评分" items={result.after_analysis.report.local_breakdown} />
             {result.score_breakdown.ai_used ? <ScoreModules title="AI增强评分" items={result.after_analysis.report.ai_breakdown} /> : null}
+            {result.after_analysis.reference_check ? <ReferenceCheckPanel check={result.after_analysis.reference_check} /> : null}
 
             <section className="report-panel">
               <div className="section-title">
@@ -448,6 +462,36 @@ function ReportList({ title, items }: { title: string; items: string[] }) {
   );
 }
 
+function ReferenceCheckPanel({ check }: { check: ReferenceCheck }) {
+  const summaryItems = [
+    `参考文献章节：${check.has_reference_section ? "已识别" : "未识别"}`,
+    `文末条目：${check.reference_count} 条`,
+    `正文引用：${check.citation_count} 处`,
+  ];
+  const relationItems = [
+    `文末编号：${formatNumbers(check.reference_numbers)}`,
+    `正文引用编号：${formatNumbers(check.citation_numbers)}`,
+    `跳号：${formatNumbers(check.numbering_gaps)}`,
+    `重复编号：${formatNumbers(check.duplicate_reference_numbers)}`,
+    `正文引用不存在：${formatNumbers(check.missing_reference_numbers)}`,
+    `文末未引用：${formatNumbers(check.uncited_reference_numbers)}`,
+  ];
+  const issueItems = check.issues.length ? check.issues : ["自动检查未发现明显参考文献风险。"];
+  return (
+    <section className="module-panel">
+      <div className="section-title">
+        <span>参考文献检查</span>
+        <strong>{check.reference_count} 条文献</strong>
+      </div>
+      <div className="report-grid">
+        <ReportList title="检查概览" items={summaryItems} />
+        <ReportList title="编号与引用" items={relationItems} />
+      </div>
+      <ReportList title="参考文献风险" items={issueItems} />
+    </section>
+  );
+}
+
 function DiffReport({ report }: { report: ModificationReport }) {
   const changedItems = report.changed_dimensions.length
     ? report.changed_dimensions.map((item) => `${item.label}：${item.before} → ${item.after}（${formatDelta(item.delta)}）`)
@@ -475,6 +519,10 @@ function DiffReport({ report }: { report: ModificationReport }) {
       </div>
     </div>
   );
+}
+
+function formatNumbers(numbers: number[]) {
+  return numbers.length ? numbers.join("、") : "无";
 }
 
 function formatDelta(delta: number) {

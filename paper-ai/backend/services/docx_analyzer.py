@@ -39,7 +39,8 @@ def analyze_docx(
     text = "\n".join(paragraphs)
     headings = [item for item in paragraphs if is_section_heading(item)]
     table_row_count = sum(len(table.rows) for table in document.tables)
-    local_breakdown = build_local_breakdown(document, paragraphs, headings, template_path, repeat_score)
+    reference_check = analyze_references(paragraphs)
+    local_breakdown = build_local_breakdown(document, paragraphs, headings, template_path, repeat_score, reference_check)
     ai_breakdown = build_ai_breakdown(ai_scores) if ai_scores else []
     score_breakdown = build_score_breakdown(local_breakdown, ai_breakdown)
 
@@ -49,6 +50,7 @@ def analyze_docx(
         "heading_count": max(count_styled_headings(document), len(headings)),
         "table_row_count": table_row_count,
         "preview": text[:1200],
+        "reference_check": reference_check,
         "report": {
             "score": score_breakdown["final_score"],
             "summary": make_summary(score_breakdown),
@@ -67,14 +69,21 @@ def extract_paragraph_text(path: Path) -> list[str]:
     return [p.text.strip() for p in document.paragraphs if p.text.strip()]
 
 
-def build_local_breakdown(document, paragraphs: list[str], headings: list[str], template_path: Path | None, repeat_score: int | None) -> list[dict[str, Any]]:
+def build_local_breakdown(
+    document,
+    paragraphs: list[str],
+    headings: list[str],
+    template_path: Path | None,
+    repeat_score: int | None,
+    reference_check: dict[str, Any],
+) -> list[dict[str, Any]]:
     return [
         score_structure(paragraphs, headings),
         score_heading_format(document, headings),
         score_body_font(document),
         score_spacing_indent(document),
         score_page_margin(document),
-        score_references(paragraphs),
+        score_references(reference_check),
         dimension("repeat_risk", "重复风险预检", repeat_score if repeat_score is not None else 88, ["相似度预检不能替代正式查重。"], "local"),
     ]
 
@@ -185,16 +194,168 @@ def score_page_margin(document) -> dict[str, Any]:
     return dimension("page_margin", "页边距", round(65 + ratio * 27), [] if ratio >= 0.75 else ["页边距与常见论文规范差异较大。"], "local")
 
 
-def score_references(paragraphs: list[str]) -> dict[str, Any]:
+def score_references(reference_check: dict[str, Any]) -> dict[str, Any]:
+    if not reference_check["has_reference_section"]:
+        return dimension("references", "参考文献基础格式", 58, ["未识别到参考文献部分。"], "local")
+    if reference_check["reference_count"] == 0:
+        return dimension("references", "参考文献基础格式", 62, ["参考文献标题存在，但未识别到条目。"], "local")
+
+    issues = reference_check["issues"]
+    formatted_ratio = min(1, len(reference_check["reference_numbers"]) / max(reference_check["reference_count"], 1))
+    score = round(70 + formatted_ratio * 18)
+    score -= len(reference_check["numbering_gaps"]) * 4
+    score -= len(reference_check["duplicate_reference_numbers"]) * 6
+    score -= len(reference_check["missing_reference_numbers"]) * 5
+    score -= min(12, len(reference_check["uncited_reference_numbers"]) * 2)
+    return dimension("references", "参考文献基础格式", score, issues, "local")
+
+
+def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
     ref_index = next((i for i, text in enumerate(paragraphs) if is_reference_heading(text)), -1)
     if ref_index < 0:
-        return dimension("references", "参考文献基础格式", 58, ["未识别到参考文献部分。"], "local")
-    refs = paragraphs[ref_index + 1 :]
-    if not refs:
-        return dimension("references", "参考文献基础格式", 62, ["参考文献标题存在，但未识别到条目。"], "local")
-    formatted = sum(1 for ref in refs if re.match(r"^\s*(\[\d+\]|\d+[.．、])", ref))
-    ratio = formatted / len(refs)
-    return dimension("references", "参考文献基础格式", round(68 + ratio * 22), [] if ratio >= 0.75 else ["参考文献编号或条目格式不够统一。"], "local")
+        return build_reference_check(
+            has_reference_section=False,
+            reference_count=0,
+            citation_numbers=[],
+            reference_numbers=[],
+            duplicate_reference_numbers=[],
+            numbering_gaps=[],
+            missing_reference_numbers=[],
+            uncited_reference_numbers=[],
+            issues=["未识别到参考文献部分。"],
+        )
+
+    body_paragraphs = paragraphs[:ref_index]
+    reference_items = paragraphs[ref_index + 1 :]
+    citation_numbers = extract_citation_numbers(body_paragraphs)
+    parsed_reference_numbers = [parse_reference_number(item) for item in reference_items]
+    reference_numbers = [number for number in parsed_reference_numbers if number is not None]
+    duplicate_reference_numbers = repeated_numbers(reference_numbers)
+    unique_reference_numbers = sorted(set(reference_numbers))
+    unique_citation_numbers = sorted(set(citation_numbers))
+    numbering_gaps = find_numbering_gaps(unique_reference_numbers)
+    missing_reference_numbers = sorted(set(unique_citation_numbers) - set(unique_reference_numbers))
+    uncited_reference_numbers = sorted(set(unique_reference_numbers) - set(unique_citation_numbers))
+    formatted_count = sum(1 for number in parsed_reference_numbers if number is not None)
+    formatted_reference_ratio = formatted_count / max(len(reference_items), 1)
+    issues = build_reference_issues(
+        has_items=bool(reference_items),
+        formatted_reference_ratio=formatted_reference_ratio,
+        duplicate_reference_numbers=duplicate_reference_numbers,
+        numbering_gaps=numbering_gaps,
+        missing_reference_numbers=missing_reference_numbers,
+        uncited_reference_numbers=uncited_reference_numbers,
+    )
+
+    return build_reference_check(
+        has_reference_section=True,
+        reference_count=len(reference_items),
+        citation_numbers=unique_citation_numbers,
+        reference_numbers=unique_reference_numbers,
+        duplicate_reference_numbers=duplicate_reference_numbers,
+        numbering_gaps=numbering_gaps,
+        missing_reference_numbers=missing_reference_numbers,
+        uncited_reference_numbers=uncited_reference_numbers,
+        issues=issues,
+    )
+
+
+def build_reference_check(
+    *,
+    has_reference_section: bool,
+    reference_count: int,
+    citation_numbers: list[int],
+    reference_numbers: list[int],
+    duplicate_reference_numbers: list[int],
+    numbering_gaps: list[int],
+    missing_reference_numbers: list[int],
+    uncited_reference_numbers: list[int],
+    issues: list[str],
+) -> dict[str, Any]:
+    return {
+        "has_reference_section": has_reference_section,
+        "reference_count": reference_count,
+        "citation_count": len(citation_numbers),
+        "reference_numbers": reference_numbers,
+        "citation_numbers": citation_numbers,
+        "missing_reference_numbers": missing_reference_numbers,
+        "uncited_reference_numbers": uncited_reference_numbers,
+        "duplicate_reference_numbers": duplicate_reference_numbers,
+        "numbering_gaps": numbering_gaps,
+        "issues": issues,
+    }
+
+
+def extract_citation_numbers(paragraphs: list[str]) -> list[int]:
+    numbers: list[int] = []
+    for text in paragraphs:
+        for group in re.findall(r"\[(\d+(?:\s*[-,，、]\s*\d+)*)\]", text):
+            numbers.extend(expand_citation_group(group))
+    return sorted(numbers)
+
+
+def expand_citation_group(group: str) -> list[int]:
+    numbers: list[int] = []
+    for part in re.split(r"[,，、]\s*", group):
+        compact = part.strip()
+        if not compact:
+            continue
+        range_match = re.match(r"^(\d+)\s*-\s*(\d+)$", compact)
+        if range_match:
+            start, end = int(range_match.group(1)), int(range_match.group(2))
+            if start <= end and end - start <= 20:
+                numbers.extend(range(start, end + 1))
+            continue
+        if compact.isdigit():
+            numbers.append(int(compact))
+    return numbers
+
+
+def parse_reference_number(text: str) -> int | None:
+    match = re.match(r"^\s*(?:\[(\d+)\]|(\d+)[.．、])", text)
+    if not match:
+        return None
+    return int(match.group(1) or match.group(2))
+
+
+def repeated_numbers(numbers: list[int]) -> list[int]:
+    return sorted({number for number in numbers if numbers.count(number) > 1})
+
+
+def find_numbering_gaps(numbers: list[int]) -> list[int]:
+    if len(numbers) < 2:
+        return []
+    expected = set(range(min(numbers), max(numbers) + 1))
+    return sorted(expected - set(numbers))
+
+
+def build_reference_issues(
+    *,
+    has_items: bool,
+    formatted_reference_ratio: float,
+    duplicate_reference_numbers: list[int],
+    numbering_gaps: list[int],
+    missing_reference_numbers: list[int],
+    uncited_reference_numbers: list[int],
+) -> list[str]:
+    issues: list[str] = []
+    if not has_items:
+        issues.append("参考文献标题存在，但未识别到条目。")
+    if has_items and formatted_reference_ratio < 0.75:
+        issues.append("参考文献编号或条目格式不够统一。")
+    if duplicate_reference_numbers:
+        issues.append(f"参考文献存在重复编号：{format_number_list(duplicate_reference_numbers)}。")
+    if numbering_gaps:
+        issues.append(f"参考文献编号不连续，缺少：{format_number_list(numbering_gaps)}。")
+    if missing_reference_numbers:
+        issues.append(f"正文引用编号未在文末参考文献中找到：{format_number_list(missing_reference_numbers)}。")
+    if uncited_reference_numbers:
+        issues.append(f"文末参考文献未在正文中引用：{format_number_list(uncited_reference_numbers)}。")
+    return issues
+
+
+def format_number_list(numbers: list[int]) -> str:
+    return "、".join(str(number) for number in numbers)
 
 
 def dimension(key: str, label: str, score: int, issues: list[str], group: str) -> dict[str, Any]:
