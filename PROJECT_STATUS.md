@@ -27,6 +27,7 @@
 - 在线预览：支持将最终 docx 转成 HTML 预览，并增强标题层级、参考文献区域和表格基础样式展示。
 - 修改报告：支持输出修复项、评分对比、修改次数、未修复项、人工复查建议和格式差异摘要。
 - 参考文献检查：支持识别参考文献章节、文末编号、正文引用、编号跳号、重复编号、正文引用缺失和文末未引用条目。
+- 图表编号检查：支持识别图题、表题、Figure/Table 编号、编号跳号、重复编号和正文引用不存在的图表编号。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 评分和建议。
 
@@ -53,6 +54,7 @@ PASS：
 - 修改报告正常：包含 summary、before_after、change_counts、manual_review_items。
 - v0.3.1 格式差异报告增强已完成：新增 format_diff_summary、changed_dimensions、score_delta_by_dimension、auto_fix_count、needs_manual_review_count。
 - v0.3.3 参考文献检查已完成：新增 reference_check 字段，并将参考文献风险合并进人工复查项。
+- v0.3.4 图表编号检查已完成：新增 figure_table_check 字段，并将图表编号风险合并进人工复查项。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -121,7 +123,7 @@ FAIL：
 - 在线预览优化（v0.3.2 已完成）。
 - 格式差异报告增强（v0.3.1 已完成）。
 - 参考文献检查（v0.3.3 已完成）。
-- 图表编号检查。
+- 图表编号检查（v0.3.4 已完成）。
 - 学校模板库。
 
 ## 未来1个月

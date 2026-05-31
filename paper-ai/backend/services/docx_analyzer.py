@@ -40,6 +40,7 @@ def analyze_docx(
     headings = [item for item in paragraphs if is_section_heading(item)]
     table_row_count = sum(len(table.rows) for table in document.tables)
     reference_check = analyze_references(paragraphs)
+    figure_table_check = analyze_figure_tables(paragraphs, document)
     local_breakdown = build_local_breakdown(document, paragraphs, headings, template_path, repeat_score, reference_check)
     ai_breakdown = build_ai_breakdown(ai_scores) if ai_scores else []
     score_breakdown = build_score_breakdown(local_breakdown, ai_breakdown)
@@ -51,6 +52,7 @@ def analyze_docx(
         "table_row_count": table_row_count,
         "preview": text[:1200],
         "reference_check": reference_check,
+        "figure_table_check": figure_table_check,
         "report": {
             "score": score_breakdown["final_score"],
             "summary": make_summary(score_breakdown),
@@ -356,6 +358,140 @@ def build_reference_issues(
 
 def format_number_list(numbers: list[int]) -> str:
     return "、".join(str(number) for number in numbers)
+
+
+def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
+    figure_numbers = extract_caption_numbers(paragraphs, "figure")
+    table_numbers = extract_caption_numbers(paragraphs, "table")
+    referenced_figures = extract_referenced_numbers(paragraphs, "figure")
+    referenced_tables = extract_referenced_numbers(paragraphs, "table")
+    unique_figures = sorted(set(figure_numbers))
+    unique_tables = sorted(set(table_numbers))
+    unique_referenced_figures = sorted(set(referenced_figures))
+    unique_referenced_tables = sorted(set(referenced_tables))
+    duplicate_figures = repeated_numbers(figure_numbers)
+    duplicate_tables = repeated_numbers(table_numbers)
+    figure_gaps = find_numbering_gaps(unique_figures)
+    table_gaps = find_numbering_gaps(unique_tables)
+    missing_referenced_figures = sorted(set(unique_referenced_figures) - set(unique_figures))
+    missing_referenced_tables = sorted(set(unique_referenced_tables) - set(unique_tables))
+    missing_figure_captions = detect_missing_figure_captions(document, len(unique_figures))
+    missing_table_captions = detect_missing_table_captions(document, len(unique_tables))
+    issues = build_figure_table_issues(
+        figure_gaps=figure_gaps,
+        table_gaps=table_gaps,
+        duplicate_figures=duplicate_figures,
+        duplicate_tables=duplicate_tables,
+        missing_figure_captions=missing_figure_captions,
+        missing_table_captions=missing_table_captions,
+        missing_referenced_figures=missing_referenced_figures,
+        missing_referenced_tables=missing_referenced_tables,
+    )
+    return {
+        "figure_numbers": unique_figures,
+        "table_numbers": unique_tables,
+        "figure_gaps": figure_gaps,
+        "table_gaps": table_gaps,
+        "duplicate_figures": duplicate_figures,
+        "duplicate_tables": duplicate_tables,
+        "missing_figure_captions": missing_figure_captions,
+        "missing_table_captions": missing_table_captions,
+        "missing_referenced_figures": missing_referenced_figures,
+        "missing_referenced_tables": missing_referenced_tables,
+        "issues": issues,
+    }
+
+
+def extract_caption_numbers(paragraphs: list[str], kind: str) -> list[int]:
+    numbers: list[int] = []
+    for text in paragraphs:
+        number = parse_caption_number(text, kind)
+        if number is not None:
+            numbers.append(number)
+    return numbers
+
+
+def parse_caption_number(text: str, kind: str) -> int | None:
+    compact = text.strip()
+    if kind == "figure":
+        match = re.match(r"^(?:图\s*|Figure\s+)(\d+)(?:[-.．]\d+)?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
+    else:
+        match = re.match(r"^(?:表\s*|Table\s+)(\d+)(?:[-.．]\d+)?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
+    return int(match.group(1)) if match else None
+
+
+def extract_referenced_numbers(paragraphs: list[str], kind: str) -> list[int]:
+    numbers: list[int] = []
+    for text in paragraphs:
+        if parse_caption_number(text, kind) is not None:
+            continue
+        patterns = figure_reference_patterns() if kind == "figure" else table_reference_patterns()
+        for pattern in patterns:
+            numbers.extend(int(match) for match in re.findall(pattern, text, re.IGNORECASE))
+    return numbers
+
+
+def figure_reference_patterns() -> list[str]:
+    return [
+        r"(?:如|见|参见|详见|由|从|根据)\s*图\s*(\d+)",
+        r"图\s*(\d+)\s*所示",
+        r"\bFigure\s+(\d+)\b",
+    ]
+
+
+def table_reference_patterns() -> list[str]:
+    return [
+        r"(?:如|见|参见|详见|由|从|根据)\s*表\s*(\d+)",
+        r"表\s*(\d+)\s*所示",
+        r"\bTable\s+(\d+)\b",
+    ]
+
+
+def detect_missing_figure_captions(document, caption_count: int) -> list[str]:
+    image_count = count_inline_images(document)
+    if image_count > caption_count:
+        return [f"检测到约 {image_count} 个图片对象，但仅识别到 {caption_count} 个图题。"]
+    return []
+
+
+def detect_missing_table_captions(document, caption_count: int) -> list[str]:
+    table_count = len(document.tables)
+    if table_count > caption_count:
+        return [f"检测到 {table_count} 个 Word 表格，但仅识别到 {caption_count} 个表题。"]
+    return []
+
+
+def count_inline_images(document) -> int:
+    return sum(1 for _ in document.element.body.iter() if str(_.tag).endswith("}drawing") or str(_.tag).endswith("}pict"))
+
+
+def build_figure_table_issues(
+    *,
+    figure_gaps: list[int],
+    table_gaps: list[int],
+    duplicate_figures: list[int],
+    duplicate_tables: list[int],
+    missing_figure_captions: list[str],
+    missing_table_captions: list[str],
+    missing_referenced_figures: list[int],
+    missing_referenced_tables: list[int],
+) -> list[str]:
+    issues: list[str] = []
+    if figure_gaps:
+        issues.append(f"图编号不连续，缺少：{format_number_list(figure_gaps)}。")
+    if table_gaps:
+        issues.append(f"表编号不连续，缺少：{format_number_list(table_gaps)}。")
+    if duplicate_figures:
+        issues.append(f"图编号存在重复：{format_number_list(duplicate_figures)}。")
+    if duplicate_tables:
+        issues.append(f"表编号存在重复：{format_number_list(duplicate_tables)}。")
+    issues.extend(missing_figure_captions)
+    issues.extend(missing_table_captions)
+    if missing_referenced_figures:
+        issues.append(f"正文引用的图号未找到对应图题：{format_number_list(missing_referenced_figures)}。")
+    if missing_referenced_tables:
+        issues.append(f"正文引用的表号未找到对应表题：{format_number_list(missing_referenced_tables)}。")
+    return issues
 
 
 def dimension(key: str, label: str, score: int, issues: list[str], group: str) -> dict[str, Any]:

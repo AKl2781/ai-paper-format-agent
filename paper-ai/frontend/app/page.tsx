@@ -31,8 +31,22 @@ type ReferenceCheck = {
   numbering_gaps: number[];
   issues: string[];
 };
+type FigureTableCheck = {
+  figure_numbers: number[];
+  table_numbers: number[];
+  figure_gaps: number[];
+  table_gaps: number[];
+  duplicate_figures: number[];
+  duplicate_tables: number[];
+  missing_figure_captions: string[];
+  missing_table_captions: string[];
+  missing_referenced_figures: number[];
+  missing_referenced_tables: number[];
+  issues: string[];
+};
 type Analysis = {
   reference_check?: ReferenceCheck;
+  figure_table_check?: FigureTableCheck;
   report: {
     score: number;
     summary: string;
@@ -300,6 +314,7 @@ export default function Home() {
             <ScoreModules title="本地规则评分" items={result.after_analysis.report.local_breakdown} />
             {result.score_breakdown.ai_used ? <ScoreModules title="AI增强评分" items={result.after_analysis.report.ai_breakdown} /> : null}
             {result.after_analysis.reference_check ? <ReferenceCheckPanel check={result.after_analysis.reference_check} /> : null}
+            {result.after_analysis.figure_table_check ? <FigureTableCheckPanel check={result.after_analysis.figure_table_check} /> : null}
 
             <section className="report-panel">
               <div className="section-title">
@@ -488,6 +503,37 @@ function ReferenceCheckPanel({ check }: { check: ReferenceCheck }) {
         <ReportList title="编号与引用" items={relationItems} />
       </div>
       <ReportList title="参考文献风险" items={issueItems} />
+    </section>
+  );
+}
+
+function FigureTableCheckPanel({ check }: { check: FigureTableCheck }) {
+  const summaryItems = [
+    `图题编号：${formatNumbers(check.figure_numbers)}`,
+    `表题编号：${formatNumbers(check.table_numbers)}`,
+    `图编号跳号：${formatNumbers(check.figure_gaps)}`,
+    `表编号跳号：${formatNumbers(check.table_gaps)}`,
+  ];
+  const riskItems = [
+    `重复图编号：${formatNumbers(check.duplicate_figures)}`,
+    `重复表编号：${formatNumbers(check.duplicate_tables)}`,
+    `正文引用图号不存在：${formatNumbers(check.missing_referenced_figures)}`,
+    `正文引用表号不存在：${formatNumbers(check.missing_referenced_tables)}`,
+  ];
+  const captionItems = [...check.missing_figure_captions, ...check.missing_table_captions];
+  const issueItems = check.issues.length ? check.issues : ["自动检查未发现明显图表编号风险。"];
+  return (
+    <section className="module-panel">
+      <div className="section-title">
+        <span>图表编号检查</span>
+        <strong>{check.figure_numbers.length} 图 / {check.table_numbers.length} 表</strong>
+      </div>
+      <div className="report-grid">
+        <ReportList title="编号概览" items={summaryItems} />
+        <ReportList title="引用与重复" items={riskItems} />
+      </div>
+      {captionItems.length ? <ReportList title="题注缺失风险" items={captionItems} /> : null}
+      <ReportList title="图表风险" items={issueItems} />
     </section>
   );
 }

@@ -243,8 +243,9 @@ def collect_unresolved(after_analysis: dict[str, Any]) -> list[str]:
 def build_manual_review_items(after_analysis: dict[str, Any], unresolved_issues: list[str]) -> list[str]:
     recommendations = after_analysis["report"].get("recommendations", [])
     reference_issues = after_analysis.get("reference_check", {}).get("issues", [])
+    figure_table_issues = after_analysis.get("figure_table_check", {}).get("issues", [])
     risk_items = [issue for issue in unresolved_issues if "未发现高风险未修复项" not in issue]
-    return list(dict.fromkeys([*risk_items, *reference_issues, *recommendations]))
+    return list(dict.fromkeys([*risk_items, *reference_issues, *figure_table_issues, *recommendations]))
 
 
 def build_format_diff_summary(
