@@ -189,21 +189,44 @@ def build_modification_report(
         )
 
     language_changes = len([item for item in language_log if "->" in item])
+    auto_fix_count = len(format_log) + language_changes
+    changed_dimensions = [item for item in comparisons if item["delta"] != 0]
+    score_delta_by_dimension = {item["key"]: item["delta"] for item in comparisons}
+    unresolved_issues = collect_unresolved(after_analysis)
+    manual_review_items = build_manual_review_items(after_analysis, unresolved_issues)
+    needs_manual_review_count = len(manual_review_items)
+    score_delta = int(after_analysis["report"]["score"]) - int(before_analysis["report"]["score"])
+    format_diff_summary = {
+        "before_score": int(before_analysis["report"]["score"]),
+        "after_score": int(after_analysis["report"]["score"]),
+        "score_delta": score_delta,
+        "auto_fix_count": auto_fix_count,
+        "changed_dimension_count": len(changed_dimensions),
+        "needs_manual_review_count": needs_manual_review_count,
+        "format_change_count": len(format_log),
+        "language_change_count": language_changes,
+        "summary": build_format_diff_summary(score_delta, changed_dimensions, auto_fix_count, needs_manual_review_count),
+    }
     return {
-        "summary": f"Agent 完成 {len(format_log) + language_changes} 项自动处理，最终评分 {after_analysis['report']['score']}。",
+        "summary": f"Agent 完成 {auto_fix_count} 项自动处理，最终评分 {after_analysis['report']['score']}。",
         "fixed_issues": [
             "统一页面边距、正文样式、标题层级和段落间距。",
             "完成本地格式修复和重复风险预检。",
             "根据当前模式完成语言审校或跳过 AI 增强。",
         ],
         "before_after": comparisons,
+        "format_diff_summary": format_diff_summary,
+        "changed_dimensions": changed_dimensions,
+        "score_delta_by_dimension": score_delta_by_dimension,
+        "auto_fix_count": auto_fix_count,
+        "needs_manual_review_count": needs_manual_review_count,
         "change_counts": {
             "format_changes": len(format_log),
             "language_changes": language_changes,
-            "total": len(format_log) + language_changes,
+            "total": auto_fix_count,
         },
-        "unresolved_issues": collect_unresolved(after_analysis),
-        "manual_review_items": list(dict.fromkeys(after_analysis["report"]["recommendations"] + repeat_risk.get("suggestions", []))),
+        "unresolved_issues": unresolved_issues,
+        "manual_review_items": manual_review_items,
         "template_used": template_path.name if template_path else None,
     }
 
@@ -215,3 +238,32 @@ def collect_unresolved(after_analysis: dict[str, Any]) -> list[str]:
             item_issues = item["issues"] or ["仍建议人工复核。"]
             issues.extend([f"{item['label']}：{issue}" for issue in item_issues])
     return issues or ["未发现高风险未修复项，但最终提交前仍建议人工复查。"]
+
+
+def build_manual_review_items(after_analysis: dict[str, Any], unresolved_issues: list[str]) -> list[str]:
+    recommendations = after_analysis["report"].get("recommendations", [])
+    risk_items = [issue for issue in unresolved_issues if "未发现高风险未修复项" not in issue]
+    return list(dict.fromkeys([*risk_items, *recommendations]))
+
+
+def build_format_diff_summary(
+    score_delta: int,
+    changed_dimensions: list[dict[str, Any]],
+    auto_fix_count: int,
+    needs_manual_review_count: int,
+) -> str:
+    if changed_dimensions:
+        dimension_names = "、".join(item["label"] for item in changed_dimensions[:4])
+        if len(changed_dimensions) > 4:
+            dimension_names += "等"
+    else:
+        dimension_names = "各评分维度"
+
+    if score_delta > 0:
+        score_text = f"评分提升 {score_delta} 分"
+    elif score_delta < 0:
+        score_text = f"评分变化 {score_delta} 分，建议重点复核"
+    else:
+        score_text = "评分保持稳定"
+
+    return f"{score_text}；{dimension_names}发生变化；完成 {auto_fix_count} 项自动处理，仍有 {needs_manual_review_count} 项建议人工复查。"

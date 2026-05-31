@@ -31,10 +31,27 @@ type Analysis = {
   };
 };
 type RepeatRisk = { level: string; score: number; suggestions: string[] };
+type ScoreComparison = { key: string; label: string; before: number; after: number; delta: number; status: string };
+type FormatDiffSummary = {
+  before_score: number;
+  after_score: number;
+  score_delta: number;
+  auto_fix_count: number;
+  changed_dimension_count: number;
+  needs_manual_review_count: number;
+  format_change_count: number;
+  language_change_count: number;
+  summary: string;
+};
 type ModificationReport = {
   summary: string;
   fixed_issues: string[];
-  before_after: Array<{ key: string; label: string; before: number; after: number; delta: number; status: string }>;
+  before_after: ScoreComparison[];
+  format_diff_summary: FormatDiffSummary;
+  changed_dimensions: ScoreComparison[];
+  score_delta_by_dimension: Record<string, number>;
+  auto_fix_count: number;
+  needs_manual_review_count: number;
   change_counts: { format_changes: number; language_changes: number; total: number };
   unresolved_issues: string[];
   manual_review_items: string[];
@@ -258,6 +275,7 @@ export default function Home() {
                 <strong>{result.modification_report.change_counts.total} 项处理</strong>
               </div>
               <p className="report-summary">{result.modification_report.summary}</p>
+              <DiffReport report={result.modification_report} />
               {result.score_breakdown.ai_added_value.length ? <ReportList title="AI额外提升" items={result.score_breakdown.ai_added_value} /> : null}
               <div className="report-grid">
                 <ReportList title="已修复的问题" items={result.modification_report.fixed_issues} />
@@ -410,6 +428,40 @@ function ReportList({ title, items }: { title: string; items: string[] }) {
       </ul>
     </div>
   );
+}
+
+function DiffReport({ report }: { report: ModificationReport }) {
+  const changedItems = report.changed_dimensions.length
+    ? report.changed_dimensions.map((item) => `${item.label}：${item.before} → ${item.after}（${formatDelta(item.delta)}）`)
+    : ["各评分维度保持稳定，本次主要完成格式规范化处理。"];
+  return (
+    <div className="diff-report">
+      <div className="diff-summary">
+        <div>
+          <span>自动处理</span>
+          <strong>{report.auto_fix_count}</strong>
+        </div>
+        <div>
+          <span>变化维度</span>
+          <strong>{report.format_diff_summary.changed_dimension_count}</strong>
+        </div>
+        <div>
+          <span>人工复查</span>
+          <strong>{report.needs_manual_review_count}</strong>
+        </div>
+      </div>
+      <p>{report.format_diff_summary.summary}</p>
+      <div className="report-grid">
+        <ReportList title="改了什么" items={changedItems} />
+        <ReportList title="仍需人工复查" items={report.manual_review_items} />
+      </div>
+    </div>
+  );
+}
+
+function formatDelta(delta: number) {
+  if (delta > 0) return `+${delta}`;
+  return String(delta);
 }
 
 function riskTone(level: string) {

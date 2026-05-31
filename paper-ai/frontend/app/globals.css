@@ -498,6 +498,45 @@ p {
   gap: 10px;
 }
 
+.diff-report {
+  display: grid;
+  gap: 14px;
+  padding: 16px;
+  border: 1px solid #d6dee9;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.diff-report p {
+  color: #334155;
+  line-height: 1.7;
+}
+
+.diff-summary {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.diff-summary div {
+  display: grid;
+  gap: 6px;
+  padding: 12px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.diff-summary span {
+  color: #56657a;
+  font-size: 13px;
+}
+
+.diff-summary strong {
+  color: #1f4b99;
+  font-size: 26px;
+}
+
 .report-list h2 {
   font-size: 17px;
 }
@@ -557,6 +596,7 @@ p {
   .upload-grid,
   .score-overview,
   .report-grid,
+  .diff-summary,
   .module-grid,
   .completion-strip,
   .action-row,

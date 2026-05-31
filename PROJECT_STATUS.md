@@ -25,7 +25,7 @@
 - AI审校：支持 DeepSeek/OpenAI API；API 不可用时可降级到本地规则。
 - 重复风险预检：支持相似段落、重复句子和重复风险等级检测。
 - 在线预览：支持将最终 docx 转成基础 HTML 预览。
-- 修改报告：支持输出修复项、评分对比、修改次数、未修复项和人工复查建议。
+- 修改报告：支持输出修复项、评分对比、修改次数、未修复项、人工复查建议和格式差异摘要。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 评分和建议。
 
@@ -49,6 +49,7 @@ PASS：
 - 在线预览正常：`/preview/{filename}` 返回 HTML。
 - 文件下载正常：`/download/{filename}` 返回 docx。
 - 修改报告正常：包含 summary、before_after、change_counts、manual_review_items。
+- v0.3.1 格式差异报告增强已完成：新增 format_diff_summary、changed_dimensions、score_delta_by_dimension、auto_fix_count、needs_manual_review_count。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -115,7 +116,7 @@ FAIL：
 ## 未来1周
 
 - 在线预览优化。
-- 格式差异报告增强。
+- 格式差异报告增强（v0.3.1 已完成）。
 - 参考文献检查。
 - 图表编号检查。
 - 学校模板库。
