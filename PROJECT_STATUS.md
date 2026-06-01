@@ -31,6 +31,7 @@
 - 真实论文测试库：v0.3.5 第一步已建立 `test_documents/` 测试资产目录、`manifest.csv` 占位清单、`regression_results/` 结果目录和 `real_paper_test_plan.md` 测试计划；第二步已生成 10 个脱敏 DOCX 测试样本并更新 manifest。
 - Agent Orchestrator Layer：v0.3.7 已新增可解释智能体调度记录 `agent_trace`，记录 task_plan、tools_used、agent_decision、fallback_reason、manual_review_required 和 confidence，不改变原有处理结果。
 - 评分语义：v0.4.1 已新增 `score_breakdown.format_score`、`risk_score`、`ai_language_score`、`final_score`、`score_confidence` 和 `score_explanation`，AI 语言评分仅作参考，不会拉低最终评分。
+- Beta 文档：v0.4.0-beta-docs 已整理 README 和 docs 文档，补充架构、Agent Trace、Risk Level、真实回归结果和部署规划说明。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
 
@@ -63,6 +64,7 @@ PASS：
 - v0.3.5 Test Corpus 第二步已完成：生成 clean、messy、references、figures_tables、template_mismatch 共 10 个脱敏 DOCX 测试样本，并更新 manifest；未修改业务代码。
 - v0.3.7 Agent Orchestrator Layer 已完成：新增 agent_trace 顶层字段，用于解释 Agent 计划、工具调用、fallback 和人工复查判断；旧字段保持兼容。
 - v0.4.1 Scoring Semantics Refinement 已完成：新增 score_breakdown 评分语义字段，保留 local_score/ai_score/ai_used 等旧字段，避免 AI 语言参考分造成“修完更低分”的误解。
+- v0.4.0-beta-docs 已完成：新增根目录 README 和 docs/ 文档，项目可展示、可运行、可说明。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
