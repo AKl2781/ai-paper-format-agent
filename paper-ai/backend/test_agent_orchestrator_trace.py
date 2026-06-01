@@ -34,6 +34,23 @@ def make_academic_docx(path: Path) -> None:
     )
 
 
+def make_high_risk_reference_docx(path: Path) -> None:
+    make_docx(
+        path,
+        [
+            "高中生压力管理研究",
+            "摘要：本文围绕高中生压力管理展开分析。",
+            "关键词：压力管理；高中生；教育研究",
+            "1. 绪论",
+            "已有研究指出压力管理需要多方协同[2]。",
+            "2. 结论",
+            "本文认为需要从学校、家庭和学生自身三个方面改进压力管理。",
+            "参考文献",
+            "[1] 张三. A.",
+        ],
+    )
+
+
 def make_lab_report_docx(path: Path) -> None:
     make_docx(
         path,
@@ -97,9 +114,25 @@ def main() -> None:
         assert_ok("local_trace_exists", bool(local_result.get("agent_trace")))
         assert_ok("local_mode_decision", local_result["agent_trace"]["agent_decision"]["mode"] == "local")
         assert_ok("local_fallback_reason", "local_mode_skip_ai" in local_result["agent_trace"]["fallback_reason"])
-        assert_ok("manual_review_required_true", local_result["agent_trace"]["manual_review_required"] is True)
+        assert_ok("advisory_only_manual_review_false", local_result["agent_trace"]["manual_review_required"] is False)
+        assert_ok(
+            "advisory_review_strategy",
+            local_result["agent_trace"]["agent_decision"]["review_strategy"] == "advisory_notice_only",
+            local_result["agent_trace"]["agent_decision"]["review_strategy"],
+        )
         for key in ["steps", "before_score", "after_score", "modification_report", "download_url"]:
             assert_ok(f"old_field_{key}", key in local_result)
+
+        high_risk_reference = tmp_path / "high_risk_reference.docx"
+        make_high_risk_reference_docx(high_risk_reference)
+        high_risk_result = run_paper_agent(high_risk_reference, output_dir, mode="local")
+        assert_ok("high_risk_status_ok", high_risk_result.get("status") == "ok", high_risk_result.get("status"))
+        assert_ok("manual_review_required_true", high_risk_result["agent_trace"]["manual_review_required"] is True)
+        assert_ok(
+            "manual_review_strategy",
+            high_risk_result["agent_trace"]["agent_decision"]["review_strategy"] == "manual_review_recommended",
+            high_risk_result["agent_trace"]["agent_decision"]["review_strategy"],
+        )
 
         def fail_ai(_path: Path) -> dict[str, object]:
             raise RuntimeError("simulated ai failure")

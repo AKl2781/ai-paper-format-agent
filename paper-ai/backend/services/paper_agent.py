@@ -14,6 +14,10 @@ from .plagiarism_checker import check_repeat_risk
 from .template_extractor import extract_template_profile
 
 
+RISK_LEVELS = ("blocking", "high_risk", "warning", "info")
+REVIEW_RISK_LEVELS = {"blocking", "high_risk"}
+
+
 @dataclass
 class AgentState:
     paper_path: Path
@@ -250,7 +254,11 @@ def build_modification_report(
     changed_dimensions = [item for item in comparisons if item["delta"] != 0]
     score_delta_by_dimension = {item["key"]: item["delta"] for item in comparisons}
     unresolved_issues = collect_unresolved(after_analysis)
-    manual_review_items = build_manual_review_items(after_analysis, unresolved_issues)
+    risk_items = collect_check_risk_items(after_analysis)
+    manual_review_items = build_manual_review_items(risk_items)
+    warning_items = build_warning_items(after_analysis, unresolved_issues, risk_items)
+    info_items = build_info_items(risk_items)
+    risk_summary = build_report_risk_summary(risk_items)
     needs_manual_review_count = len(manual_review_items)
     score_delta = int(after_analysis["report"]["score"]) - int(before_analysis["report"]["score"])
     format_diff_summary = {
@@ -284,6 +292,9 @@ def build_modification_report(
         },
         "unresolved_issues": unresolved_issues,
         "manual_review_items": manual_review_items,
+        "risk_summary": risk_summary,
+        "warning_items": warning_items,
+        "info_items": info_items,
         "template_used": template_path.name if template_path else None,
     }
 
@@ -297,12 +308,42 @@ def collect_unresolved(after_analysis: dict[str, Any]) -> list[str]:
     return issues or ["未发现高风险未修复项，但最终提交前仍建议人工复查。"]
 
 
-def build_manual_review_items(after_analysis: dict[str, Any], unresolved_issues: list[str]) -> list[str]:
+def collect_check_risk_items(after_analysis: dict[str, Any]) -> list[dict[str, str]]:
+    reference_items = after_analysis.get("reference_check", {}).get("risk_items", [])
+    figure_table_items = after_analysis.get("figure_table_check", {}).get("risk_items", [])
+    return [*reference_items, *figure_table_items]
+
+
+def build_manual_review_items(risk_items: list[dict[str, str]]) -> list[str]:
+    return unique_messages(item for item in risk_items if item.get("level") in REVIEW_RISK_LEVELS)
+
+
+def build_warning_items(
+    after_analysis: dict[str, Any],
+    unresolved_issues: list[str],
+    risk_items: list[dict[str, str]],
+) -> list[str]:
     recommendations = after_analysis["report"].get("recommendations", [])
-    reference_issues = after_analysis.get("reference_check", {}).get("issues", [])
-    figure_table_issues = after_analysis.get("figure_table_check", {}).get("issues", [])
-    risk_items = [issue for issue in unresolved_issues if "未发现高风险未修复项" not in issue]
-    return list(dict.fromkeys([*risk_items, *reference_issues, *figure_table_issues, *recommendations]))
+    review_risk_messages = [item.get("message", "") for item in risk_items if item.get("level") in REVIEW_RISK_LEVELS]
+    score_warnings = [
+        issue
+        for issue in unresolved_issues
+        if "未发现高风险未修复项" not in issue and not any(message and message in issue for message in review_risk_messages)
+    ]
+    risk_warnings = unique_messages(item for item in risk_items if item.get("level") == "warning")
+    return list(dict.fromkeys([*score_warnings, *risk_warnings, *recommendations]))
+
+
+def build_info_items(risk_items: list[dict[str, str]]) -> list[str]:
+    return unique_messages(item for item in risk_items if item.get("level") == "info")
+
+
+def build_report_risk_summary(risk_items: list[dict[str, str]]) -> dict[str, int]:
+    return {level: sum(1 for item in risk_items if item.get("level") == level) for level in RISK_LEVELS}
+
+
+def unique_messages(items) -> list[str]:
+    return list(dict.fromkeys(item.get("message", "") for item in items if item.get("message")))
 
 
 def build_format_diff_summary(

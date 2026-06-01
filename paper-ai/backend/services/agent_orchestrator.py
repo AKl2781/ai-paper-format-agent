@@ -5,6 +5,7 @@ from typing import Any
 
 
 AGENT_TRACE_VERSION = "v0.3.7"
+REVIEW_RISK_LEVELS = {"blocking", "high_risk"}
 
 
 TASKS = [
@@ -66,6 +67,7 @@ class AgentTraceBuilder:
         self._fill_pending_tasks(status)
         self._collect_fallbacks(template_profile, language_review, requires_confirmation)
         manual_review_required = needs_manual_review(modification_report, after_analysis, requires_confirmation)
+        advisory_notice_required = has_advisory_notice(modification_report, after_analysis)
         return {
             "version": AGENT_TRACE_VERSION,
             "task_plan": self.task_plan,
@@ -77,6 +79,7 @@ class AgentTraceBuilder:
                 template_profile=template_profile,
                 language_review=language_review,
                 manual_review_required=manual_review_required,
+                advisory_notice_required=advisory_notice_required,
                 requires_confirmation=requires_confirmation,
             ),
             "fallback_reason": self.fallback_reasons,
@@ -120,6 +123,7 @@ def build_agent_decision(
     template_profile: dict[str, Any] | None,
     language_review: dict[str, Any] | None,
     manual_review_required: bool,
+    advisory_notice_required: bool,
     requires_confirmation: bool,
 ) -> dict[str, Any]:
     document_type = (classification or {}).get("document_type")
@@ -130,7 +134,7 @@ def build_agent_decision(
         "template_strategy": template_strategy(has_template, template_warnings),
         "format_strategy": "apply_paper_format",
         "language_strategy": language_strategy(mode, language_review),
-        "review_strategy": review_strategy(manual_review_required, requires_confirmation),
+        "review_strategy": review_strategy(manual_review_required, advisory_notice_required, requires_confirmation),
     }
 
 
@@ -150,11 +154,13 @@ def language_strategy(mode: str, language_review: dict[str, Any] | None) -> str:
     return "local_language_fallback"
 
 
-def review_strategy(manual_review_required: bool, requires_confirmation: bool) -> str:
+def review_strategy(manual_review_required: bool, advisory_notice_required: bool, requires_confirmation: bool) -> str:
     if requires_confirmation:
         return "user_confirmation_required"
     if manual_review_required:
         return "manual_review_recommended"
+    if advisory_notice_required:
+        return "advisory_notice_only"
     return "automatic_review_passed"
 
 
@@ -168,11 +174,30 @@ def needs_manual_review(
     if modification_report and modification_report.get("manual_review_items"):
         return True
     if after_analysis:
-        reference_issues = (after_analysis.get("reference_check") or {}).get("issues") or []
-        figure_table_issues = (after_analysis.get("figure_table_check") or {}).get("issues") or []
-        if reference_issues or figure_table_issues:
+        if has_review_risk(after_analysis):
             return True
     return False
+
+
+def has_review_risk(after_analysis: dict[str, Any]) -> bool:
+    return any(item.get("level") in REVIEW_RISK_LEVELS for item in collect_check_risk_items(after_analysis))
+
+
+def has_advisory_notice(
+    modification_report: dict[str, Any] | None,
+    after_analysis: dict[str, Any] | None,
+) -> bool:
+    if modification_report and (modification_report.get("warning_items") or modification_report.get("info_items")):
+        return True
+    if not after_analysis:
+        return False
+    return any(item.get("level") in {"warning", "info"} for item in collect_check_risk_items(after_analysis))
+
+
+def collect_check_risk_items(after_analysis: dict[str, Any]) -> list[dict[str, Any]]:
+    reference_items = (after_analysis.get("reference_check") or {}).get("risk_items") or []
+    figure_table_items = (after_analysis.get("figure_table_check") or {}).get("risk_items") or []
+    return [*reference_items, *figure_table_items]
 
 
 def calculate_confidence(

@@ -19,6 +19,9 @@ LOCAL_WEIGHTS = {
     "repeat_risk": 0.14,
 }
 
+RISK_LEVELS = ("blocking", "high_risk", "warning", "info")
+REVIEW_RISK_LEVELS = {"blocking", "high_risk"}
+
 AI_WEIGHTS = {
     "language": 0.25,
     "fluency": 0.25,
@@ -215,6 +218,8 @@ def score_references(reference_check: dict[str, Any]) -> dict[str, Any]:
 def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
     ref_index = next((i for i, text in enumerate(paragraphs) if is_reference_heading(text)), -1)
     if ref_index < 0:
+        issues = ["未识别到参考文献部分。"]
+        risk_items = [risk_item("missing_reference_section", "warning", issues[0])]
         return build_reference_check(
             has_reference_section=False,
             reference_count=0,
@@ -224,7 +229,8 @@ def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
             numbering_gaps=[],
             missing_reference_numbers=[],
             uncited_reference_numbers=[],
-            issues=["未识别到参考文献部分。"],
+            issues=issues,
+            risk_items=risk_items,
         )
 
     body_paragraphs = paragraphs[:ref_index]
@@ -240,7 +246,7 @@ def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
     uncited_reference_numbers = sorted(set(unique_reference_numbers) - set(unique_citation_numbers))
     formatted_count = sum(1 for number in parsed_reference_numbers if number is not None)
     formatted_reference_ratio = formatted_count / max(len(reference_items), 1)
-    issues = build_reference_issues(
+    risk_items = build_reference_risk_items(
         has_items=bool(reference_items),
         formatted_reference_ratio=formatted_reference_ratio,
         duplicate_reference_numbers=duplicate_reference_numbers,
@@ -248,6 +254,7 @@ def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
         missing_reference_numbers=missing_reference_numbers,
         uncited_reference_numbers=uncited_reference_numbers,
     )
+    issues = [item["message"] for item in risk_items]
 
     return build_reference_check(
         has_reference_section=True,
@@ -259,6 +266,7 @@ def analyze_references(paragraphs: list[str]) -> dict[str, Any]:
         missing_reference_numbers=missing_reference_numbers,
         uncited_reference_numbers=uncited_reference_numbers,
         issues=issues,
+        risk_items=risk_items,
     )
 
 
@@ -273,6 +281,7 @@ def build_reference_check(
     missing_reference_numbers: list[int],
     uncited_reference_numbers: list[int],
     issues: list[str],
+    risk_items: list[dict[str, str]],
 ) -> dict[str, Any]:
     return {
         "has_reference_section": has_reference_section,
@@ -285,6 +294,9 @@ def build_reference_check(
         "duplicate_reference_numbers": duplicate_reference_numbers,
         "numbering_gaps": numbering_gaps,
         "issues": issues,
+        "risk_items": risk_items,
+        "risk_summary": build_risk_summary(risk_items),
+        "highest_risk_level": highest_risk_level(risk_items),
     }
 
 
@@ -331,7 +343,7 @@ def find_numbering_gaps(numbers: list[int]) -> list[int]:
     return sorted(expected - set(numbers))
 
 
-def build_reference_issues(
+def build_reference_risk_items(
     *,
     has_items: bool,
     formatted_reference_ratio: float,
@@ -339,25 +351,69 @@ def build_reference_issues(
     numbering_gaps: list[int],
     missing_reference_numbers: list[int],
     uncited_reference_numbers: list[int],
-) -> list[str]:
-    issues: list[str] = []
+) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
     if not has_items:
-        issues.append("参考文献标题存在，但未识别到条目。")
+        items.append(risk_item("empty_reference_section", "warning", "参考文献标题存在，但未识别到条目。"))
     if has_items and formatted_reference_ratio < 0.75:
-        issues.append("参考文献编号或条目格式不够统一。")
+        items.append(risk_item("reference_format_inconsistent", "warning", "参考文献编号或条目格式不够统一。"))
     if duplicate_reference_numbers:
-        issues.append(f"参考文献存在重复编号：{format_number_list(duplicate_reference_numbers)}。")
+        items.append(
+            risk_item(
+                "duplicate_reference_numbers",
+                "high_risk",
+                f"参考文献存在重复编号：{format_number_list(duplicate_reference_numbers)}。",
+            )
+        )
     if numbering_gaps:
-        issues.append(f"参考文献编号不连续，缺少：{format_number_list(numbering_gaps)}。")
+        items.append(
+            risk_item(
+                "reference_numbering_gaps",
+                "warning",
+                f"参考文献编号不连续，缺少：{format_number_list(numbering_gaps)}。",
+            )
+        )
     if missing_reference_numbers:
-        issues.append(f"正文引用编号未在文末参考文献中找到：{format_number_list(missing_reference_numbers)}。")
+        items.append(
+            risk_item(
+                "missing_reference_numbers",
+                "high_risk",
+                f"正文引用编号未在文末参考文献中找到：{format_number_list(missing_reference_numbers)}。",
+            )
+        )
     if uncited_reference_numbers:
-        issues.append(f"文末参考文献未在正文中引用：{format_number_list(uncited_reference_numbers)}。")
-    return issues
+        items.append(
+            risk_item(
+                "uncited_reference_numbers",
+                "warning",
+                f"文末参考文献未在正文中引用：{format_number_list(uncited_reference_numbers)}。",
+            )
+        )
+    return items
 
 
 def format_number_list(numbers: list[int]) -> str:
     return "、".join(str(number) for number in numbers)
+
+
+def risk_item(code: str, level: str, message: str) -> dict[str, str]:
+    normalized = level if level in RISK_LEVELS else "info"
+    return {"code": code, "level": normalized, "message": message}
+
+
+def build_risk_summary(risk_items: list[dict[str, str]]) -> dict[str, int]:
+    return {level: sum(1 for item in risk_items if item.get("level") == level) for level in RISK_LEVELS}
+
+
+def highest_risk_level(risk_items: list[dict[str, str]]) -> str | None:
+    for level in RISK_LEVELS:
+        if any(item.get("level") == level for item in risk_items):
+            return level
+    return None
+
+
+def has_review_risk(risk_items: list[dict[str, str]]) -> bool:
+    return any(item.get("level") in REVIEW_RISK_LEVELS for item in risk_items)
 
 
 def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
@@ -377,7 +433,7 @@ def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
     missing_referenced_tables = sorted(set(unique_referenced_tables) - set(unique_tables))
     missing_figure_captions = detect_missing_figure_captions(document, len(unique_figures))
     missing_table_captions = detect_missing_table_captions(document, len(unique_tables))
-    issues = build_figure_table_issues(
+    risk_items = build_figure_table_risk_items(
         figure_gaps=figure_gaps,
         table_gaps=table_gaps,
         duplicate_figures=duplicate_figures,
@@ -387,6 +443,7 @@ def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
         missing_referenced_figures=missing_referenced_figures,
         missing_referenced_tables=missing_referenced_tables,
     )
+    issues = [item["message"] for item in risk_items]
     return {
         "figure_numbers": unique_figures,
         "table_numbers": unique_tables,
@@ -399,6 +456,9 @@ def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
         "missing_referenced_figures": missing_referenced_figures,
         "missing_referenced_tables": missing_referenced_tables,
         "issues": issues,
+        "risk_items": risk_items,
+        "risk_summary": build_risk_summary(risk_items),
+        "highest_risk_level": highest_risk_level(risk_items),
     }
 
 
@@ -465,7 +525,7 @@ def count_inline_images(document) -> int:
     return sum(1 for _ in document.element.body.iter() if str(_.tag).endswith("}drawing") or str(_.tag).endswith("}pict"))
 
 
-def build_figure_table_issues(
+def build_figure_table_risk_items(
     *,
     figure_gaps: list[int],
     table_gaps: list[int],
@@ -475,23 +535,35 @@ def build_figure_table_issues(
     missing_table_captions: list[str],
     missing_referenced_figures: list[int],
     missing_referenced_tables: list[int],
-) -> list[str]:
-    issues: list[str] = []
+) -> list[dict[str, str]]:
+    items: list[dict[str, str]] = []
     if figure_gaps:
-        issues.append(f"图编号不连续，缺少：{format_number_list(figure_gaps)}。")
+        items.append(risk_item("figure_numbering_gaps", "warning", f"图编号不连续，缺少：{format_number_list(figure_gaps)}。"))
     if table_gaps:
-        issues.append(f"表编号不连续，缺少：{format_number_list(table_gaps)}。")
+        items.append(risk_item("table_numbering_gaps", "warning", f"表编号不连续，缺少：{format_number_list(table_gaps)}。"))
     if duplicate_figures:
-        issues.append(f"图编号存在重复：{format_number_list(duplicate_figures)}。")
+        items.append(risk_item("duplicate_figures", "high_risk", f"图编号存在重复：{format_number_list(duplicate_figures)}。"))
     if duplicate_tables:
-        issues.append(f"表编号存在重复：{format_number_list(duplicate_tables)}。")
-    issues.extend(missing_figure_captions)
-    issues.extend(missing_table_captions)
+        items.append(risk_item("duplicate_tables", "high_risk", f"表编号存在重复：{format_number_list(duplicate_tables)}。"))
+    items.extend(risk_item("missing_figure_captions", "info", item) for item in missing_figure_captions)
+    items.extend(risk_item("missing_table_captions", "info", item) for item in missing_table_captions)
     if missing_referenced_figures:
-        issues.append(f"正文引用的图号未找到对应图题：{format_number_list(missing_referenced_figures)}。")
+        items.append(
+            risk_item(
+                "missing_referenced_figures",
+                "high_risk",
+                f"正文引用的图号未找到对应图题：{format_number_list(missing_referenced_figures)}。",
+            )
+        )
     if missing_referenced_tables:
-        issues.append(f"正文引用的表号未找到对应表题：{format_number_list(missing_referenced_tables)}。")
-    return issues
+        items.append(
+            risk_item(
+                "missing_referenced_tables",
+                "high_risk",
+                f"正文引用的表号未找到对应表题：{format_number_list(missing_referenced_tables)}。",
+            )
+        )
+    return items
 
 
 def dimension(key: str, label: str, score: int, issues: list[str], group: str) -> dict[str, Any]:
