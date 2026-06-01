@@ -1,0 +1,4 @@
+case_id,file_name,category,document_type,template_file,expected_classification_success,expected_format_success,expected_report,expected_preview,expected_download,expected_manual_review,known_risks,notes
+clean_001,clean_001.docx,clean,academic_paper,,true,true,true,true,true,false,none,脱敏占位样例；真实文件默认不提交
+references_001,references_gap_001.docx,references,academic_paper,,true,true,true,true,true,true,reference_number_gap,脱敏占位样例；用于参考文献跳号
+reports_001,lab_report_001.docx,reports,lab_report,,true,true,true,true,true,true,requires_confirmation,脱敏占位样例；用于非标准论文确认流程

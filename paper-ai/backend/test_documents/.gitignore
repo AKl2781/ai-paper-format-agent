@@ -1,0 +1,13 @@
+# Real DOCX files are local test assets by default.
+*.docx
+*.doc
+*.wps
+*.pdf
+
+# Keep corpus metadata and directory placeholders versioned.
+!README.md
+!manifest.csv
+!.gitignore
+!.gitkeep
+!*/
+!*/.gitkeep
