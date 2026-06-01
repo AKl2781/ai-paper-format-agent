@@ -367,6 +367,27 @@ p {
   font-size: 30px;
 }
 
+.score-change small,
+.score-note {
+  grid-column: 1 / -1;
+}
+
+.score-change small {
+  color: #56657a;
+}
+
+.score-note,
+.score-explanation {
+  margin: 0;
+  padding: 10px 12px;
+  border: 1px solid #bfdbfe;
+  border-radius: 8px;
+  background: #eff6ff;
+  color: #1d4ed8;
+  font-size: 14px;
+  line-height: 1.5;
+}
+
 .risk-pill.risk-low strong {
   color: #15803d;
 }

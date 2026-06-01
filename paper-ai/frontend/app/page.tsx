@@ -13,9 +13,14 @@ type Classification = {
   requires_confirmation: boolean;
 };
 type ScoreBreakdown = {
+  format_score?: number;
+  risk_score?: number;
+  ai_language_score?: number | null;
   local_score: number;
   ai_score: number | null;
   final_score: number;
+  score_confidence?: number;
+  score_explanation?: string;
   ai_used: boolean;
   ai_added_value: string[];
 };
@@ -82,6 +87,7 @@ type ModificationReport = {
   change_counts: { format_changes: number; language_changes: number; total: number };
   unresolved_issues: string[];
   manual_review_items: string[];
+  score_explanation?: string;
   template_used: string | null;
 };
 type AgentResult = {
@@ -311,8 +317,8 @@ export default function Home() {
               {!preview && !previewError ? <div className="preview-loading">正在生成修改后的论文预览...</div> : null}
             </section>
 
-            <ScoreModules title="本地规则评分" items={result.after_analysis.report.local_breakdown} />
-            {result.score_breakdown.ai_used ? <ScoreModules title="AI增强评分" items={result.after_analysis.report.ai_breakdown} /> : null}
+            <ScoreModules title="格式规则评分" items={result.after_analysis.report.local_breakdown} />
+            {result.score_breakdown.ai_used ? <ScoreModules title="AI语言参考评分" items={result.after_analysis.report.ai_breakdown} /> : null}
             {result.after_analysis.reference_check ? <ReferenceCheckPanel check={result.after_analysis.reference_check} /> : null}
             {result.after_analysis.figure_table_check ? <FigureTableCheckPanel check={result.after_analysis.figure_table_check} /> : null}
 
@@ -323,7 +329,8 @@ export default function Home() {
               </div>
               <p className="report-summary">{result.modification_report.summary}</p>
               <DiffReport report={result.modification_report} />
-              {result.score_breakdown.ai_added_value.length ? <ReportList title="AI额外提升" items={result.score_breakdown.ai_added_value} /> : null}
+              {result.modification_report.score_explanation ? <p className="score-explanation">{result.modification_report.score_explanation}</p> : null}
+              {result.score_breakdown.ai_added_value.length ? <ReportList title="AI语言参考说明" items={result.score_breakdown.ai_added_value} /> : null}
               <div className="report-grid">
                 <ReportList title="已修复的问题" items={result.modification_report.fixed_issues} />
                 <ReportList title="未能自动修复的问题" items={result.modification_report.unresolved_issues} />
@@ -397,6 +404,10 @@ function ProgressPanel({ running, steps }: { running: boolean; steps: AgentStep[
 }
 
 function ScoreOverview({ result }: { result: AgentResult }) {
+  const formatScore = result.score_breakdown.format_score ?? result.score_breakdown.local_score;
+  const aiLanguageScore = result.score_breakdown.ai_language_score ?? result.score_breakdown.ai_score;
+  const aiIsReferenceOnly = typeof aiLanguageScore === "number" && aiLanguageScore < formatScore;
+
   return (
     <div className="score-overview">
       <div>
@@ -405,10 +416,14 @@ function ScoreOverview({ result }: { result: AgentResult }) {
         <p>{result.after_analysis.report.summary}</p>
       </div>
       <div className="score-change">
-        <span>本地规则</span>
-        <b>{result.score_breakdown.local_score}</b>
-        <span>AI增强</span>
-        <b>{result.score_breakdown.ai_score ?? "未启用"}</b>
+        <span>格式规则分</span>
+        <b>{formatScore}</b>
+        <span>风险稳定分</span>
+        <b>{result.score_breakdown.risk_score ?? "待评估"}</b>
+        <span>AI语言参考分</span>
+        <b>{aiLanguageScore ?? "未启用"}</b>
+        <small>可信度 {result.score_breakdown.score_confidence ?? "待评估"}</small>
+        {aiIsReferenceOnly ? <p className="score-note">AI语言评分仅作参考，不影响最终评分。</p> : null}
       </div>
       <div className={`risk-pill ${riskTone(result.repeat_risk.level)}`}>
         <span>重复风险</span>

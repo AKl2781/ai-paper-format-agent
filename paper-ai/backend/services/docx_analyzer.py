@@ -46,7 +46,13 @@ def analyze_docx(
     figure_table_check = analyze_figure_tables(paragraphs, document)
     local_breakdown = build_local_breakdown(document, paragraphs, headings, template_path, repeat_score, reference_check)
     ai_breakdown = build_ai_breakdown(ai_scores) if ai_scores else []
-    score_breakdown = build_score_breakdown(local_breakdown, ai_breakdown)
+    risk_items = collect_check_risk_items(reference_check, figure_table_check)
+    score_breakdown = build_score_breakdown(
+        local_breakdown,
+        ai_breakdown,
+        risk_score=calculate_risk_score(risk_items),
+        risk_items=risk_items,
+    )
 
     return {
         "paragraph_count": len(paragraphs),
@@ -104,24 +110,41 @@ def build_ai_breakdown(ai_scores: dict[str, int] | None) -> list[dict[str, Any]]
     ]
 
 
-def build_score_breakdown(local_breakdown: list[dict[str, Any]], ai_breakdown: list[dict[str, Any]]) -> dict[str, Any]:
-    local_score = weighted(local_breakdown, LOCAL_WEIGHTS)
+def build_score_breakdown(
+    local_breakdown: list[dict[str, Any]],
+    ai_breakdown: list[dict[str, Any]],
+    *,
+    risk_score: int | None = None,
+    risk_items: list[dict[str, Any]] | None = None,
+) -> dict[str, Any]:
+    format_score = weighted(local_breakdown, LOCAL_WEIGHTS)
+    risk_items = risk_items or []
+    risk_score = calculate_risk_score(risk_items) if risk_score is None else risk_score
     if not ai_breakdown:
         return {
-            "local_score": local_score,
+            "format_score": format_score,
+            "risk_score": risk_score,
+            "ai_language_score": None,
+            "final_score": format_score,
+            "score_confidence": calculate_score_confidence(risk_items, ai_used=False),
+            "score_explanation": build_score_explanation(format_score, None, ai_used=False),
+            "local_score": format_score,
             "ai_score": None,
-            "final_score": local_score,
             "ai_used": False,
             "ai_added_value": [],
         }
     ai_score = weighted(ai_breakdown, AI_WEIGHTS)
-    final_score = max(local_score, min(96, round(local_score * 0.78 + ai_score * 0.22)))
     return {
-        "local_score": local_score,
+        "format_score": format_score,
+        "risk_score": risk_score,
+        "ai_language_score": ai_score,
+        "final_score": format_score,
+        "score_confidence": calculate_score_confidence(risk_items, ai_used=True),
+        "score_explanation": build_score_explanation(format_score, ai_score, ai_used=True),
+        "local_score": format_score,
         "ai_score": ai_score,
-        "final_score": final_score,
         "ai_used": True,
-        "ai_added_value": build_ai_added_value(ai_breakdown, local_score, final_score),
+        "ai_added_value": build_ai_added_value(ai_breakdown, format_score),
     }
 
 
@@ -129,9 +152,51 @@ def weighted(items: list[dict[str, Any]], weights: dict[str, float]) -> int:
     return max(0, min(96, round(sum(item["score"] * weights[item["key"]] for item in items))))
 
 
-def build_ai_added_value(ai_breakdown: list[dict[str, Any]], local_score: int, final_score: int) -> list[str]:
+def collect_check_risk_items(*checks: dict[str, Any]) -> list[dict[str, Any]]:
+    items: list[dict[str, Any]] = []
+    for check in checks:
+        items.extend(check.get("risk_items") or [])
+    return items
+
+
+def calculate_risk_score(risk_items: list[dict[str, Any]]) -> int:
+    penalties = {"blocking": 25, "high_risk": 12, "warning": 4, "info": 1}
+    score = 96
+    for item in risk_items:
+        score -= penalties.get(str(item.get("level")), 0)
+    return max(0, min(96, score))
+
+
+def calculate_score_confidence(risk_items: list[dict[str, Any]], *, ai_used: bool) -> float:
+    confidence = 0.9
+    for item in risk_items:
+        level = item.get("level")
+        if level == "blocking":
+            confidence -= 0.2
+        elif level == "high_risk":
+            confidence -= 0.08
+        elif level == "warning":
+            confidence -= 0.03
+        elif level == "info":
+            confidence -= 0.01
+    if ai_used:
+        confidence += 0.02
+    return round(max(0.3, min(0.98, confidence)), 2)
+
+
+def build_score_explanation(format_score: int, ai_language_score: int | None, *, ai_used: bool) -> str:
+    if not ai_used:
+        return "最终评分以格式规则评分为主；当前为本地模式，AI语言评分未启用。"
+    if ai_language_score is None:
+        return "最终评分以格式规则评分为主；AI语言评分不可用，不影响最终评分。"
+    if ai_language_score < format_score:
+        return "最终评分以格式规则评分为主，AI语言评分仅作参考，不会拉低最终评分。"
+    return "最终评分以格式规则评分为主，AI语言评分仅作参考，不参与主评分计算。"
+
+
+def build_ai_added_value(ai_breakdown: list[dict[str, Any]], format_score: int) -> list[str]:
     values = [f"{item['label']}：{item['score']} 分" for item in ai_breakdown]
-    values.append(f"AI增强使最终评分相对本地模式提升 {max(0, final_score - local_score)} 分。")
+    values.append(f"AI语言评分仅作参考，不影响最终评分；当前格式规则分为 {format_score} 分。")
     return values
 
 
@@ -706,8 +771,8 @@ def severity_from_score(score: int) -> str:
 
 def make_summary(score_breakdown: dict[str, Any]) -> str:
     if score_breakdown["ai_used"]:
-        return "已完成本地格式修复与 AI 增强审校，仍建议人工复核关键内容。"
-    return "已完成本地格式修复与基础预检，未启用 AI 增强评分。"
+        return "已完成格式规则评分与 AI 语言参考评分，最终评分以格式规则分为主。"
+    return "已完成格式规则评分与基础预检，未启用 AI 语言参考评分。"
 
 
 def build_recommendations(table_row_count: int, template_path: Path | None) -> list[str]:

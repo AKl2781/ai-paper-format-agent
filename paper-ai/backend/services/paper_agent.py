@@ -259,6 +259,10 @@ def build_modification_report(
     warning_items = build_warning_items(after_analysis, unresolved_issues, risk_items)
     info_items = build_info_items(risk_items)
     risk_summary = build_report_risk_summary(risk_items)
+    score_explanation = (after_analysis["report"].get("score_breakdown") or {}).get(
+        "score_explanation",
+        "最终评分以格式规则评分为主，AI语言评分仅作参考，不会拉低最终评分。",
+    )
     needs_manual_review_count = len(manual_review_items)
     score_delta = int(after_analysis["report"]["score"]) - int(before_analysis["report"]["score"])
     format_diff_summary = {
@@ -295,6 +299,7 @@ def build_modification_report(
         "risk_summary": risk_summary,
         "warning_items": warning_items,
         "info_items": info_items,
+        "score_explanation": score_explanation,
         "template_used": template_path.name if template_path else None,
     }
 

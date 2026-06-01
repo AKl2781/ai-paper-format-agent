@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.4
+当前版本号：v0.4.1
 
 项目名称：AI论文格式修改Agent
 
@@ -30,8 +30,9 @@
 - 图表编号检查：支持识别图题、表题、Figure/Table 编号、编号跳号、重复编号和正文引用不存在的图表编号。
 - 真实论文测试库：v0.3.5 第一步已建立 `test_documents/` 测试资产目录、`manifest.csv` 占位清单、`regression_results/` 结果目录和 `real_paper_test_plan.md` 测试计划；第二步已生成 10 个脱敏 DOCX 测试样本并更新 manifest。
 - Agent Orchestrator Layer：v0.3.7 已新增可解释智能体调度记录 `agent_trace`，记录 task_plan、tools_used、agent_decision、fallback_reason、manual_review_required 和 confidence，不改变原有处理结果。
+- 评分语义：v0.4.1 已新增 `score_breakdown.format_score`、`risk_score`、`ai_language_score`、`final_score`、`score_confidence` 和 `score_explanation`，AI 语言评分仅作参考，不会拉低最终评分。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
-- ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 评分和建议。
+- ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
 
 # 最近回归测试结果
 
@@ -61,6 +62,7 @@ PASS：
 - v0.3.5 Test Corpus 第一步已完成：新增真实论文测试库目录、脱敏说明、manifest 占位清单、回归结果目录和测试计划；未修改业务代码。
 - v0.3.5 Test Corpus 第二步已完成：生成 clean、messy、references、figures_tables、template_mismatch 共 10 个脱敏 DOCX 测试样本，并更新 manifest；未修改业务代码。
 - v0.3.7 Agent Orchestrator Layer 已完成：新增 agent_trace 顶层字段，用于解释 Agent 计划、工具调用、fallback 和人工复查判断；旧字段保持兼容。
+- v0.4.1 Scoring Semantics Refinement 已完成：新增 score_breakdown 评分语义字段，保留 local_score/ai_score/ai_used 等旧字段，避免 AI 语言参考分造成“修完更低分”的误解。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -90,7 +92,7 @@ FAIL：
 
 ## P1
 
-- AI评分可信度不足：`ai_score` 与真实修改量没有强绑定。
+- AI内容评分可信度仍需提升：`ai_language_score` 已改为参考分，不参与主评分，但内容修改量与语言建议质量仍需继续增强。
 - AI审校偏浅：当前主要是词语级替换，不能稳定完成段落级学术润色。
 - 关键词规范不足：能修正“关键字/关键词”标签，但不能稳定规范关键词内容。
 - 文档分类仍有边界问题：结构较弱、摘要/关键词/参考文献缺失的论文可能识别不稳定。
@@ -110,7 +112,7 @@ FAIL：
 
 - Word 文档格式复杂：python-docx 对目录、页眉页脚、批注、脚注、公式、图片题注等支持有限。
 - AI输出不可控：LLM 可能返回非 JSON、空建议或过度改写，需要继续强化解析和保护策略。
-- 评分系统存在解释风险：格式评分、AI评分、最终评分如果不绑定实际修改量，容易造成误导。
+- 评分系统解释风险已缓解：v0.4.1 已明确格式规则分、风险稳定分、AI语言参考分和最终评分；后续仍需继续绑定真实内容修改量。
 - 文档分类存在误判风险：非标准论文、课程作业、实验报告和弱结构论文之间边界不稳定。
 - 文件编码风险：中文文案在不同终端下可能显示乱码，后续修改需注意 UTF-8。
 - 运行产物膨胀风险：uploads、outputs、`.next`、`node_modules`、日志文件会增加仓库体积和 AI 上下文成本。
