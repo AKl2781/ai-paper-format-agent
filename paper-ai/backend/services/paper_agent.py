@@ -5,6 +5,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from .agent_orchestrator import AgentTraceBuilder
 from .document_classifier import classify_document
 from .docx_analyzer import analyze_docx
 from .docx_formatter import apply_paper_format
@@ -44,11 +45,20 @@ def run_paper_agent(
 ) -> dict[str, Any]:
     state = AgentState(paper_path=paper_path, template_path=template_path, output_dir=output_dir)
     normalized_mode = "local" if mode == "local" else "ai"
+    trace = AgentTraceBuilder(mode=normalized_mode, has_template=template_path is not None)
+    classification: dict[str, Any] | None = None
+    template_profile: dict[str, Any] | None = None
+    language_review: dict[str, Any] | None = None
+    after_analysis: dict[str, Any] | None = None
+    modification_report: dict[str, Any] | None = None
 
     try:
         state.start("识别文档类型", "正在判断该文件是否为标准论文。")
         classification = classify_document(paper_path)
+        trace.mark_task("classify_document", "done", f"{classification['label']}，置信度 {classification['confidence']}")
+        trace.record_tool("document_classifier.classify_document", summary=f"{classification['label']}，置信度 {classification['confidence']}")
         if classification["requires_confirmation"] and not allow_non_paper:
+            trace.add_fallback("non_paper_requires_confirmation")
             state.finish(classification["warning"])
             return {
                 "status": "requires_confirmation",
@@ -56,6 +66,11 @@ def run_paper_agent(
                 "classification": classification,
                 "steps": state.steps,
                 "message": classification["warning"],
+                "agent_trace": trace.build(
+                    classification=classification,
+                    requires_confirmation=True,
+                    status="requires_confirmation",
+                ),
             }
         state.finish(f"文档类型：{classification['label']}，置信度 {round(classification['confidence'] * 100)}%。")
 
@@ -67,14 +82,21 @@ def run_paper_agent(
         state.start("分析本地格式", "正在进行结构、标题、字体、行距、页边距和参考文献基础评估。")
         before_repeat = check_repeat_risk(paper_path)
         before_analysis = analyze_docx(paper_path, template_path=template_path, repeat_score=before_repeat["score_for_quality"])
+        trace.mark_task("analyze_before", "done", f"修改前评分 {before_analysis['report']['score']}")
+        trace.record_tool("docx_analyzer.analyze_docx", summary=f"修改前评分 {before_analysis['report']['score']}")
         before_score = int(before_analysis["report"]["score"])
         state.finish(f"本地模式初评 {before_score}。")
 
         state.start("识别模板格式", "正在读取模板页边距、正文样式和标题格式。")
         template_profile = extract_template_profile(template_path) if template_path else None
+        trace.mark_task("extract_template", "done" if template_path else "skipped", "已读取上传模板" if template_path else "未上传模板，使用默认规则")
+        if template_path:
+            trace.record_tool("template_extractor.extract_template_profile", summary=f"模板：{template_path.name}")
         if template_profile and template_path:
             warnings = template_profile.get("warnings") or []
             warning_text = f"；提示：{'；'.join(warnings)}" if warnings else ""
+            if warnings:
+                trace.add_fallback("template_parse_warning")
             state.finish(f"已识别模板：{template_path.name}{warning_text}")
         else:
             state.finish("未上传模板，按通用论文规范执行。")
@@ -82,10 +104,12 @@ def run_paper_agent(
         state.start("修复标题与正文格式", "正在统一标题层级、正文字体、段落缩进和页面基础格式。")
         formatted_path = build_output_path(output_dir, paper_path, "formatted")
         format_log = apply_paper_format(paper_path, formatted_path, template_path)
+        trace.mark_task("format_document", "done", f"格式处理记录 {len(format_log)} 项")
+        trace.record_tool("docx_formatter.apply_paper_format", summary=f"格式处理记录 {len(format_log)} 项")
         state.finish("标题、正文和页面基础格式已统一。")
 
         language_log: list[str] = []
-        language_review: dict[str, Any] = {
+        language_review = {
             "mode": "local",
             "error": None,
             "suggestions": [],
@@ -100,6 +124,10 @@ def run_paper_agent(
             language_review = review_language_with_status(formatted_path)
             suggestions = language_review["suggestions"]
             language_log = apply_language_suggestions(formatted_path, language_path, suggestions)
+            trace.mark_task("language_review", "done", f"{language_review['mode']} 模式，建议 {len(suggestions)} 条")
+            trace.record_tool("language_reviewer.review_language_with_status", summary=f"{language_review['mode']} 模式，建议 {len(suggestions)} 条")
+            if language_review["mode"] != "ai":
+                trace.add_fallback("llm_unavailable_use_local_rules")
             final_path = language_path
             applied_language_count = len([item for item in language_log if "->" in item])
             if language_review["mode"] == "ai":
@@ -109,6 +137,8 @@ def run_paper_agent(
                 state.finish(f"AI不可用，已使用本地语言规则，应用 {applied_language_count} 条优化；提示：{language_review.get('error') or 'AI未返回可用结果'}。")
         else:
             state.start("AI增强审校", "本地规则模式已启用，本轮跳过 AI 语言审校。")
+            trace.mark_task("language_review", "skipped", "local 模式跳过 AI 审校")
+            trace.add_fallback("local_mode_skip_ai")
             state.finish("本地规则模式不计算 AI 语言、流畅度、逻辑和学术表达评分。")
 
         state.start("重复风险预检", "正在检测相似段落、重复句子和重复风险等级。")
@@ -122,6 +152,8 @@ def run_paper_agent(
             repeat_score=repeat_risk["score_for_quality"],
             ai_scores=language_review["ai_scores"] if normalized_mode == "ai" else None,
         )
+        trace.mark_task("analyze_after", "done", f"最终评分 {after_analysis['report']['score']}")
+        trace.record_tool("docx_analyzer.analyze_docx", summary=f"最终评分 {after_analysis['report']['score']}")
         after_score = int(after_analysis["report"]["score"])
         score_breakdown = after_analysis["report"]["score_breakdown"]
         state.finish(f"最终评分 {after_score}，AI使用状态：{'已启用' if score_breakdown['ai_used'] else '未启用'}。")
@@ -135,6 +167,8 @@ def run_paper_agent(
             repeat_risk,
             template_path,
         )
+        trace.mark_task("generate_report", "done", f"人工复查项 {len(modification_report.get('manual_review_items') or [])} 项")
+        trace.record_tool("report_generator/build_modification_report", summary=f"人工复查项 {len(modification_report.get('manual_review_items') or [])} 项")
         state.finish(f"报告已生成，最终文件：{final_path.name}")
 
         return {
@@ -154,10 +188,33 @@ def run_paper_agent(
             "modification_report": modification_report,
             "language_review": {"mode": language_review["mode"], "error": language_review["error"]},
             "language_suggestions": language_review["suggestions"],
+            "agent_trace": trace.build(
+                classification=classification,
+                template_profile=template_profile,
+                language_review=language_review,
+                modification_report=modification_report,
+                after_analysis=after_analysis,
+                requires_confirmation=False,
+                status="ok",
+            ),
         }
     except Exception as exc:
         state.fail(str(exc))
-        return {"status": "error", "failed_step": state.current_step, "steps": state.steps, "error": str(exc), "download_url": None}
+        return {
+            "status": "error",
+            "failed_step": state.current_step,
+            "steps": state.steps,
+            "error": str(exc),
+            "download_url": None,
+            "agent_trace": trace.build(
+                classification=classification,
+                template_profile=template_profile,
+                language_review=language_review,
+                modification_report=modification_report,
+                after_analysis=after_analysis,
+                status="error",
+            ),
+        }
 
 
 def build_output_path(output_dir: Path, source: Path, suffix: str) -> Path:

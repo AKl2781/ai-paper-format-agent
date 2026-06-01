@@ -29,6 +29,7 @@
 - 参考文献检查：支持识别参考文献章节、文末编号、正文引用、编号跳号、重复编号、正文引用缺失和文末未引用条目。
 - 图表编号检查：支持识别图题、表题、Figure/Table 编号、编号跳号、重复编号和正文引用不存在的图表编号。
 - 真实论文测试库：v0.3.5 第一步已建立 `test_documents/` 测试资产目录、`manifest.csv` 占位清单、`regression_results/` 结果目录和 `real_paper_test_plan.md` 测试计划；第二步已生成 10 个脱敏 DOCX 测试样本并更新 manifest。
+- Agent Orchestrator Layer：v0.3.7 已新增可解释智能体调度记录 `agent_trace`，记录 task_plan、tools_used、agent_decision、fallback_reason、manual_review_required 和 confidence，不改变原有处理结果。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 评分和建议。
 
@@ -59,6 +60,7 @@ PASS：
 - v0.3.4 图表编号检查已完成：新增 figure_table_check 字段，并将图表编号风险合并进人工复查项。
 - v0.3.5 Test Corpus 第一步已完成：新增真实论文测试库目录、脱敏说明、manifest 占位清单、回归结果目录和测试计划；未修改业务代码。
 - v0.3.5 Test Corpus 第二步已完成：生成 clean、messy、references、figures_tables、template_mismatch 共 10 个脱敏 DOCX 测试样本，并更新 manifest；未修改业务代码。
+- v0.3.7 Agent Orchestrator Layer 已完成：新增 agent_trace 顶层字段，用于解释 Agent 计划、工具调用、fallback 和人工复查判断；旧字段保持兼容。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
