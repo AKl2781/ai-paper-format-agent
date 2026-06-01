@@ -1,4 +1,11 @@
 case_id,file_name,category,document_type,template_file,expected_classification_success,expected_format_success,expected_report,expected_preview,expected_download,expected_manual_review,known_risks,notes
-clean_001,clean_001.docx,clean,academic_paper,,true,true,true,true,true,false,none,脱敏占位样例；真实文件默认不提交
-references_001,references_gap_001.docx,references,academic_paper,,true,true,true,true,true,true,reference_number_gap,脱敏占位样例；用于参考文献跳号
-reports_001,lab_report_001.docx,reports,lab_report,,true,true,true,true,true,true,requires_confirmation,脱敏占位样例；用于非标准论文确认流程
+clean_001,clean/clean_001.docx,clean,academic_paper,,true,true,true,true,true,false,none,标准论文结构；预期主链路全部通过
+messy_001,messy/messy_001.docx,messy,academic_paper,,true,true,true,true,true,true,title_songti_body_heiti,标题宋体五号且正文黑体；预期格式报告提示异常
+messy_002,messy/messy_002.docx,messy,academic_paper,,true,true,true,true,true,true,mixed_heading_body,标题正文混排；预期格式处理成功并提示人工复查
+references_001,references/references_001.docx,references,academic_paper,,true,true,true,true,true,true,reference_number_gap,参考文献跳号；预期 reference_check 检出 numbering_gaps
+references_002,references/references_002.docx,references,academic_paper,,true,true,true,true,true,true,duplicate_reference_number,参考文献重复编号；预期 reference_check 检出 duplicate_reference_numbers
+references_003,references/references_003.docx,references,academic_paper,,true,true,true,true,true,true,missing_reference_number,正文引用不存在；预期 reference_check 检出 missing_reference_numbers
+references_004,references/references_004.docx,references,academic_paper,,true,true,true,true,true,true,uncited_reference,文末未引用文献；预期 reference_check 检出 uncited_reference_numbers
+figures_001,figures_tables/figures_001.docx,figures_tables,academic_paper,,true,true,true,true,true,true,figure_number_gap,图编号跳号；预期 figure_table_check 检出 figure_gaps
+tables_001,figures_tables/tables_001.docx,figures_tables,academic_paper,,true,true,true,true,true,true,duplicate_table_number,表编号重复；预期 figure_table_check 检出 duplicate_tables
+template_mismatch_001,template_mismatch/template_mismatch_001.docx,template_mismatch,lab_report,,true,true,true,true,true,true,template_mismatch_report_structure,实验报告结构模拟；预期分类可能要求确认但流程不应中断
