@@ -90,6 +90,15 @@ def split_mixed_heading_paragraphs(document) -> list[str]:
     split_count = 0
     for paragraph in list(document.paragraphs):
         text = paragraph.text.strip()
+        inline_parts = split_inline_numbered_heading_text(text)
+        if inline_parts:
+            replace_paragraph_text(paragraph, inline_parts[0])
+            anchor = paragraph
+            for part in inline_parts[1:]:
+                anchor = insert_paragraph_after(anchor, part)
+            split_count += 1
+            continue
+
         result = split_mixed_heading_text(text)
         if not result:
             continue
@@ -98,6 +107,30 @@ def split_mixed_heading_paragraphs(document) -> list[str]:
         insert_paragraph_after(paragraph, body)
         split_count += 1
     return [f"已拆分 {split_count} 个标题正文混排段落。"] if split_count else []
+
+
+def split_inline_numbered_heading_text(text: str) -> list[str] | None:
+    compact = text.strip()
+    if len(compact) < 20:
+        return None
+
+    match = re.search(
+        r"(?<!^)(?P<heading>\d{1,2}[.．、]\s*(?:引言|绪论|结论|结语|总结|参考文献|研究背景|研究方法|实验结果|结果与分析|讨论|致谢))\s*[：:]\s*(?P<body>\S.{5,})$",
+        compact,
+    )
+    if not match:
+        return None
+
+    prefix = compact[: match.start()].strip()
+    heading = normalize_numbered_heading_spacing(match.group("heading").strip())
+    body = match.group("body").strip()
+    if not prefix or not body:
+        return None
+    return [prefix, heading, body]
+
+
+def normalize_numbered_heading_spacing(heading: str) -> str:
+    return re.sub(r"^(\d{1,2})([.．、])\s*", r"\1\2 ", heading).strip()
 
 
 def apply_page_setup(document, profile: dict[str, Any] | None) -> None:

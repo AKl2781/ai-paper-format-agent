@@ -44,6 +44,7 @@ PASS：
 - local / template / ai fallback smoke test 全部 PASS。
 - 标准论文弱结构样例不再被识别为 `unknown`。
 - 标题正文混排已能拆分，例如 `4.结语：正文内容...`。
+- 真实样本暴露的段落中间标题混排已修复，例如 `...办法。4. 结语：正文内容...` 会拆成前文、标题、正文三段。
 - 上传模板后未再出现 `unsupported operand type(s) for *` 阻断错误。
 - `C-51` 等异常模板残留已在 smoke test 中验证清理。
 - 上传论文正常。
@@ -80,6 +81,7 @@ FAIL：
 - 当前没有阻断级 P0。
 - 已修复 standard paper 被识别为 `unknown` 的弱结构样例问题。
 - 已修复标题正文混排：例如 `4.结语：正文内容...` 可拆成独立标题和正文。
+- 已修复段落中间标题正文混排：例如 `...办法。4. 结语：正文内容...` 可拆成独立标题和正文。
 - 已修复模板解析 `unsupported operand type(s) for *` 类阻断风险，模板异常时可 fallback。
 - 已修复 `C-51` 等异常模板残留的基础清理规则。
 - local / template / ai fallback smoke test 全部 PASS。
