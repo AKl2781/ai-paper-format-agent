@@ -397,15 +397,20 @@ def parse_reference_number(text: str) -> int | None:
     return int(match.group(1) or match.group(2))
 
 
-def repeated_numbers(numbers: list[int]) -> list[int]:
-    return sorted({number for number in numbers if numbers.count(number) > 1})
+def repeated_numbers(numbers: list[FigureTableNumber]) -> list[FigureTableNumber]:
+    return sorted({number for number in numbers if numbers.count(number) > 1}, key=figure_table_sort_key)
 
 
-def find_numbering_gaps(numbers: list[int]) -> list[int]:
-    if len(numbers) < 2:
+def find_numbering_gaps(numbers: list[FigureTableNumber]) -> list[int]:
+    simple_numbers = [number for number in numbers if isinstance(number, int)]
+    if len(simple_numbers) < 2:
         return []
-    expected = set(range(min(numbers), max(numbers) + 1))
-    return sorted(expected - set(numbers))
+    expected = set(range(min(simple_numbers), max(simple_numbers) + 1))
+    return sorted(expected - set(simple_numbers))
+
+
+def figure_table_sort_key(number: FigureTableNumber) -> tuple[int, str]:
+    return (0, f"{number:08d}") if isinstance(number, int) else (1, str(number))
 
 
 def build_reference_risk_items(
@@ -457,7 +462,7 @@ def build_reference_risk_items(
     return items
 
 
-def format_number_list(numbers: list[int]) -> str:
+def format_number_list(numbers: list[Any]) -> str:
     return "、".join(str(number) for number in numbers)
 
 
@@ -486,16 +491,16 @@ def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
     table_numbers = extract_caption_numbers(paragraphs, "table")
     referenced_figures = extract_referenced_numbers(paragraphs, "figure")
     referenced_tables = extract_referenced_numbers(paragraphs, "table")
-    unique_figures = sorted(set(figure_numbers))
-    unique_tables = sorted(set(table_numbers))
-    unique_referenced_figures = sorted(set(referenced_figures))
-    unique_referenced_tables = sorted(set(referenced_tables))
+    unique_figures = sorted(set(figure_numbers), key=figure_table_sort_key)
+    unique_tables = sorted(set(table_numbers), key=figure_table_sort_key)
+    unique_referenced_figures = sorted(set(referenced_figures), key=figure_table_sort_key)
+    unique_referenced_tables = sorted(set(referenced_tables), key=figure_table_sort_key)
     duplicate_figures = repeated_numbers(figure_numbers)
     duplicate_tables = repeated_numbers(table_numbers)
     figure_gaps = find_numbering_gaps(unique_figures)
     table_gaps = find_numbering_gaps(unique_tables)
-    missing_referenced_figures = sorted(set(unique_referenced_figures) - set(unique_figures))
-    missing_referenced_tables = sorted(set(unique_referenced_tables) - set(unique_tables))
+    missing_referenced_figures = sorted(set(unique_referenced_figures) - set(unique_figures), key=figure_table_sort_key)
+    missing_referenced_tables = sorted(set(unique_referenced_tables) - set(unique_tables), key=figure_table_sort_key)
     missing_figure_captions = detect_missing_figure_captions(document, len(unique_figures))
     missing_table_captions = detect_missing_table_captions(document, len(unique_tables))
     risk_items = build_figure_table_risk_items(
@@ -527,8 +532,11 @@ def analyze_figure_tables(paragraphs: list[str], document) -> dict[str, Any]:
     }
 
 
-def extract_caption_numbers(paragraphs: list[str], kind: str) -> list[int]:
-    numbers: list[int] = []
+FigureTableNumber = int | str
+
+
+def extract_caption_numbers(paragraphs: list[str], kind: str) -> list[FigureTableNumber]:
+    numbers: list[FigureTableNumber] = []
     for text in paragraphs:
         number = parse_caption_number(text, kind)
         if number is not None:
@@ -536,39 +544,54 @@ def extract_caption_numbers(paragraphs: list[str], kind: str) -> list[int]:
     return numbers
 
 
-def parse_caption_number(text: str, kind: str) -> int | None:
+def parse_caption_number(text: str, kind: str) -> FigureTableNumber | None:
     compact = text.strip()
     if kind == "figure":
-        match = re.match(r"^(?:图\s*|Figure\s+)(\d+)(?:[-.．]\d+)?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
+        match = re.match(r"^(?:图\s*|Figure\s+)([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
     else:
-        match = re.match(r"^(?:表\s*|Table\s+)(\d+)(?:[-.．]\d+)?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
-    return int(match.group(1)) if match else None
+        match = re.match(r"^(?:表\s*|Table\s+)([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?(?:\s|[：:、.．-]|$)", compact, re.IGNORECASE)
+    if not match:
+        return None
+    return normalize_figure_table_number(match.group(1), match.group(2))
 
 
-def extract_referenced_numbers(paragraphs: list[str], kind: str) -> list[int]:
-    numbers: list[int] = []
+def normalize_figure_table_number(prefix: str, suffix: str | None = None) -> FigureTableNumber:
+    normalized_prefix = prefix.upper() if prefix.isalpha() else prefix
+    if suffix:
+        return f"{normalized_prefix}.{suffix}"
+    if normalized_prefix.isdigit():
+        return int(normalized_prefix)
+    return normalized_prefix
+
+
+def extract_referenced_numbers(paragraphs: list[str], kind: str) -> list[FigureTableNumber]:
+    numbers: list[FigureTableNumber] = []
     for text in paragraphs:
         if parse_caption_number(text, kind) is not None:
             continue
         patterns = figure_reference_patterns() if kind == "figure" else table_reference_patterns()
         for pattern in patterns:
-            numbers.extend(int(match) for match in re.findall(pattern, text, re.IGNORECASE))
+            for match in re.findall(pattern, text, re.IGNORECASE):
+                if isinstance(match, tuple):
+                    numbers.append(normalize_figure_table_number(match[0], match[1] or None))
+                else:
+                    numbers.append(normalize_figure_table_number(match))
     return numbers
 
 
 def figure_reference_patterns() -> list[str]:
     return [
-        r"(?:如|见|参见|详见|由|从|根据)\s*图\s*(\d+)",
-        r"图\s*(\d+)\s*所示",
-        r"\bFigure\s+(\d+)\b",
+        r"(?:如|见|参见|详见|由|从|根据)\s*图\s*([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?",
+        r"图\s*([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?\s*所示",
+        r"\bFigure\s+([A-Z]?\d+|[A-Z])(?:\s*[-.]\s*(\d+))?\b",
     ]
 
 
 def table_reference_patterns() -> list[str]:
     return [
-        r"(?:如|见|参见|详见|由|从|根据)\s*表\s*(\d+)",
-        r"表\s*(\d+)\s*所示",
-        r"\bTable\s+(\d+)\b",
+        r"(?:如|见|参见|详见|由|从|根据)\s*表\s*([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?",
+        r"表\s*([A-Z]?\d+|[A-Z])(?:\s*[-.．]\s*(\d+))?\s*所示",
+        r"\bTable\s+([A-Z]?\d+|[A-Z])(?:\s*[-.]\s*(\d+))?\b",
     ]
 
 
@@ -594,12 +617,12 @@ def build_figure_table_risk_items(
     *,
     figure_gaps: list[int],
     table_gaps: list[int],
-    duplicate_figures: list[int],
-    duplicate_tables: list[int],
+    duplicate_figures: list[FigureTableNumber],
+    duplicate_tables: list[FigureTableNumber],
     missing_figure_captions: list[str],
     missing_table_captions: list[str],
-    missing_referenced_figures: list[int],
-    missing_referenced_tables: list[int],
+    missing_referenced_figures: list[FigureTableNumber],
+    missing_referenced_tables: list[FigureTableNumber],
 ) -> list[dict[str, str]]:
     items: list[dict[str, str]] = []
     if figure_gaps:
