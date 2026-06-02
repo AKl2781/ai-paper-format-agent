@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.4.1
+当前版本号：v0.4.6
 
 项目名称：AI论文格式修改Agent
 
@@ -31,6 +31,7 @@
 - 真实论文测试库：v0.3.5 第一步已建立 `test_documents/` 测试资产目录、`manifest.csv` 占位清单、`regression_results/` 结果目录和 `real_paper_test_plan.md` 测试计划；第二步已生成 10 个脱敏 DOCX 测试样本并更新 manifest。
 - Agent Orchestrator Layer：v0.3.7 已新增可解释智能体调度记录 `agent_trace`，记录 task_plan、tools_used、agent_decision、fallback_reason、manual_review_required 和 confidence，不改变原有处理结果。
 - 评分语义：v0.4.1 已新增 `score_breakdown.format_score`、`risk_score`、`ai_language_score`、`final_score`、`score_confidence` 和 `score_explanation`，AI 语言评分仅作参考，不会拉低最终评分。
+- 重复风险检测性能保护：v0.4.6 已为 `check_repeat_risk` 增加段落采样、比较次数硬上限和异常 fallback，极端 DOCX 不再因相似段落两两比较导致完整 Agent 超时。
 - Beta 文档：v0.4.0-beta-docs 已整理 README 和 docs 文档，补充架构、Agent Trace、Risk Level、真实回归结果和部署规划说明。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
@@ -64,6 +65,10 @@ PASS：
 - v0.3.5 Test Corpus 第二步已完成：生成 clean、messy、references、figures_tables、template_mismatch 共 10 个脱敏 DOCX 测试样本，并更新 manifest；未修改业务代码。
 - v0.3.7 Agent Orchestrator Layer 已完成：新增 agent_trace 顶层字段，用于解释 Agent 计划、工具调用、fallback 和人工复查判断；旧字段保持兼容。
 - v0.4.1 Scoring Semantics Refinement 已完成：新增 score_breakdown 评分语义字段，保留 local_score/ai_score/ai_used 等旧字段，避免 AI 语言参考分造成“修完更低分”的误解。
+- v0.4.6 Repeat Risk Performance Guard 已完成：提交 `af81c08`（tag: `v0.4.6-repeat-risk-performance-guard`）只修改 `paper-ai/backend/services/plagiarism_checker.py`，为重复风险检测增加最多 300 段参与比较、最多 30000 次相似度比较、`truncated/sampled_paragraphs/total_paragraphs/max_comparisons` 元数据和检测失败 fallback。
+- v0.4.6 极端 DOCX 回归 PASS：`extreme_stress_test_thesis.docx` 完整 local Agent 返回 200，约 50.67s 完成，`status=ok`，评分 `78 -> 84`，预览和下载均 PASS，local 模式保持 `ai_score=null`、`ai_used=false`。
+- v0.4.6 普通 smoke 回归 PASS：`test_smoke_agent_flow.py` 全部 PASS，覆盖分类、local、模板、AI fallback、预览和下载。
+- v0.4.6 fallback 注入测试 PASS：重复风险检测异常时返回低风险占位结构，主流程不因相似度预检失败而中断。
 - v0.4.0-beta-docs 已完成：新增根目录 README 和 docs/ 文档，项目可展示、可运行、可说明。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
@@ -85,6 +90,7 @@ FAIL：
 ## P0
 
 - 当前没有阻断级 P0。
+- 已修复极端 DOCX 在重复风险检测阶段超时的问题：`check_repeat_risk` 已加入性能上限和 fallback，避免 1000+ 段文档触发不可控的两两 `SequenceMatcher` 比较。
 - 已修复 standard paper 被识别为 `unknown` 的弱结构样例问题。
 - 已修复标题正文混排：例如 `4.结语：正文内容...` 可拆成独立标题和正文。
 - 已修复段落中间标题正文混排：例如 `...办法。4. 结语：正文内容...` 可拆成独立标题和正文。
