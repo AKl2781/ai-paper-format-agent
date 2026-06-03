@@ -4,6 +4,7 @@ from collections import Counter
 from difflib import SequenceMatcher
 from pathlib import Path
 import re
+import time
 from typing import Any
 
 from .docx_analyzer import extract_paragraph_text
@@ -11,6 +12,9 @@ from .docx_analyzer import extract_paragraph_text
 
 MAX_PARAGRAPHS_FOR_COMPARISON = 300
 MAX_SIMILARITY_COMPARISONS = 30000
+MAX_SEQUENCE_MATCHER_PAIRS = 3000
+REPEAT_RISK_TIME_BUDGET_SECONDS = 25.0
+SMALL_DOCUMENT_PARAGRAPH_LIMIT = 80
 
 
 def check_repeat_risk(path: Path) -> dict[str, Any]:
@@ -100,14 +104,26 @@ def find_similar_paragraphs(
 ) -> tuple[list[dict[str, Any]], int, bool]:
     results: list[dict[str, Any]] = []
     comparison_count = 0
+    sequence_count = 0
     comparison_limited = False
+    deadline = time.perf_counter() + REPEAT_RISK_TIME_BUDGET_SECONDS
+    prepared = [(number, text, build_paragraph_profile(text)) for number, text in paragraphs]
+    small_document = len(paragraphs) <= SMALL_DOCUMENT_PARAGRAPH_LIMIT
     for i, (left_number, left) in enumerate(paragraphs):
         for j in range(i + 1, len(paragraphs)):
-            if comparison_count >= max_comparisons:
+            if (
+                comparison_count >= max_comparisons
+                or (not small_document and sequence_count >= MAX_SEQUENCE_MATCHER_PAIRS)
+                or time.perf_counter() >= deadline
+            ):
                 comparison_limited = True
                 return sorted(results, key=lambda item: item["similarity"], reverse=True), comparison_count, comparison_limited
-            right_number, right = paragraphs[j]
             comparison_count += 1
+            left_number, left, left_profile = prepared[i]
+            right_number, right, right_profile = prepared[j]
+            if not small_document and not is_similarity_candidate(left_profile, right_profile):
+                continue
+            sequence_count += 1
             ratio = SequenceMatcher(None, normalize(left), normalize(right)).ratio()
             if ratio >= 0.72:
                 results.append(
@@ -119,6 +135,43 @@ def find_similar_paragraphs(
                     }
                 )
     return sorted(results, key=lambda item: item["similarity"], reverse=True), comparison_count, comparison_limited
+
+
+def build_paragraph_profile(text: str) -> dict[str, Any]:
+    normalized = normalize(text)
+    chars = {char for char in normalized if not char.isdigit()}
+    tokens = set(re.findall(r"[A-Za-z0-9_]+|[\u4e00-\u9fff]{2,}", normalized))
+    if not tokens:
+        tokens = {normalized[index : index + 2] for index in range(max(0, len(normalized) - 1))}
+    return {
+        "length": len(normalized),
+        "chars": chars,
+        "tokens": tokens,
+    }
+
+
+def is_similarity_candidate(left: dict[str, Any], right: dict[str, Any]) -> bool:
+    left_length = left["length"]
+    right_length = right["length"]
+    if not left_length or not right_length:
+        return False
+
+    length_gap = abs(left_length - right_length) / max(left_length, right_length)
+    if length_gap > 0.45:
+        return False
+
+    char_overlap = overlap_ratio(left["chars"], right["chars"])
+    if char_overlap < 0.45:
+        return False
+
+    token_overlap = overlap_ratio(left["tokens"], right["tokens"])
+    return token_overlap >= 0.18 or (char_overlap >= 0.68 and length_gap <= 0.25)
+
+
+def overlap_ratio(left: set[str], right: set[str]) -> float:
+    if not left or not right:
+        return 0.0
+    return len(left & right) / min(len(left), len(right))
 
 
 def find_duplicate_sentences(sentences: list[str]) -> list[dict[str, Any]]:
