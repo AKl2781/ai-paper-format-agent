@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.4.7.1
+当前版本号：v0.5.0
 
 项目名称：AI论文格式修改Agent
 
@@ -33,6 +33,7 @@
 - 评分语义：v0.4.1 已新增 `score_breakdown.format_score`、`risk_score`、`ai_language_score`、`final_score`、`score_confidence` 和 `score_explanation`，AI 语言评分仅作参考，不会拉低最终评分。
 - 重复风险检测性能保护：v0.4.6 已为 `check_repeat_risk` 增加段落采样、比较次数硬上限和异常 fallback，极端 DOCX 不再因相似段落两两比较导致完整 Agent 超时。
 - 资源压力测试：v0.4.7.1 已完成 74.79MB 重型 DOCX 全链路验证，覆盖上传、分类、local Agent、格式修复、评分、预览、下载和 AI fallback。
+- 重复风险检测性能优化：v0.4.9 已优化 `plagiarism_checker`，在 `SequenceMatcher` 前加入段落长度差过滤、字符集合重叠率过滤、中文关键词重叠率过滤，并增加 `MAX_SEQUENCE_MATCHER_PAIRS=3000` 与 `REPEAT_RISK_TIME_BUDGET_SECONDS=25`，保持 `truncated/sampled_paragraphs/total_paragraphs/max_comparisons` 返回字段兼容。
 - Beta 文档：v0.4.0-beta-docs 已整理 README 和 docs 文档，补充架构、Agent Trace、Risk Level、真实回归结果和部署规划说明。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
@@ -74,6 +75,7 @@ PASS：
 - v0.4.7.1 大文档 local Agent 回归 PASS：完整 local Agent 返回 200，`status=ok`，耗时 510.88s，评分 `81 -> 84`，local 模式保持 `ai_score=null`、`ai_used=false`。
 - v0.4.7.1 接口与保真审计 PASS：预览接口返回 200，下载接口返回 200；输出文档保持 2489 段、80 张表、100 张图片和 300 条参考文献；图片数量、唯一性和可打开性均通过审计。
 - v0.4.7.1 AI fallback 回归 PASS：模拟 AI 故障后主流程不中断，`language_review.mode=local`，耗时 479.86s。
+- v0.4.9 Repeat Risk Performance Optimization PASS：`plagiarism_checker` before `196.741s -> 17.724s`，after `181.200s -> 17.928s`，合计 `377.941s -> 35.652s`；74.79MB heavy DOCX 完整 local Agent `510.88s -> 51.209s`；py_compile PASS，smoke PASS，local `ai_score=null` / `ai_used=false` PASS，预览 PASS，下载 PASS。
 - v0.4.0-beta-docs 已完成：新增根目录 README 和 docs/ 文档，项目可展示、可运行、可说明。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
@@ -86,7 +88,7 @@ FAIL：
 
 Current Bottleneck：
 
-- Performance：74.79MB 重型 DOCX 的完整 local Agent 耗时 510.88s，下一阶段需要拆分耗时分布并将大文档处理时间压缩到 120~150s。
+- v0.4.9 后 74.79MB heavy DOCX local Agent 已降至 51.209s，原重复风险检测瓶颈已解除；下一阶段进入 v0.5.0 Beta Readiness，重点检查真实用户试用、UI 流程、上传/下载、报告质量和文档兼容性。
 
 回归后仍需关注：
 
@@ -100,6 +102,7 @@ Current Bottleneck：
 
 - 当前没有阻断级 P0。
 - Known High Risk：无阻断级风险。
+- v0.4.9 已修复 74.79MB heavy DOCX 重复风险检测性能瓶颈，`plagiarism_checker` 合计耗时 `377.941s -> 35.652s`，完整 local Agent `510.88s -> 51.209s`；当前无阻断级性能风险。
 - 已修复极端 DOCX 在重复风险检测阶段超时的问题：`check_repeat_risk` 已加入性能上限和 fallback，避免 1000+ 段文档触发不可控的两两 `SequenceMatcher` 比较。
 - 已修复 standard paper 被识别为 `unknown` 的弱结构样例问题。
 - 已修复标题正文混排：例如 `4.结语：正文内容...` 可拆成独立标题和正文。

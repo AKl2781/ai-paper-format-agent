@@ -58,6 +58,14 @@
 
 ---
 
+### [DONE] v0.4.9 repeat risk optimization
+
+目标：优化 `plagiarism_checker` 性能，降低 74.79MB heavy DOCX 在重复风险检测阶段的耗时。
+
+状态：已完成。`plagiarism_checker` before `196.741s -> 17.724s`，after `181.200s -> 17.928s`，合计 `377.941s -> 35.652s`；heavy local Agent `510.88s -> 51.209s`；py_compile、smoke、heavy DOCX、local `ai_score=null` / `ai_used=false`、预览和下载均 PASS。
+
+---
+
 ### 标题正文混排
 
 目标：识别并拆分段落开头或段落中间出现的编号标题与正文混排。
@@ -106,11 +114,27 @@
 
 ---
 
-### Performance Profiling v0.4.8
+### [DONE] Performance Profiling v0.4.8
 
 目标：拆分 74.79MB 重型 DOCX 完整 local Agent 的 510.88s 耗时分布，并将大文档处理时间优化到 120~150s。
 
-状态：待处理（重点分析并优化格式修复、评分、重复风险检测、预览/下载前后处理；优先加计时埋点和批量性能报告，避免盲目重构）
+状态：已完成。v0.4.8 已定位 Top1 瓶颈为 `plagiarism_checker`，before 196.741s，after 181.200s，合计 377.941s，占 heavy profiling 有效总耗时 92%+；v0.4.9 已完成对应优化。
+
+---
+
+### v0.5.0 Beta Readiness
+
+目标：进入真实用户试用准备阶段，确认格式 Agent 在试用前的主流程、交付物和兼容性风险。
+
+任务：
+- 真实用户试用准备
+- UI 流程检查
+- 上传流程检查
+- 下载流程检查
+- 报告质量检查
+- 文档兼容性检查
+
+状态：待处理。优先做检查清单和真实用户试用前验收，不新增业务功能，不扩大重构范围。
 
 ---
 
