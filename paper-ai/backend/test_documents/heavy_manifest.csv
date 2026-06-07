@@ -1,0 +1,2 @@
+case_id,file_name,category,document_type,template_file,expected_classification_success,expected_format_success,expected_report,expected_preview,expected_download,expected_manual_review,known_risks,notes
+heavy_001,real/realistic_heavy_thesis.docx,real,academic_paper,,true,true,true,true,true,true,heavy;stress;large_docx,74.79MB heavy DOCX stress sample; expected to validate 30MB-100MB local processing stability.

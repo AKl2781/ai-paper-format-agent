@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.5.0
+当前版本号：v0.5.1 / real-doc-regression-boundary-pass
 
 项目名称：AI论文格式修改Agent
 
@@ -29,6 +29,8 @@
 - 参考文献检查：支持识别参考文献章节、文末编号、正文引用、编号跳号、重复编号、正文引用缺失和文末未引用条目。
 - 图表编号检查：支持识别图题、表题、Figure/Table 编号、编号跳号、重复编号和正文引用不存在的图表编号。
 - 真实论文测试库：v0.3.5 第一步已建立 `test_documents/` 测试资产目录、`manifest.csv` 占位清单、`regression_results/` 结果目录和 `real_paper_test_plan.md` 测试计划；第二步已生成 10 个脱敏 DOCX 测试样本并更新 manifest。
+- 批量真实样本回归脚本：v0.5.0 已新增 `run_real_doc_regression.py`，支持读取 `manifest.csv` / `generated_manifest.csv` 批量运行分类、local/ai Agent、报告、预览、下载和 local AI 字段校验，并输出 `summary.csv`、`summary.json` 与单 case JSON。
+- CNKI / GB/T 7714 来源规范：v0.5.0 已新增 `test_documents/CNKI_GBT7714_SOURCE_NOTES.md`，明确只使用公开或已授权文件，不纳入登录/付费/验证码/受限全文；真实论文必须脱敏后才能进入测试库。
 - Agent Orchestrator Layer：v0.3.7 已新增可解释智能体调度记录 `agent_trace`，记录 task_plan、tools_used、agent_decision、fallback_reason、manual_review_required 和 confidence，不改变原有处理结果。
 - 评分语义：v0.4.1 已新增 `score_breakdown.format_score`、`risk_score`、`ai_language_score`、`final_score`、`score_confidence` 和 `score_explanation`，AI 语言评分仅作参考，不会拉低最终评分。
 - 重复风险检测性能保护：v0.4.6 已为 `check_repeat_risk` 增加段落采样、比较次数硬上限和异常 fallback，极端 DOCX 不再因相似段落两两比较导致完整 Agent 超时。
@@ -77,6 +79,12 @@ PASS：
 - v0.4.7.1 AI fallback 回归 PASS：模拟 AI 故障后主流程不中断，`language_review.mode=local`，耗时 479.86s。
 - v0.4.9 Repeat Risk Performance Optimization PASS：`plagiarism_checker` before `196.741s -> 17.724s`，after `181.200s -> 17.928s`，合计 `377.941s -> 35.652s`；74.79MB heavy DOCX 完整 local Agent `510.88s -> 51.209s`；py_compile PASS，smoke PASS，local `ai_score=null` / `ai_used=false` PASS，预览 PASS，下载 PASS。
 - v0.4.0-beta-docs 已完成：新增根目录 README 和 docs/ 文档，项目可展示、可运行、可说明。
+- v0.5.0 批量真实样本回归入口已完成：新增 `run_real_doc_regression.py`，支持 small/medium/large 文件大小分桶、case/category/limit 过滤、非标准论文自动确认参数和 `regression_results/<run_id>/` 结果输出。
+- v0.5.0 CNKI / GB/T 7714 来源规范已完成：新增公开/授权来源入库边界说明，禁止将登录、付费、验证码或授权受限的 CNKI 正文全文作为自动下载测试集。
+- v0.5.0 批量回归脚本验证 PASS：`generated_manifest.csv --limit 2` 为 2/2 PASS；`manifest.csv` 完整 10 个样本为 10/10 PASS；`test_smoke_agent_flow.py` PASS。
+- v0.5.1 / real-doc-regression-boundary-pass 已完成：`run_real_doc_regression.py` 支持区分 `BOUNDARY_WARNING` 与 blocking `FAIL`；`generated_manifest.csv` 中 3 个 `reports_*` hybrid 样本标记为 `classification_boundary`，不再计入阻断级 FAIL；generated 回归为 21 PASS + 3 boundary warnings + 0 blocking FAIL。
+- v0.5.1 Heavy DOCX Stress Regression 已接入：`D:\新下载\realistic_heavy_thesis.docx` 已复制到 `test_documents/real/realistic_heavy_thesis.docx`，新增 `test_documents/heavy_manifest.csv`；74.79MB 样本 local 回归 PASS，耗时 57.558s，分类 `academic_paper`，输出 DOCX / 修改报告 / 预览 / 下载均通过，local `ai_score=null`、`ai_used=false`。
+- v0.5.1 稳定测试版已冻结：新增 `VERSION_0_5_1_SUMMARY.md`；当前回归为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS；建议 tag `v0.5.1-heavy-regression-pass`。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。

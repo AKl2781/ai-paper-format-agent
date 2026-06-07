@@ -67,6 +67,7 @@ paper-ai/
 - `paper-ai/backend/services/language_reviewer.py`：AI/本地语言审校建议与 AI 评分解析。
 - `paper-ai/backend/services/plagiarism_checker.py`：重复风险检测/相似度预检。
 - `paper-ai/backend/services/preview_service.py`：最终 docx 转 HTML 预览。
+- `paper-ai/backend/run_real_doc_regression.py`：读取测试库 manifest 并批量执行分类、Agent、报告、预览、下载和 local AI 字段校验，输出回归结果。
 - `paper-ai/frontend/app/page.tsx`：前端主页面，包含上传、模式选择、启动 Agent、执行过程、结果面板、预览和下载。
 - `paper-ai/frontend/app/globals.css`：前端样式。
 
@@ -217,6 +218,7 @@ paper-ai/
 8. 不要把正式查重表述成“知网查重”，只能使用“重复风险检测”“相似度预检”。
 9. local 模式必须 `ai_score=null` 且 `ai_used=false`。
 10. ai 模式如果 LLM 失败，应降级继续，不得让总评分异常下降。
+11. CNKI / GB/T 7714 测试来源只能使用公开或已授权文件；不得自动下载登录、付费、验证码或授权受限的 CNKI 正文全文，真实论文入库前必须脱敏。
 
 # 回归测试清单
 

@@ -83,6 +83,8 @@
 - `known_risks`
 - `notes`
 
+`document_type` 支持用 `|` 写多个可接受分类，例如 `academic_paper|lab_report`，用于记录模板错配、报告/论文边界等已知模糊样本。
+
 ## PASS / FAIL 标准
 
 单篇文档 PASS 需要满足：
@@ -109,7 +111,7 @@
 
 ## 运行流程
 
-当前阶段暂不新增批量脚本。人工回归流程如下：
+v0.5.0 新增 `run_real_doc_regression.py`，用于读取 `manifest.csv` 并批量执行本地回归。人工回归流程仍可保留：
 
 1. 将脱敏 DOCX 放入对应分类目录。
 2. 在 `test_documents/manifest.csv` 增加记录。
@@ -117,11 +119,18 @@
 4. 检查分类、处理、报告、预览、下载结果。
 5. 将结果保存到 `regression_results/<run_id>/`。
 
-建议后续新增 `run_real_doc_regression.py`，用于自动读取 `manifest.csv` 并批量输出 `summary.csv`、`summary.json` 和单篇 case 结果。
+批量回归命令：
+
+```powershell
+python .\run_real_doc_regression.py --manifest test_documents\manifest.csv --mode local
+python .\run_real_doc_regression.py --manifest test_documents\generated_manifest.csv --mode local --limit 3
+```
+
+脚本会输出 `summary.csv`、`summary.json` 和 `cases/<case_id>.json`。默认会在分类发现非标准论文需要确认时自动传入确认参数，以验证 Agent 主链路、报告、预览和下载不被阻断；如需只验证确认拦截流程，可增加 `--no-confirm-non-paper`。
 
 ## 回归结果建议格式
 
-建议后续保存：
+批量脚本保存：
 
 ```text
 regression_results/
@@ -148,6 +157,13 @@ regression_results/
 - 总结果 PASS / FAIL
 - 错误信息
 - 运行耗时
+- 文件大小分桶：`small`、`medium`、`large`
+
+## CNKI / GB/T 7714 样本边界
+
+可使用公开 CNKI 采编平台页面、公开投稿模板、公开投稿须知、公开 GB/T 7714 参考文献格式说明作为来源线索。不得下载或纳入需要登录、付费、验证码、授权受限的 CNKI 正文全文；用户合法提供的真实论文必须先脱敏再入库。
+
+详见 `test_documents/CNKI_GBT7714_SOURCE_NOTES.md`。
 
 ## 当前阶段验收
 

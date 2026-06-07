@@ -8,4 +8,4 @@ references_003,references/references_003.docx,references,academic_paper,,true,tr
 references_004,references/references_004.docx,references,academic_paper,,true,true,true,true,true,true,uncited_reference,文末未引用文献；预期 reference_check 检出 uncited_reference_numbers
 figures_001,figures_tables/figures_001.docx,figures_tables,academic_paper,,true,true,true,true,true,true,figure_number_gap,图编号跳号；预期 figure_table_check 检出 figure_gaps
 tables_001,figures_tables/tables_001.docx,figures_tables,academic_paper,,true,true,true,true,true,true,duplicate_table_number,表编号重复；预期 figure_table_check 检出 duplicate_tables
-template_mismatch_001,template_mismatch/template_mismatch_001.docx,template_mismatch,lab_report,,true,true,true,true,true,true,template_mismatch_report_structure,实验报告结构模拟；预期分类可能要求确认但流程不应中断
+template_mismatch_001,template_mismatch/template_mismatch_001.docx,template_mismatch,academic_paper|lab_report,,true,true,true,true,true,true,template_mismatch_report_structure,实验报告结构模拟；预期分类可能要求确认但流程不应中断

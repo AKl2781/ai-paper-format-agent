@@ -159,7 +159,7 @@ copy .env.example .env
 - `v0.3.6-real-document-collection`：收集 10 个公开 DOCX 真实样本并整理来源清单。
 - `v0.3.7-agent-orchestrator-trace`：新增 Agent Trace，记录执行计划、工具调用、决策和 fallback。
 - `v0.3.8-real-document-regression`：对真实 DOCX 执行回归，10/10 PASS。
-- `v0.3.9-risk-level-system`：新增 Risk Level System，将人工复查从提示项中分离。
+- `v0.5.1-risk-level-system`：新增 Risk Level System，将人工复查从提示项中分离。
 - `v0.4.1-scoring-semantics`：重构评分语义，明确格式规则分、风险稳定分、AI语言参考分和最终评分。
 
 ## 文档
