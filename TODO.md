@@ -167,3 +167,11 @@
 目标：从当前词语级 AI 审校升级到段落级问题识别，输出口语化、主观化、逻辑跳跃、因果不清、关键词不规范和重复表达问题清单。
 
 状态：待处理（在格式 Agent 稳定后推进）
+
+---
+
+### Controlled Beta 用户试用准备
+
+目标：为第一轮 controlled beta 试用准备用户筛选、文档准入、试用任务、阻断标准、反馈表和退出条件。
+
+状态：已完成（v0.5.3 / controlled-beta-trial-prep）。新增 `VERSION_0_5_3_CONTROLLED_BETA_TRIAL_PREP.md`；当前建议先收集 3-5 名可信用户的真实 DOCX 试用反馈，再决定 v0.5.4 优先做 UI polish、报告措辞修正或内容 Agent 窄能力。

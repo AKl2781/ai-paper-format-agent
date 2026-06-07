@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.5.2 / beta-readiness-audit
+当前版本号：v0.5.3 / controlled-beta-trial-prep
 
 项目名称：AI论文格式修改Agent
 
@@ -86,6 +86,7 @@ PASS：
 - v0.5.1 Heavy DOCX Stress Regression 已接入：`D:\新下载\realistic_heavy_thesis.docx` 已复制到 `test_documents/real/realistic_heavy_thesis.docx`，新增 `test_documents/heavy_manifest.csv`；74.79MB 样本 local 回归 PASS，耗时 57.558s，分类 `academic_paper`，输出 DOCX / 修改报告 / 预览 / 下载均通过，local `ai_score=null`、`ai_used=false`。
 - v0.5.1 稳定测试版已冻结：新增 `VERSION_0_5_1_SUMMARY.md`；当前回归为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS；建议 tag `v0.5.1-heavy-regression-pass`。
 - v0.5.2 Beta Readiness Audit 已完成：新增 `VERSION_0_5_2_BETA_READINESS_AUDIT.md`；manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS；当前仍建议作为格式 Agent 做 controlled beta，不应包装为深度内容改写 Agent。
+- v0.5.3 Controlled Beta Trial Prep 已完成：新增 `VERSION_0_5_3_CONTROLLED_BETA_TRIAL_PREP.md`，明确试用定位、试用用户、文档准入、试用任务、阻断标准、反馈表和退出条件；不新增功能，不修改业务代码。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -97,7 +98,7 @@ FAIL：
 
 Current Bottleneck：
 
-- v0.5.2 已完成试用前 beta readiness audit，当前没有阻断级 FAIL；下一阶段可进入 controlled beta 用户试用准备，或选择一个窄范围内容 Agent 能力作为 v0.5.3 起点。
+- v0.5.3 已完成 controlled beta 用户试用准备；下一阶段可收集 3-5 名可信用户的真实试用反馈，并形成 `BETA_FEEDBACK_AUDIT.md`。
 
 回归后仍需关注：
 
