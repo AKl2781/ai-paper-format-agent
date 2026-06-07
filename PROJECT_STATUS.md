@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.5.1 / real-doc-regression-boundary-pass
+当前版本号：v0.5.2 / beta-readiness-audit
 
 项目名称：AI论文格式修改Agent
 
@@ -85,6 +85,7 @@ PASS：
 - v0.5.1 / real-doc-regression-boundary-pass 已完成：`run_real_doc_regression.py` 支持区分 `BOUNDARY_WARNING` 与 blocking `FAIL`；`generated_manifest.csv` 中 3 个 `reports_*` hybrid 样本标记为 `classification_boundary`，不再计入阻断级 FAIL；generated 回归为 21 PASS + 3 boundary warnings + 0 blocking FAIL。
 - v0.5.1 Heavy DOCX Stress Regression 已接入：`D:\新下载\realistic_heavy_thesis.docx` 已复制到 `test_documents/real/realistic_heavy_thesis.docx`，新增 `test_documents/heavy_manifest.csv`；74.79MB 样本 local 回归 PASS，耗时 57.558s，分类 `academic_paper`，输出 DOCX / 修改报告 / 预览 / 下载均通过，local `ai_score=null`、`ai_used=false`。
 - v0.5.1 稳定测试版已冻结：新增 `VERSION_0_5_1_SUMMARY.md`；当前回归为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS；建议 tag `v0.5.1-heavy-regression-pass`。
+- v0.5.2 Beta Readiness Audit 已完成：新增 `VERSION_0_5_2_BETA_READINESS_AUDIT.md`；manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS；当前仍建议作为格式 Agent 做 controlled beta，不应包装为深度内容改写 Agent。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -96,7 +97,7 @@ FAIL：
 
 Current Bottleneck：
 
-- v0.4.9 后 74.79MB heavy DOCX local Agent 已降至 51.209s，原重复风险检测瓶颈已解除；下一阶段进入 v0.5.0 Beta Readiness，重点检查真实用户试用、UI 流程、上传/下载、报告质量和文档兼容性。
+- v0.5.2 已完成试用前 beta readiness audit，当前没有阻断级 FAIL；下一阶段可进入 controlled beta 用户试用准备，或选择一个窄范围内容 Agent 能力作为 v0.5.3 起点。
 
 回归后仍需关注：
 

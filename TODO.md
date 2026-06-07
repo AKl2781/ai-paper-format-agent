@@ -158,7 +158,7 @@
 - 报告质量检查
 - 文档兼容性检查
 
-状态：待处理。优先做检查清单和真实用户试用前验收，不新增业务功能，不扩大重构范围。
+状态：已完成（v0.5.2 / beta-readiness-audit）。新增 `VERSION_0_5_2_BETA_READINESS_AUDIT.md`；本轮验收结果为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS。结论：可进入 controlled beta，但产品表述仍应定位为格式 Agent，不应包装为深度内容改写 Agent。
 
 ---
 
