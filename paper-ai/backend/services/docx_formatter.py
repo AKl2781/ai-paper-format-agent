@@ -19,14 +19,15 @@ from .template_extractor import extract_template_profile, safe_margin, safe_size
 def apply_paper_format(source: Path, output: Path, template: Path | None = None) -> list[str]:
     document = Document(source)
     template_profile = extract_template_profile(template) if template else None
+    protected_until = detect_cover_boundary_index(document)
     applied: list[str] = []
 
-    applied.extend(clean_document_text(document))
-    applied.extend(split_mixed_heading_paragraphs(document))
+    applied.extend(clean_document_text(document, protected_until))
+    applied.extend(split_mixed_heading_paragraphs(document, protected_until))
     apply_page_setup(document, template_profile)
     apply_normal_style(document, template_profile)
-    applied.extend(split_long_paragraphs(document))
-    apply_paragraph_styles(document, template_profile)
+    applied.extend(split_long_paragraphs(document, protected_until))
+    apply_paragraph_styles(document, template_profile, protected_until)
     apply_table_styles(document)
 
     applied.append(f"已读取模板并套用关键格式：{template.name}" if template_profile and template else "未上传模板，已使用通用论文格式规则。")
@@ -38,7 +39,7 @@ def apply_paper_format(source: Path, output: Path, template: Path | None = None)
     return applied
 
 
-def clean_document_text(document) -> list[str]:
+def clean_document_text(document, protected_until: int | None = None) -> list[str]:
     changes: list[str] = []
     removed_placeholders = 0
     removed_style_notes = 0
@@ -46,7 +47,9 @@ def clean_document_text(document) -> list[str]:
     normalized_labels = 0
     keyword_suggestion = suggest_keywords("\n".join(p.text for p in document.paragraphs))
 
-    for paragraph in list(document.paragraphs):
+    for index, paragraph in enumerate(list(document.paragraphs)):
+        if is_protected_paragraph(index, protected_until):
+            continue
         original = paragraph.text
         cleaned = original.strip()
         cleaned, count = re.subn(r"\[[^\]]*(宋体|黑体|楷体|字号|行距|居中|左对齐|右对齐|C-\d+|B-\d+)[^\]]*\]", "", cleaned)
@@ -86,9 +89,11 @@ def clean_document_text(document) -> list[str]:
     return changes
 
 
-def split_mixed_heading_paragraphs(document) -> list[str]:
+def split_mixed_heading_paragraphs(document, protected_until: int | None = None) -> list[str]:
     split_count = 0
-    for paragraph in list(document.paragraphs):
+    for index, paragraph in enumerate(list(document.paragraphs)):
+        if is_protected_paragraph(index, protected_until):
+            continue
         text = paragraph.text.strip()
         inline_parts = split_inline_numbered_heading_text(text)
         if inline_parts:
@@ -152,12 +157,14 @@ def apply_normal_style(document, profile: dict[str, Any] | None) -> None:
     normal._element.rPr.rFonts.set(qn("w:eastAsia"), font_name)
 
 
-def apply_paragraph_styles(document, profile: dict[str, Any] | None) -> None:
+def apply_paragraph_styles(document, profile: dict[str, Any] | None, protected_until: int | None = None) -> None:
     body_profile = (profile or {}).get("body", {})
     title_done = False
     in_references = False
 
-    for paragraph in document.paragraphs:
+    for index, paragraph in enumerate(document.paragraphs):
+        if is_protected_paragraph(index, protected_until):
+            continue
         text = paragraph.text.strip()
         if not text:
             continue
@@ -282,9 +289,11 @@ def delete_paragraph(paragraph) -> None:
     paragraph._p = paragraph._element = None
 
 
-def split_long_paragraphs(document, max_chars: int = 420) -> list[str]:
+def split_long_paragraphs(document, protected_until: int | None = None, max_chars: int = 420) -> list[str]:
     split_count = 0
-    for paragraph in list(document.paragraphs):
+    for index, paragraph in enumerate(list(document.paragraphs)):
+        if is_protected_paragraph(index, protected_until):
+            continue
         text = paragraph.text.strip()
         if len(text) <= max_chars or is_section_heading(text):
             continue
@@ -343,3 +352,42 @@ def suggest_keywords(text: str) -> list[str]:
         if marker in text and keyword not in keywords:
             keywords.append(keyword)
     return (keywords or ["研究主题", "问题分析", "优化策略"])[:5]
+
+
+def detect_cover_boundary_index(document) -> int | None:
+    paragraphs = list(document.paragraphs)
+    if not paragraphs:
+        return None
+
+    first_page_end = None
+    for index, paragraph in enumerate(paragraphs[:30]):
+        if has_page_break(paragraph):
+            first_page_end = index
+            break
+    if first_page_end is None:
+        return None
+
+    first_page = paragraphs[: first_page_end + 1]
+    markers = sum(1 for paragraph in first_page if is_cover_form_text(paragraph.text))
+    has_cover_title = any(normalize_cover_text(paragraph.text) in {"课程论文", "课程设计", "毕业论文"} for paragraph in first_page[:5])
+    if markers < 3 or not has_cover_title:
+        return None
+    return first_page_end
+
+
+def is_protected_paragraph(index: int, protected_until: int | None) -> bool:
+    return protected_until is not None and index <= protected_until
+
+
+def has_page_break(paragraph) -> bool:
+    return bool(paragraph._p.xpath('.//w:br[@w:type="page"]'))
+
+
+def is_cover_form_text(text: str) -> bool:
+    compact = normalize_cover_text(text)
+    markers = ["课程：", "姓名：", "学号：", "学院：", "专业：", "班级：", "教务部制表"]
+    return any(marker in compact for marker in markers)
+
+
+def normalize_cover_text(text: str) -> str:
+    return re.sub(r"[\s\u3000]+", "", text.strip())

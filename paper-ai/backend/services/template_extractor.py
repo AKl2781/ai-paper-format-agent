@@ -91,7 +91,7 @@ def extract_body_style(document, warnings: list[str]) -> dict[str, Any]:
     body = DEFAULT_TEMPLATE_PROFILE["body"].copy()
     for paragraph in document.paragraphs:
         text = paragraph.text.strip()
-        if not text or is_section_heading(text):
+        if not text or has_page_break(paragraph) or is_section_heading(text) or is_cover_or_form_text(text) or is_template_instruction_text(text):
             continue
         fmt = paragraph.paragraph_format
         body.update(
@@ -106,6 +106,23 @@ def extract_body_style(document, warnings: list[str]) -> dict[str, Any]:
         return body
     warnings.append("模板正文段落样式无法读取，已使用默认正文格式。")
     return body
+
+
+def is_cover_or_form_text(text: str) -> bool:
+    compact = "".join(text.split()).replace("\u3000", "")
+    if compact in {"课程论文", "课程设计", "毕业论文"}:
+        return True
+    markers = ["课程：", "姓名：", "学号：", "学院：", "专业：", "班级：", "教务部制表"]
+    return any(marker in compact for marker in markers)
+
+
+def is_template_instruction_text(text: str) -> bool:
+    markers = ["排版要求", "内容要求", "以下为正文", "提交最终稿", "字体", "字号", "行距", "缩进"]
+    return any(marker in text for marker in markers)
+
+
+def has_page_break(paragraph) -> bool:
+    return bool(paragraph._p.xpath('.//w:br[@w:type="page"]'))
 
 
 def safe_margin(value: Any, fallback: float) -> float:
