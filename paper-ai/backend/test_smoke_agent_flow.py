@@ -48,6 +48,17 @@ def assert_ok(name: str, condition: bool, detail: object = "") -> None:
     print(f"{name} PASS{suffix}")
 
 
+def assert_pipeline_trace(result: dict[str, object]) -> None:
+    trace = result.get("agent_trace")
+    assert_ok("agent_trace_is_list", isinstance(trace, list) and bool(trace), trace)
+    required_keys = {"step", "status", "duration_ms", "fallback_used", "message"}
+    for index, item in enumerate(trace or []):
+        assert_ok(f"agent_trace_item_{index}_shape", isinstance(item, dict) and required_keys.issubset(item.keys()), item)
+        assert_ok(f"agent_trace_item_{index}_duration", isinstance(item.get("duration_ms"), int), item)
+        assert_ok(f"agent_trace_item_{index}_fallback", isinstance(item.get("fallback_used"), bool), item)
+    assert_ok("agent_trace_detail_compatible", isinstance(result.get("agent_trace_detail"), dict), result.get("agent_trace_detail"))
+
+
 def main() -> None:
     client = TestClient(app)
     paper = make_docx(
@@ -84,6 +95,9 @@ def main() -> None:
     local_output = OUTPUT_DIR / local["filename"]
     assert_ok("local_output_file_created", local_output.exists() and local_output.stat().st_size > 0, local_output.name)
     assert_ok("local_report_created", bool(local.get("modification_report")), local["modification_report"]["change_counts"])
+    assert_ok("top_level_reference_check", isinstance(local.get("reference_check"), dict), local.get("reference_check"))
+    assert_ok("top_level_figure_table_check", isinstance(local.get("figure_table_check"), dict), local.get("figure_table_check"))
+    assert_pipeline_trace(local)
     local_preview = client.get(f"/preview/{local['filename']}")
     assert_ok("local_preview_endpoint", local_preview.status_code == 200 and bool(local_preview.json().get("html")), local_preview.status_code)
     local_download = client.get(local["download_url"])

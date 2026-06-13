@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.5.3 / controlled-beta-trial-prep
+当前版本号：v0.6.1 / demo-polish
 
 项目名称：AI论文格式修改Agent
 
@@ -186,3 +186,19 @@ Current Bottleneck：
   - 完善 `.gitignore`。
   - 保持 `AI_CONTEXT.md` 和 `PROJECT_STATUS.md` 随版本更新。
   - 每次功能变更后执行固定回归清单。
+
+## v0.5.4 Summer Internship Showcase
+
+- 新增 `paper-ai/backend/services/agent_pipeline.py` 作为统一调度层，`/agent/run` 已切换到该层调用。
+- 新 `agent_trace` 为逐步列表，每项包含 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 旧解释型 trace 保留为 `agent_trace_detail`，旧字段 `modification_report`、`reference_check`、`figure_table_check` 保持兼容。
+- 新增/更新 `docs/ARCHITECTURE.md` 和 `docs/DEVELOPMENT_LOG.md`，用于说明架构、处理流程和 fallback 策略。
+- 本轮回归：`py_compile` PASS；现有后端测试 PASS；`npm run build` PASS。
+
+## v0.6.1 Demo Polish
+
+- 本轮只做展示文档增强，不修改核心业务逻辑、`agent_pipeline` 执行逻辑、`/agent/run` 接口行为、前端交互、测试断言或依赖文件。
+- README 已补充项目定位、技术栈、核心功能、处理流程、启动方式、测试命令、当前版本和展示亮点。
+- `docs/ARCHITECTURE.md` 已补充架构图、`agent_pipeline`、`agent_trace`、local/ai fallback 和旧字段兼容说明。
+- 新增 `docs/DEMO_SCRIPT.md` 和 `docs/INTERVIEW_QA.md`，用于暑期实习面试演示。
+- 当前仍定位为格式 Agent；不宣传为论文代写、正式查重或深度内容改写系统。

@@ -3,6 +3,7 @@ from __future__ import annotations
 from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
+from time import perf_counter
 from typing import Any
 
 from .agent_orchestrator import AgentTraceBuilder
@@ -23,21 +24,48 @@ class AgentState:
     paper_path: Path
     output_dir: Path
     template_path: Path | None = None
-    steps: list[dict[str, str]] = field(default_factory=list)
+    steps: list[dict[str, Any]] = field(default_factory=list)
     current_step: str = ""
+    current_step_started_at: float | None = None
 
     def start(self, name: str, message: str) -> None:
         self.current_step = name
-        self.steps.append({"name": name, "status": "running", "message": message})
+        self.current_step_started_at = perf_counter()
+        self.steps.append({"name": name, "status": "running", "message": message, "duration_ms": 0, "fallback_used": False})
 
-    def finish(self, message: str) -> None:
-        self.steps[-1] = {"name": self.current_step, "status": "done", "message": message}
+    def finish(self, message: str, *, fallback_used: bool = False) -> None:
+        self.steps[-1] = {
+            "name": self.current_step,
+            "status": "done",
+            "message": message,
+            "duration_ms": self._elapsed_ms(),
+            "fallback_used": fallback_used,
+        }
 
-    def fail(self, message: str) -> None:
+    def fail(self, message: str, *, fallback_used: bool = False) -> None:
         if self.steps and self.steps[-1]["status"] == "running":
-            self.steps[-1] = {"name": self.current_step, "status": "error", "message": message}
+            self.steps[-1] = {
+                "name": self.current_step,
+                "status": "error",
+                "message": message,
+                "duration_ms": self._elapsed_ms(),
+                "fallback_used": fallback_used,
+            }
         else:
-            self.steps.append({"name": self.current_step or "未知步骤", "status": "error", "message": message})
+            self.steps.append(
+                {
+                    "name": self.current_step or "unknown_step",
+                    "status": "error",
+                    "message": message,
+                    "duration_ms": self._elapsed_ms(),
+                    "fallback_used": fallback_used,
+                }
+            )
+
+    def _elapsed_ms(self) -> int:
+        if self.current_step_started_at is None:
+            return 0
+        return max(0, round((perf_counter() - self.current_step_started_at) * 1000))
 
 
 def run_paper_agent(
@@ -63,7 +91,7 @@ def run_paper_agent(
         trace.record_tool("document_classifier.classify_document", summary=f"{classification['label']}，置信度 {classification['confidence']}")
         if classification["requires_confirmation"] and not allow_non_paper:
             trace.add_fallback("non_paper_requires_confirmation")
-            state.finish(classification["warning"])
+            state.finish(classification["warning"], fallback_used=True)
             return {
                 "status": "requires_confirmation",
                 "requires_confirmation": True,
@@ -101,9 +129,9 @@ def run_paper_agent(
             warning_text = f"；提示：{'；'.join(warnings)}" if warnings else ""
             if warnings:
                 trace.add_fallback("template_parse_warning")
-            state.finish(f"已识别模板：{template_path.name}{warning_text}")
+            state.finish(f"已识别模板：{template_path.name}{warning_text}", fallback_used=bool(warnings))
         else:
-            state.finish("未上传模板，按通用论文规范执行。")
+            state.finish("未上传模板，按通用论文规范执行。", fallback_used=True)
 
         state.start("修复标题与正文格式", "正在统一标题层级、正文字体、段落缩进和页面基础格式。")
         formatted_path = build_output_path(output_dir, paper_path, "formatted")
@@ -138,12 +166,12 @@ def run_paper_agent(
                 warning = f"；提示：{language_review['error']}" if language_review.get("error") else ""
                 state.finish(f"AI增强完成，应用 {applied_language_count} 条语言优化{warning}。")
             else:
-                state.finish(f"AI不可用，已使用本地语言规则，应用 {applied_language_count} 条优化；提示：{language_review.get('error') or 'AI未返回可用结果'}。")
+                state.finish(f"AI不可用，已使用本地语言规则，应用 {applied_language_count} 条优化；提示：{language_review.get('error') or 'AI未返回可用结果'}。", fallback_used=True)
         else:
             state.start("AI增强审校", "本地规则模式已启用，本轮跳过 AI 语言审校。")
             trace.mark_task("language_review", "skipped", "local 模式跳过 AI 审校")
             trace.add_fallback("local_mode_skip_ai")
-            state.finish("本地规则模式不计算 AI 语言、流畅度、逻辑和学术表达评分。")
+            state.finish("本地规则模式不计算 AI 语言、流畅度、逻辑和学术表达评分。", fallback_used=True)
 
         state.start("重复风险预检", "正在检测相似段落、重复句子和重复风险等级。")
         repeat_risk = check_repeat_risk(final_path)

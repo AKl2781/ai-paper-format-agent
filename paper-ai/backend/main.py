@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import FileResponse
 
 from services.document_classifier import classify_document
-from services.paper_agent import run_paper_agent
+from services.agent_pipeline import run_agent_pipeline
 from services.preview_service import build_docx_preview
 
 
@@ -61,7 +61,7 @@ async def run_agent(
 ) -> dict[str, object]:
     paper_path = save_docx(paper, UPLOAD_DIR)
     template_path = save_docx(template, TEMPLATE_DIR) if template and template.filename else None
-    result = run_paper_agent(
+    result = run_agent_pipeline(
         paper_path=paper_path,
         template_path=template_path,
         output_dir=OUTPUT_DIR,

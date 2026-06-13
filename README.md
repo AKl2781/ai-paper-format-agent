@@ -1,14 +1,19 @@
 # AI论文格式修改Agent
 
-上传 DOCX -> Agent 自动完成格式修复、参考文献检查、图表检查、风险分析、报告生成、在线预览与下载。
+当前版本：`v0.6.1-demo-polish`
 
-当前定位：`v0.4-beta`，偏格式智能体（Format Agent）。它不是内容生成器，不是查重系统，也不是论文代写工具。
+这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
-## 项目简介
+项目当前定位是“论文格式 Agent”，不是论文代写工具、不是正式查重系统，也不是深度内容润色系统。AI 模式目前主要用于语言审校建议和参考评分；核心稳定能力仍是格式修复、检查报告和可解释处理流程。
 
-AI论文格式修改Agent 是一个面向 DOCX 论文和报告文档的本地格式处理系统。用户上传论文后，系统会识别文档类型，按通用论文规则或上传模板进行格式修复，再生成修改报告、风险提示、在线预览和最终 DOCX 下载。
+## 项目亮点
 
-项目当前重点是稳定“格式 Agent”：让标题、正文、页边距、段落缩进、参考文献提示、图表编号提示和报告解释更可靠。AI 语言评分只作为参考信息，不参与最终主评分，也不会拉低格式规则分。
+- 完整主链路：上传 DOCX -> Agent 处理 -> 在线预览 -> 下载结果文件。
+- 统一调度层：`agent_pipeline.py` 负责包装 `/agent/run` 主流程，统一输出展示用 `agent_trace`。
+- 可解释 Trace：每一步记录 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- fallback 保护：未上传模板、AI 调用失败、相似度预检异常等场景不会轻易中断主流程。
+- 旧字段兼容：保留 `modification_report`、`reference_check`、`figure_table_check` 等原有字段，降低前端和测试回归风险。
+- 测试覆盖：包含 smoke test、评分一致性、参考文献检查、图表编号检查、风险等级和 trace 结构测试。
 
 ## 技术栈
 
@@ -17,50 +22,96 @@ Backend:
 - Python
 - FastAPI
 - python-docx
+- TestClient / 独立测试脚本
 
 Frontend:
 
 - Next.js
+- React
 - TypeScript
 
-Agent:
+Agent 相关实现:
 
-- Agent Trace
-- Risk Level System
-- Reference Checker
-- Figure/Table Checker
+- `agent_pipeline.py`：统一调度层
+- `paper_agent.py`：核心处理流程
+- `agent_orchestrator.py`：解释型 trace 细节
+- `docx_formatter.py`：DOCX 格式修复
+- `docx_analyzer.py`：评分、参考文献、图表编号检查
+- `language_reviewer.py`：AI/本地语言审校 fallback
+- `plagiarism_checker.py`：重复风险检测 / 相似度预检
+
+未使用或未实现：
+
+- 未接入 RAG、LangGraph、Milvus、数据库、用户系统或云部署。
+- 未实现论文正文生成、论文代写、正式查重。
 
 ## 核心功能
 
-- DOCX 上传
-- 文档分类
-- 模板解析
-- 格式修复
-- 标题正文混排修复
-- 在线预览
-- DOCX 下载
-- 格式差异报告
-- Reference Checker
-- Figure/Table Checker
-- Risk Level
-- Agent Trace
+- DOCX 论文上传。
+- 可选 DOCX 模板上传。
+- 文档类型识别：标准论文、课程作业、实验报告、简历、未知文档。
+- 非标准论文确认机制。
+- 标题、正文、段落、页边距等基础格式修复。
+- 标题正文混排拆分。
+- 部分异常模板残留清理，例如 smoke test 覆盖的 `C-51`。
+- 参考文献基础检查。
+- 图表编号和正文引用检查。
+- 重复风险检测 / 相似度预检。
+- local 模式：本地格式规则，不启用 AI 评分。
+- ai 模式：在格式修复基础上尝试 AI 语言审校，失败时 fallback 到本地规则。
+- 修改报告：包含修复项、评分对比、自动处理数量、人工复查建议。
+- 在线 HTML 预览。
+- 最终 DOCX 下载。
 
-## Agent 工作流
+## 处理流程
 
 ```mermaid
 flowchart TD
-    A["User Upload"] --> B["Document Classifier"]
-    B --> C["Template Extractor"]
-    C --> D["Formatter"]
-    D --> E["Language Review"]
-    E --> F["Reference Checker"]
-    F --> G["Figure/Table Checker"]
-    G --> H["Risk Level System"]
-    H --> I["Modification Report"]
-    I --> J["Preview / Download"]
+    A["上传 DOCX"] --> B["main.py 保存文件"]
+    B --> C["agent_pipeline.py 统一调度"]
+    C --> D["paper_agent.py 核心流程"]
+    D --> E["文档分类"]
+    E --> F{"是否需要用户确认"}
+    F -->|是| G["返回 requires_confirmation"]
+    F -->|否| H["修改前分析 + 重复风险检测"]
+    H --> I["模板解析或通用规则 fallback"]
+    I --> J["DOCX 格式修复"]
+    J --> K{"mode=ai?"}
+    K -->|local| L["跳过 AI 审校"]
+    K -->|ai| M["AI 语言审校，失败则本地 fallback"]
+    L --> N["修改后分析"]
+    M --> N
+    N --> O["生成 modification_report"]
+    O --> P["输出 agent_trace + 兼容字段"]
+    P --> Q["预览 / 下载"]
 ```
 
-## 本地启动
+## 返回字段说明
+
+`/agent/run` 保留旧字段：
+
+- `status`
+- `mode`
+- `steps`
+- `before_score`
+- `after_score`
+- `score_breakdown`
+- `repeat_risk`
+- `download_url`
+- `filename`
+- `before_analysis`
+- `after_analysis`
+- `modification_report`
+- `language_review`
+- `reference_check`
+- `figure_table_check`
+
+展示版新增/规范化：
+
+- `agent_trace`：逐步列表，每项包含 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- `agent_trace_detail`：保留旧解释型 trace，包含任务计划、工具调用、fallback 原因、人工复查判断和置信度。
+
+## 启动方式
 
 Backend:
 
@@ -85,86 +136,68 @@ npm run dev
 - Backend health: `http://127.0.0.1:8000/health`
 - Frontend: `http://127.0.0.1:3000`
 
-Test:
-
-```powershell
-cd D:\ai_论文修改格式\paper-ai\backend
-python -m py_compile main.py services\paper_agent.py services\docx_analyzer.py services\docx_formatter.py services\preview_service.py
-python test_smoke_agent_flow.py
-python test_reference_checker.py
-python test_figure_table_checker.py
-python test_agent_orchestrator_trace.py
-python test_risk_level_system.py
-python test_score_consistency.py
-
-cd D:\ai_论文修改格式\paper-ai\frontend
-npm run build
-```
-
-AI 模式可选环境变量：
+AI 模式可选配置：
 
 ```powershell
 cd D:\ai_论文修改格式\paper-ai\backend
 copy .env.example .env
 ```
 
-未配置 API Key 时，AI 语言审校会降级到本地规则，不应中断主流程。
+未配置 API Key 或 LLM 调用失败时，系统会降级到本地语言规则，不应中断主流程。
 
-## 真实DOCX回归结果
+## 测试命令
 
-真实样本目录：`paper-ai/backend/test_documents/real/`
+后端语法检查：
 
-回归结果目录：`paper-ai/backend/regression_results/`
+```powershell
+cd D:\ai_论文修改格式
+python -m py_compile .\paper-ai\backend\main.py .\paper-ai\backend\services\agent_pipeline.py .\paper-ai\backend\services\paper_agent.py .\paper-ai\backend\services\agent_orchestrator.py .\paper-ai\backend\services\document_classifier.py .\paper-ai\backend\services\docx_analyzer.py .\paper-ai\backend\services\docx_formatter.py .\paper-ai\backend\services\language_reviewer.py .\paper-ai\backend\services\plagiarism_checker.py .\paper-ai\backend\services\preview_service.py .\paper-ai\backend\services\template_extractor.py
+```
 
-最近真实 DOCX 回归：
+后端测试：
 
-- 样本：10
-- PASS：10
-- FAIL：0
-- PASS率：100%
-- `manual_review_required`：10/10 -> 1/10
+```powershell
+cd D:\ai_论文修改格式\paper-ai\backend
+python test_reference_checker.py
+python test_figure_table_checker.py
+python test_risk_level_system.py
+python test_composite_numbering.py
+python test_formatter_mixed_heading.py
+python test_score_consistency.py
+python test_agent_orchestrator_trace.py
+python test_smoke_agent_flow.py
+```
 
-风险汇总：
+前端构建：
 
-- blocking：0
-- high_risk：2
-- warning：10
-- info：13
+```powershell
+cd D:\ai_论文修改格式\paper-ai\frontend
+npm run build
+```
 
-回归结果文件：
+## 展示时建议强调
 
-- `paper-ai/backend/regression_results/summary.csv`
-- `paper-ai/backend/regression_results/summary.json`
-- `paper-ai/backend/test_documents/real/real_document_inventory.md`
+- 我把论文处理拆成了稳定的工程工具链，而不是让 LLM 自由决定流程。
+- `agent_pipeline.py` 是 API 和核心处理流程之间的统一调度层。
+- `agent_trace` 让每一步处理可解释、可展示、可测试。
+- local 模式和 ai fallback 都有明确规则，AI 失败不会拖垮主流程。
+- 旧字段兼容是为了保护已有前端和测试。
+- 当前能力边界清楚：主要做格式处理和风险提示，不承诺深度内容改写。
 
 ## 当前限制
 
-- 不是知网查重、维普查重或万方查重，只提供重复风险检测和相似度预检。
-- 不是内容生成器，不承诺自动补写论文观点、实验结果或参考文献。
-- 不是论文代写工具，不替代作者的学术判断和人工复核。
-- 复杂 Word 对象支持有限，包括目录、脚注、批注、公式、页眉页脚、图片题注和复杂表格。
-- Preview 不是 Word 像素级还原，只用于在线快速阅读和结构确认。
-- AI 语言评分仅作参考，不参与主评分计算。
+- 重复风险检测 / 相似度预检不等同于正式查重系统。
+- AI 语言评分只作参考，不参与主评分计算，也不会拉低最终格式评分。
+- 复杂 Word 对象支持有限，例如目录、脚注、批注、公式、页眉页脚和复杂图文排版。
+- 在线预览不是 Word 像素级还原，只用于快速检查结构和内容。
+- 内容级 Agent 仍在规划中，当前不会自动补写论文观点、实验结果或参考文献。
 
-## 版本路线图
-
-- `v0.2-format-core-pass`：格式核心链路通过，上传、格式修复、预览、下载和 smoke test 可用。
-- `v0.3.1-format-diff-report`：增强格式差异报告，新增改了什么和仍需复查的字段。
-- `v0.3.2-online-preview`：优化在线预览，增强标题、正文、参考文献和表格展示。
-- `v0.3.3-reference-checker`：新增 Reference Checker，检查参考文献章节、编号、引用缺失和未引用文献。
-- `v0.3.4-figure-table-checker`：新增 Figure/Table Checker，检查图表编号连续性、重复编号和正文引用缺失。
-- `v0.3.5-test-corpus-structure`：建立测试文档目录、manifest 和真实论文测试计划。
-- `v0.3.5-test-corpus-samples`：生成 10 个脱敏 DOCX 测试样本。
-- `v0.3.6-inline-heading-fix`：修复标题正文混排，包括段落开头和段落中间标题。
-- `v0.3.6-real-document-collection`：收集 10 个公开 DOCX 真实样本并整理来源清单。
-- `v0.3.7-agent-orchestrator-trace`：新增 Agent Trace，记录执行计划、工具调用、决策和 fallback。
-- `v0.3.8-real-document-regression`：对真实 DOCX 执行回归，10/10 PASS。
-- `v0.5.1-risk-level-system`：新增 Risk Level System，将人工复查从提示项中分离。
-- `v0.4.1-scoring-semantics`：重构评分语义，明确格式规则分、风险稳定分、AI语言参考分和最终评分。
-
-## 文档
+## 相关文档
 
 - [架构说明](docs/ARCHITECTURE.md)
+- [面试演示脚本](docs/DEMO_SCRIPT.md)
+- [面试问答](docs/INTERVIEW_QA.md)
+- [开发记录](docs/DEVELOPMENT_LOG.md)
 - [Agent Trace](docs/AGENT_TRACE.md)
 - [Risk Level System](docs/RISK_LEVEL_SYSTEM.md)
 - [真实回归结果](docs/REGRESSION_RESULTS.md)

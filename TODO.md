@@ -183,3 +183,54 @@
 目标：为 controlled beta 试用用户准备简单说明文档和反馈表，明确测试版边界、上传建议、支持能力、非承诺事项和问题反馈字段。
 
 状态：已完成。新增 `BETA_TRIAL_USER_GUIDE.md` 和 `BETA_TRIAL_FEEDBACK_FORM.md`；说明当前是测试版、建议仅上传 `.docx`、先用备份副本测试、不上传隐私敏感或正式最终提交版论文、不承诺论文代写或生成正文，并收集文档类型、大小、页数、上传/生成/下载结果、修改评分、格式错乱、图片/表格丢失、报错、截图和继续试用意愿。
+---
+
+### [DONE] 暑期实习展示版整理
+
+目标：在不大规模重构、不改变前端上传/预览/下载功能的前提下，增加统一调度层、标准化 Agent Trace、补充架构文档和开发记录。
+
+状态：已完成。新增 `paper-ai/backend/services/agent_pipeline.py`，`/agent/run` 已通过统一调度层调用现有 `paper_agent`；`agent_trace` 已标准化为逐步列表，并保留旧解释型 trace 到 `agent_trace_detail`；顶层兼容 `modification_report`、`reference_check`、`figure_table_check`。本轮 `py_compile`、现有后端测试和 `npm run build` 均 PASS。
+---
+
+### v0.6.2 demo 样本整理
+
+目标：准备 2-3 个适合面试演示的脱敏 DOCX 样本，覆盖标准论文、模板上传、参考文献提示、图表编号提示和 AI fallback 说明。
+
+计划：
+
+- 准备一个小型标准论文样本，控制处理耗时，适合现场演示。
+- 准备一个带模板的样本，展示模板解析和通用规则 fallback 边界。
+- 准备一个包含参考文献或图表编号轻微问题的样本，展示 `modification_report`、`reference_check`、`figure_table_check`。
+- 为每个样本记录预期展示点和不应承诺的边界。
+
+状态：待处理。仅整理样本和说明，不修改核心业务逻辑。
+
+---
+
+### v0.7 task_state
+
+目标：为 Agent 长流程增加任务状态记录，方便后续支持更清晰的运行状态、错误恢复和前端进度展示。
+
+计划：
+
+- 设计 task 状态结构，例如 queued/running/succeeded/failed/requires_confirmation。
+- 明确状态数据是否仅保存在内存或落盘，暂不默认引入数据库。
+- 保持 `/agent/run` 兼容，避免破坏已有前端和测试。
+- 将状态与现有 `agent_trace` 区分：task_state 说明任务生命周期，agent_trace 说明处理步骤。
+
+状态：规划中。实现前需先写设计文档。
+
+---
+
+### v0.8 trace UI
+
+目标：将后端 `agent_trace` 展示到前端 UI，让用户能看到每一步处理、耗时和 fallback 状态。
+
+计划：
+
+- 在结果页增加执行轨迹区域。
+- 展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 对 fallback 步骤做温和提示，例如“已使用通用规则”或“AI 不可用，已本地处理”。
+- 保持原有上传、预览、下载交互不变。
+
+状态：规划中。实现前需先确认 UI 方案和回归测试点。
