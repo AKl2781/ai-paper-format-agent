@@ -1,5 +1,50 @@
 # Development Log
 
+## 2026-06-14 v0.6.2-demo-samples
+
+### 修改目标
+
+在 `v0.6.1-demo-polish` 稳定节点基础上，补充固定演示样本目录说明和面试演示案例文档，让项目更适合作为暑期实习面试展示材料。
+
+### 修改范围
+
+- 新增 `demo_inputs/README.md`
+  - 说明演示输入样本目录用途。
+  - 推荐待修改论文和模板文件命名：`messy_paper_sample.docx`、`template_sample.docx`。
+  - 明确当前不虚构真实 DOCX 文件，后续可放入脱敏后的真实样本。
+- 新增 `demo_outputs/README.md`
+  - 说明演示输出结果目录用途。
+  - 推荐输出文件命名：`formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
+  - 明确未真实运行前不声称这些输出已经生成。
+- 新增 `docs/DEMO_CASE.md`
+  - 固定面试演示案例说明，覆盖输入样本特征、处理流程、重点观察字段和 1 分钟讲解话术。
+- 更新 `docs/DEMO_SCRIPT.md`
+  - 在演示准备和演示输出部分补充推荐样本路径。
+  - 明确这些路径是建议命名，不代表仓库已经内置真实样本。
+- 更新 `README.md`
+  - 标记当前版本为 `v0.6.2-demo-samples`。
+  - 增加 Demo Samples / 演示样本说明。
+- 更新 `PROJECT_STATUS.md` 和 `TODO.md`
+  - 记录 v0.6.2 当前状态。
+  - 将后续任务调整为 `v0.6.3-real-demo-files`、`v0.7-task-state`、`v0.8-trace-ui`。
+
+### 未修改范围
+
+- 没有修改核心业务逻辑。
+- 没有修改 `agent_pipeline`。
+- 没有修改 `/agent/run`。
+- 没有修改 formatter、analyzer、language reviewer。
+- 没有修改前端交互。
+- 没有修改已有返回字段结构或测试断言。
+- 没有修改依赖文件或 lock 文件。
+- 没有新增真实 DOCX 文件或真实运行输出样本。
+
+### v0.6.2 验收说明
+
+- 本轮只修改 Markdown 文档和演示目录说明。
+- 未运行完整后端测试、smoke test 或 `npm run build`，原因是未修改任何 Python/前端业务代码、测试断言或依赖文件。
+- 验收命令：`git status --short`。
+
 ## 2026-06-14 v0.5.4-summer-internship-showcase
 
 ### 修改目标

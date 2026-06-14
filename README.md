@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.6.1-demo-polish`
+当前版本：`v0.6.2-demo-samples`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -192,9 +192,27 @@ npm run build
 - 在线预览不是 Word 像素级还原，只用于快速检查结构和内容。
 - 内容级 Agent 仍在规划中，当前不会自动补写论文观点、实验结果或参考文献。
 
+## Demo Samples / 演示样本
+
+v0.6.2 增加了固定演示样本目录说明，方便后续准备暑期实习面试展示材料。
+
+- `demo_inputs/`
+  - 用于放演示输入样本。
+  - 推荐命名：`messy_paper_sample.docx`、`template_sample.docx`。
+  - 当前 README 只说明目录用途；如果真实 DOCX 文件不存在，不应声称仓库已经内置真实论文样本。
+- `demo_outputs/`
+  - 用于放真实运行后的演示输出样例。
+  - 推荐命名：`formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
+  - 如果尚未真实运行生成这些文件，不应声称输出样例已经存在或已经 PASS。
+- `docs/DEMO_CASE.md`
+  - 固定演示案例说明，描述推荐样本特征、处理流程、重点观察字段和面试讲解话术。
+
+后续可以将脱敏后的真实论文和模板放入 `demo_inputs/`，并将一次真实运行结果保存到 `demo_outputs/`。
+
 ## 相关文档
 
 - [架构说明](docs/ARCHITECTURE.md)
+- [固定演示案例](docs/DEMO_CASE.md)
 - [面试演示脚本](docs/DEMO_SCRIPT.md)
 - [面试问答](docs/INTERVIEW_QA.md)
 - [开发记录](docs/DEVELOPMENT_LOG.md)

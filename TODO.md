@@ -1,5 +1,49 @@
 # TODO
 
+## 当前路线图 / Roadmap
+
+### v0.6.3-real-demo-files
+
+目标：补充脱敏真实 demo DOCX 和一次真实运行输出，让面试演示从“路径和案例说明”升级为“可直接复现的固定样本”。
+
+计划：
+- 放入脱敏后的待修改论文样本和模板样本。
+- 使用推荐命名：`demo_inputs/messy_paper_sample.docx`、`demo_inputs/template_sample.docx`。
+- 运行一次主流程，保留对应的 `formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
+- 记录样本来源、脱敏边界和不应承诺的能力边界。
+
+状态：待处理。不得虚构样本或输出，必须基于真实可运行结果补充。
+
+---
+
+### v0.7-task-state
+
+目标：为长流程 Agent 增加任务状态持久化 `task_state.json`，方便后续展示任务生命周期和异常恢复。
+
+计划：
+- 设计任务状态结构，例如 queued、running、succeeded、failed。
+- 明确 `task_state.json` 与现有 `agent_trace` 的边界：前者描述任务生命周期，后者描述处理步骤。
+- 保持 `/agent/run` 兼容，避免破坏现有前端和测试。
+- 先写设计文档，再小范围实现。
+
+状态：规划中。
+
+---
+
+### v0.8-trace-ui
+
+目标：在前端可视化展示 `agent_trace`，让演示时能直接看到每一步处理状态、耗时和 fallback 信息。
+
+计划：
+- 设计结果页 trace 展示区域。
+- 展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 保持现有上传、预览、下载交互不变。
+- 在实现前先确认 UI 方案和回归测试点。
+
+状态：规划中。
+
+---
+
 ## 下一阶段
 
 ### 在线预览优化

@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.6.1 / demo-polish
+当前版本号：v0.6.2 / demo-samples
 
 项目名称：AI论文格式修改Agent
 
@@ -202,3 +202,11 @@ Current Bottleneck：
 - `docs/ARCHITECTURE.md` 已补充架构图、`agent_pipeline`、`agent_trace`、local/ai fallback 和旧字段兼容说明。
 - 新增 `docs/DEMO_SCRIPT.md` 和 `docs/INTERVIEW_QA.md`，用于暑期实习面试演示。
 - 当前仍定位为格式 Agent；不宣传为论文代写、正式查重或深度内容改写系统。
+## v0.6.2 Demo Samples
+
+- 本轮只新增/更新演示样本目录说明和固定演示案例文档，不修改核心业务逻辑。
+- 新增 `demo_inputs/README.md`，说明推荐输入样本路径：`messy_paper_sample.docx` 和 `template_sample.docx`。
+- 新增 `demo_outputs/README.md`，说明推荐输出样例路径：`formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
+- 新增 `docs/DEMO_CASE.md`，说明固定面试演示案例、推荐样本特征、处理流程、重点观察字段和 1 分钟讲解话术。
+- 更新 README 和 `docs/DEMO_SCRIPT.md`，把固定演示样本目录纳入展示流程。
+- 当前仍未新增真实脱敏 DOCX 样本，也未新增真实运行输出；后续需要补充脱敏真实论文、模板和一次真实输出样例。
