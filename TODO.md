@@ -16,29 +16,57 @@
 
 ---
 
-### v0.7-task-state
+### [DONE] v0.7.0-task-state-minimal
 
-目标：为长流程 Agent 增加任务状态持久化 `task_state.json`，方便后续展示任务生命周期和异常恢复。
+目标：为长流程 Agent 增加最小任务状态持久化 `task_state.json`，方便后续展示任务生命周期和异常恢复。
+
+已完成：
+- 新增 `paper-ai/backend/services/task_state.py`。
+- task state 默认写入 `paper-ai/backend/task_states/{task_id}.json`。
+- 已记录 `running`、`succeeded`、`failed` 生命周期状态。
+- 已明确 `task_state.json` 与现有 `agent_trace` 的边界：前者描述任务生命周期，后者描述处理步骤。
+- `/agent/run` 保持同步执行语义，旧字段兼容；仅额外透出 `task_id` 和 `task_state_path`。
+
+状态：已完成。当前还不是断点续跑或异步队列。
+
+---
+
+### v0.7.1-task-state-cleanup
+
+目标：为 `paper-ai/backend/task_states/` 增加轻量清理策略，避免运行产物长期膨胀。
 
 计划：
-- 设计任务状态结构，例如 queued、running、succeeded、failed。
-- 明确 `task_state.json` 与现有 `agent_trace` 的边界：前者描述任务生命周期，后者描述处理步骤。
-- 保持 `/agent/run` 兼容，避免破坏现有前端和测试。
-- 先写设计文档，再小范围实现。
+- 设计保留最近 N 个 task state 或按时间清理的策略。
+- 明确清理动作是否自动触发，或仅作为维护脚本/文档命令。
+- 保持现有 `/agent/run` 行为不变。
 
-状态：下一步建议推进。
+状态：规划中。
 
 ---
 
 ### v0.8-trace-ui
 
-目标：在前端可视化展示 `agent_trace`，让演示时能直接看到每一步处理状态、耗时和 fallback 信息。
+目标：在前端可视化展示 `agent_trace`，并可选展示 task state 摘要，让演示时能直接看到每一步处理状态、耗时和 fallback 信息。
 
 计划：
 - 设计结果页 trace 展示区域。
 - 展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 展示 task state 摘要，例如 `task_id`、生命周期状态、总耗时。
 - 保持现有上传、预览、下载交互不变。
 - 在实现前先确认 UI 方案和回归测试点。
+
+状态：规划中。
+
+---
+
+### v0.9-resume-draft
+
+目标：设计断点续跑能力，但暂不默认实现完整异步队列。
+
+计划：
+- 梳理哪些步骤可重试、哪些步骤必须重新执行。
+- 明确 `task_state`、`agent_trace`、输出文件之间的恢复关系。
+- 先写设计文档，再决定是否实现。
 
 状态：规划中。
 
@@ -251,18 +279,11 @@
 
 ---
 
-### v0.7 task_state
+### [DONE] v0.7 task_state
 
 目标：为 Agent 长流程增加任务状态记录，方便后续支持更清晰的运行状态、错误恢复和前端进度展示。
 
-计划：
-
-- 设计 task 状态结构，例如 queued/running/succeeded/failed/requires_confirmation。
-- 明确状态数据是否仅保存在内存或落盘，暂不默认引入数据库。
-- 保持 `/agent/run` 兼容，避免破坏已有前端和测试。
-- 将状态与现有 `agent_trace` 区分：task_state 说明任务生命周期，agent_trace 说明处理步骤。
-
-状态：规划中。实现前需先写设计文档。
+状态：已完成最小落盘版本（v0.7.0-task-state-minimal）。后续清理策略见 `v0.7.1-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
 
 ---
 

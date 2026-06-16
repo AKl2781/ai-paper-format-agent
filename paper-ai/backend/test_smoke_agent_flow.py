@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import io
+import json
 import os
 from pathlib import Path
 
@@ -10,6 +11,7 @@ from fastapi.testclient import TestClient
 
 import services.language_reviewer as language_reviewer
 from main import OUTPUT_DIR, app
+from services.agent_pipeline import run_agent_pipeline
 
 
 DOCX_MIME = "application/vnd.openxmlformats-officedocument.wordprocessingml.document"
@@ -59,6 +61,21 @@ def assert_pipeline_trace(result: dict[str, object]) -> None:
     assert_ok("agent_trace_detail_compatible", isinstance(result.get("agent_trace_detail"), dict), result.get("agent_trace_detail"))
 
 
+def assert_task_state(result: dict[str, object], expected_status: str = "succeeded") -> dict[str, object]:
+    task_id = result.get("task_id")
+    task_state_path = result.get("task_state_path")
+    assert_ok("task_id_present", isinstance(task_id, str) and bool(task_id), task_id)
+    assert_ok("task_state_path_present", isinstance(task_state_path, str) and bool(task_state_path), task_state_path)
+    path = Path(str(task_state_path))
+    assert_ok("task_state_file_exists", path.exists() and path.stat().st_size > 0, path)
+    state = json.loads(path.read_text(encoding="utf-8"))
+    assert_ok("task_state_status", state.get("status") == expected_status, state.get("status"))
+    assert_ok("task_state_input_files", isinstance(state.get("input_files"), dict), state.get("input_files"))
+    assert_ok("task_state_output_files", isinstance(state.get("output_files"), dict), state.get("output_files"))
+    assert_ok("task_state_duration_ms", isinstance(state.get("duration_ms"), int), state.get("duration_ms"))
+    return state
+
+
 def main() -> None:
     client = TestClient(app)
     paper = make_docx(
@@ -98,6 +115,9 @@ def main() -> None:
     assert_ok("top_level_reference_check", isinstance(local.get("reference_check"), dict), local.get("reference_check"))
     assert_ok("top_level_figure_table_check", isinstance(local.get("figure_table_check"), dict), local.get("figure_table_check"))
     assert_pipeline_trace(local)
+    local_task_state = assert_task_state(local)
+    assert_ok("task_state_local_ai_score_null", local_task_state.get("ai_score") is None, local_task_state)
+    assert_ok("task_state_local_ai_used_false", local_task_state.get("ai_used") is False, local_task_state)
     local_preview = client.get(f"/preview/{local['filename']}")
     assert_ok("local_preview_endpoint", local_preview.status_code == 200 and bool(local_preview.json().get("html")), local_preview.status_code)
     local_download = client.get(local["download_url"])
@@ -139,6 +159,15 @@ def main() -> None:
     assert_ok("ai_fallback_ai_used_false", ai.get("score_breakdown", {}).get("ai_used") is False, ai.get("score_breakdown"))
     ai_download = client.get(ai["download_url"])
     assert_ok("ai_fallback_download_endpoint", ai_download.status_code == 200 and len(ai_download.content) > 0, ai_download.status_code)
+
+    failed = run_agent_pipeline(
+        paper_path=Path("__missing_smoke_paper__.docx"),
+        output_dir=OUTPUT_DIR,
+        mode="local",
+    )
+    assert_ok("task_state_failure_result", failed.get("status") == "error", failed.get("status"))
+    failed_task_state = assert_task_state(failed, expected_status="failed")
+    assert_ok("task_state_failure_error", bool(failed_task_state.get("error")), failed_task_state)
     print("SMOKE PASS")
 
 

@@ -1,5 +1,63 @@
 # Development Log
 
+## 2026-06-17 v0.7.0-task-state-minimal
+
+### 修改目标
+
+在 `v0.6.3-real-demo-files` 稳定节点基础上，新增最小任务状态持久化能力。目标是记录每次 Agent 运行的生命周期状态，而不是把 `/agent/run` 改成异步队列，也不替代已有 `agent_trace`。
+
+### 修改范围
+
+- 新增 `paper-ai/backend/services/task_state.py`
+  - 使用标准库生成 `task_id`。
+  - 默认写入 `paper-ai/backend/task_states/{task_id}.json`。
+  - 使用 UTF-8 JSON。
+  - 使用临时文件加 `os.replace(...)` 写入，降低半写文件风险。
+  - 记录 `running`、`succeeded`、`failed` 生命周期状态。
+- 更新 `paper-ai/backend/services/agent_pipeline.py`
+  - 在 pipeline 开始时创建 task state 并写入 `running`。
+  - 成功返回前写入 `succeeded`。
+  - 异常或内部 `status=error` 时写入 `failed`。
+  - 结果中额外返回 `task_id` 和 `task_state_path`。
+  - 保留原有返回字段语义和同步执行语义。
+- 更新 `paper-ai/backend/test_smoke_agent_flow.py`
+  - 校验 `/agent/run` 成功后存在 `task_id` 和 `task_state_path`。
+  - 校验 task state 文件存在且 `status=succeeded`。
+  - 校验 task state 包含 `input_files`、`output_files`、`duration_ms`。
+  - 校验 local 模式仍保持 `ai_score=null`、`ai_used=false`。
+  - 校验 `agent_trace` 仍为 list，下载字段仍可用。
+  - 增加一个 direct pipeline 失败路径校验：不存在的 paper path 会写入 `status=failed` 和 `error`。
+- 更新 `PROJECT_STATUS.md`、`TODO.md`、`README.md`
+  - 记录当前版本、能力边界和后续任务。
+
+### task_state 与 agent_trace 边界
+
+- `task_state`：记录任务生命周期，例如 running、succeeded、failed、输入文件、输出文件、耗时、错误和评分摘要。
+- `agent_trace`：记录处理步骤，例如识别文档类型、分析本地格式、模板解析、格式修复、AI 审校、重复风险预检、最终复查和报告生成。
+- 本轮不做断点续跑，不做异步任务队列，不做前端进度条。
+
+### 未修改范围
+
+- 没有修改 formatter、analyzer、language reviewer 核心业务逻辑。
+- 没有修改前端页面交互。
+- 没有修改 `/agent/run` 的同步返回语义。
+- 没有修改下载/预览逻辑。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 v0.6.3 demo 输入/输出样本文件。
+
+### v0.7.0 测试结果
+
+- `python -m py_compile paper-ai/backend/services/task_state.py paper-ai/backend/services/agent_pipeline.py paper-ai/backend/main.py`：PASS。
+- `python test_reference_checker.py`：PASS。
+- `python test_figure_table_checker.py`：PASS。
+- `python test_risk_level_system.py`：PASS。
+- `python test_composite_numbering.py`：PASS。
+- `python test_formatter_mixed_heading.py`：PASS。
+- `python test_score_consistency.py`：PASS。
+- `python test_agent_orchestrator_trace.py`：PASS。
+- `python test_smoke_agent_flow.py`：PASS，覆盖 task state 成功落盘和失败路径落盘。
+- `npm run build`：SKIPPED。本轮未修改前端交互、前端依赖或前端页面代码。
+
 ## 2026-06-17 v0.6.3-real-demo-files
 
 ### 修改目标

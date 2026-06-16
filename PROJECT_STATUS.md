@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.6.3 / real-demo-files
+当前版本号：v0.7.0 / task-state-minimal
 
 项目名称：AI论文格式修改Agent
 
@@ -40,6 +40,7 @@
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
 - Demo 文件：v0.6.3 已新增人工构造的脱敏模拟论文样本、模板样本和一次 local 模式输出样例，路径见 `docs/DEMO_RESULT.md`。
+- Task State：v0.7.0 已新增最小任务状态落盘记录，默认写入 `paper-ai/backend/task_states/{task_id}.json`，用于记录每次 Agent 运行的生命周期状态。
 
 # 最近回归测试结果
 
@@ -224,3 +225,11 @@ Current Bottleneck：
 - 本次运行结果：`status=ok`，`mode=local`，`classification.document_type=academic_paper`，`confidence=0.95`，`before_score=80`，`after_score=86`，local 模式保持 `ai_score=null`、`ai_used=false`。
 - 新增 `docs/DEMO_RESULT.md`，记录输入/输出路径、运行方式、重点字段、限制和验收情况。
 - 本轮未修改核心业务逻辑、前端交互、测试断言或依赖文件；DOCX 渲染视觉 QA 因当前环境缺少 LibreOffice/`soffice` 跳过。
+
+## v0.7.0 Task State Minimal
+
+- 新增 `paper-ai/backend/services/task_state.py`，提供 `task_id` 生成、task state 路径定位、UTF-8 JSON 原子写入、初始化和更新能力。
+- `run_agent_pipeline(...)` 已在任务开始时写入 `running`，成功时写入 `succeeded`，异常或内部错误时写入 `failed`。
+- `/agent/run` 仍保持同步执行语义；返回结果只额外增加 `task_id` 和 `task_state_path`，旧字段继续兼容。
+- task state 记录任务生命周期；`agent_trace` 仍记录处理步骤，两者职责不互相替代。
+- 当前边界：这还不是完整断点续跑，也不是异步队列；暂未实现 task state 清理策略和前端可视化。

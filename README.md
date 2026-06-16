@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.6.3-real-demo-files`
+当前版本：`v0.7.0-task-state-minimal`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -11,6 +11,7 @@
 - 完整主链路：上传 DOCX -> Agent 处理 -> 在线预览 -> 下载结果文件。
 - 统一调度层：`agent_pipeline.py` 负责包装 `/agent/run` 主流程，统一输出展示用 `agent_trace`。
 - 可解释 Trace：每一步记录 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 任务状态落盘：每次 Agent 运行会生成 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
 - fallback 保护：未上传模板、AI 调用失败、相似度预检异常等场景不会轻易中断主流程。
 - 旧字段兼容：保留 `modification_report`、`reference_check`、`figure_table_check` 等原有字段，降低前端和测试回归风险。
 - 测试覆盖：包含 smoke test、评分一致性、参考文献检查、图表编号检查、风险等级和 trace 结构测试。
@@ -110,6 +111,15 @@ flowchart TD
 
 - `agent_trace`：逐步列表，每项包含 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
 - `agent_trace_detail`：保留旧解释型 trace，包含任务计划、工具调用、fallback 原因、人工复查判断和置信度。
+- `task_id`：本次 Agent 运行的任务 ID。
+- `task_state_path`：本次任务状态 JSON 的落盘路径。
+
+Task State 说明：
+
+- 默认写入 `paper-ai/backend/task_states/{task_id}.json`。
+- `task_state` 描述任务生命周期，例如 `running`、`succeeded`、`failed`、输入文件、输出文件、总耗时和错误信息。
+- `agent_trace` 描述处理步骤，两者不互相替代。
+- 当前版本不是异步队列，也不是完整断点续跑。
 
 ## 启动方式
 
@@ -191,6 +201,7 @@ npm run build
 - 复杂 Word 对象支持有限，例如目录、脚注、批注、公式、页眉页脚和复杂图文排版。
 - 在线预览不是 Word 像素级还原，只用于快速检查结构和内容。
 - 内容级 Agent 仍在规划中，当前不会自动补写论文观点、实验结果或参考文献。
+- `task_state` 当前只是运行状态持久化雏形，还没有清理策略、前端可视化或断点续跑能力。
 
 ## Demo Samples / 演示样本
 

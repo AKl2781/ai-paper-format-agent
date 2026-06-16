@@ -5,6 +5,7 @@ from time import perf_counter
 from typing import Any
 
 from .paper_agent import run_paper_agent
+from .task_state import create_task_id, get_task_state_path, init_task_state, update_task_state
 
 
 FALLBACK_BY_STEP = {
@@ -23,6 +24,15 @@ def run_agent_pipeline(
     allow_non_paper: bool = False,
     mode: str = "ai",
 ) -> dict[str, Any]:
+    task_id = create_task_id()
+    task_state_path = get_task_state_path(output_dir, task_id)
+    task_state, task_started_at = init_task_state(
+        task_state_path,
+        task_id=task_id,
+        mode="local" if mode == "local" else "ai",
+        paper_path=paper_path,
+        template_path=template_path,
+    )
     started_at = perf_counter()
     try:
         result = run_paper_agent(
@@ -34,10 +44,12 @@ def run_agent_pipeline(
         )
     except Exception as exc:
         duration_ms = elapsed_ms(started_at)
-        return {
+        failed_result = {
             "status": "error",
             "error": str(exc),
             "download_url": None,
+            "task_id": task_id,
+            "task_state_path": str(task_state_path),
             "agent_trace": [
                 {
                     "step": "agent_pipeline",
@@ -48,8 +60,30 @@ def run_agent_pipeline(
                 }
             ],
         }
+        update_task_state(
+            task_state_path,
+            task_state,
+            status="failed",
+            started_at=task_started_at,
+            result=failed_result,
+            error=str(exc),
+            output_dir=output_dir,
+        )
+        return failed_result
 
-    return normalize_pipeline_result(result, elapsed_ms(started_at))
+    normalized = normalize_pipeline_result(result, elapsed_ms(started_at))
+    normalized["task_id"] = task_id
+    normalized["task_state_path"] = str(task_state_path)
+    update_task_state(
+        task_state_path,
+        task_state,
+        status="failed" if normalized.get("status") == "error" else "succeeded",
+        started_at=task_started_at,
+        result=normalized,
+        error=normalized.get("error") if normalized.get("status") == "error" else None,
+        output_dir=output_dir,
+    )
+    return normalized
 
 
 def normalize_pipeline_result(result: dict[str, Any], total_duration_ms: int) -> dict[str, Any]:
