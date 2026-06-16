@@ -2,17 +2,17 @@
 
 ## 当前路线图 / Roadmap
 
-### v0.6.3-real-demo-files
+### [DONE] v0.6.3-real-demo-files
 
-目标：补充脱敏真实 demo DOCX 和一次真实运行输出，让面试演示从“路径和案例说明”升级为“可直接复现的固定样本”。
+目标：补充人工构造的脱敏模拟 demo DOCX 和一次真实 local 模式运行输出，让面试演示从“路径和案例说明”升级为“可直接复现的固定样本”。
 
-计划：
-- 放入脱敏后的待修改论文样本和模板样本。
-- 使用推荐命名：`demo_inputs/messy_paper_sample.docx`、`demo_inputs/template_sample.docx`。
-- 运行一次主流程，保留对应的 `formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
-- 记录样本来源、脱敏边界和不应承诺的能力边界。
+已完成：
+- 已放入人工构造的脱敏模拟论文样本和模板样本。
+- 已使用固定命名：`demo_inputs/messy_paper_sample.docx`、`demo_inputs/template_sample.docx`。
+- 已通过现有 `run_agent_pipeline(...)` local 模式运行一次主流程，并保留 `demo_outputs/formatted_result_sample.docx`、`demo_outputs/report_sample.json`、`demo_outputs/agent_trace_sample.json`。
+- 已在 `docs/DEMO_RESULT.md` 记录样本来源、故意设置的格式问题、运行方式、重点字段、限制和验收情况。
 
-状态：待处理。不得虚构样本或输出，必须基于真实可运行结果补充。
+状态：已完成。样本不是真实用户论文，输出来自一次真实 local 模式处理流程。
 
 ---
 
@@ -26,7 +26,7 @@
 - 保持 `/agent/run` 兼容，避免破坏现有前端和测试。
 - 先写设计文档，再小范围实现。
 
-状态：规划中。
+状态：下一步建议推进。
 
 ---
 
@@ -236,18 +236,18 @@
 状态：已完成。新增 `paper-ai/backend/services/agent_pipeline.py`，`/agent/run` 已通过统一调度层调用现有 `paper_agent`；`agent_trace` 已标准化为逐步列表，并保留旧解释型 trace 到 `agent_trace_detail`；顶层兼容 `modification_report`、`reference_check`、`figure_table_check`。本轮 `py_compile`、现有后端测试和 `npm run build` 均 PASS。
 ---
 
-### v0.6.2 demo 样本整理
+### [DONE] v0.6.3 demo 文件整理
 
-目标：准备 2-3 个适合面试演示的脱敏 DOCX 样本，覆盖标准论文、模板上传、参考文献提示、图表编号提示和 AI fallback 说明。
+目标：准备适合面试演示的脱敏模拟 DOCX 样本，覆盖标准论文、模板上传、参考文献提示、图表编号提示和 local 输出说明。
 
-计划：
+已完成：
 
-- 准备一个小型标准论文样本，控制处理耗时，适合现场演示。
-- 准备一个带模板的样本，展示模板解析和通用规则 fallback 边界。
-- 准备一个包含参考文献或图表编号轻微问题的样本，展示 `modification_report`、`reference_check`、`figure_table_check`。
-- 为每个样本记录预期展示点和不应承诺的边界。
+- 已准备一个小型模拟标准论文样本，适合现场演示。
+- 已准备一个模板样本，展示模板解析输入。
+- 已准备包含参考文献编号和图表编号引用检查点的样本，展示 `modification_report`、`reference_check`、`figure_table_check`。
+- 已保存一次 local 模式输出样例，并记录预期展示点和不应承诺的边界。
 
-状态：待处理。仅整理样本和说明，不修改核心业务逻辑。
+状态：已完成（v0.6.3-real-demo-files）。仅整理样本和说明，未修改核心业务逻辑。
 
 ---
 

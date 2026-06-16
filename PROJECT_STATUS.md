@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.6.2 / demo-samples
+当前版本号：v0.6.3 / real-demo-files
 
 项目名称：AI论文格式修改Agent
 
@@ -39,6 +39,7 @@
 - Beta 文档：v0.4.0-beta-docs 已整理 README 和 docs 文档，补充架构、Agent Trace、Risk Level、真实回归结果和部署规划说明。
 - local模式：只执行本地格式修复和基础预检，返回 `ai_score=null`、`ai_used=false`。
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
+- Demo 文件：v0.6.3 已新增人工构造的脱敏模拟论文样本、模板样本和一次 local 模式输出样例，路径见 `docs/DEMO_RESULT.md`。
 
 # 最近回归测试结果
 
@@ -210,3 +211,16 @@ Current Bottleneck：
 - 新增 `docs/DEMO_CASE.md`，说明固定面试演示案例、推荐样本特征、处理流程、重点观察字段和 1 分钟讲解话术。
 - 更新 README 和 `docs/DEMO_SCRIPT.md`，把固定演示样本目录纳入展示流程。
 - 当前仍未新增真实脱敏 DOCX 样本，也未新增真实运行输出；后续需要补充脱敏真实论文、模板和一次真实输出样例。
+
+## v0.6.3 Real Demo Files
+
+- 本轮新增人工构造的脱敏模拟 DOCX 输入样本和模板样本，不使用真实用户论文原文。
+- 新增 `demo_inputs/messy_paper_sample.docx`，包含封面、中文摘要、英文摘要、关键词、正文 5 节、图表标题和参考文献，并故意设置标题、缩进、行距、图表编号引用和参考文献编号检查点。
+- 新增 `demo_inputs/template_sample.docx`，包含一级标题、二级标题、正文、摘要、参考文献、图题和表题样式示例。
+- 使用现有 `run_agent_pipeline(...)` local 模式生成一次真实输出样例：
+  - `demo_outputs/formatted_result_sample.docx`
+  - `demo_outputs/report_sample.json`
+  - `demo_outputs/agent_trace_sample.json`
+- 本次运行结果：`status=ok`，`mode=local`，`classification.document_type=academic_paper`，`confidence=0.95`，`before_score=80`，`after_score=86`，local 模式保持 `ai_score=null`、`ai_used=false`。
+- 新增 `docs/DEMO_RESULT.md`，记录输入/输出路径、运行方式、重点字段、限制和验收情况。
+- 本轮未修改核心业务逻辑、前端交互、测试断言或依赖文件；DOCX 渲染视觉 QA 因当前环境缺少 LibreOffice/`soffice` 跳过。

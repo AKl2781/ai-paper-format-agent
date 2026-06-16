@@ -1,17 +1,17 @@
 # 面试演示脚本
 
-版本：`v0.6.2-demo-samples`
+版本：`v0.6.3-real-demo-files`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
 ## 0. 演示准备
 
-推荐输入样本路径：
+内置输入样本路径：
 
 - `demo_inputs/messy_paper_sample.docx`
 - `demo_inputs/template_sample.docx`
 
-推荐输出样例路径：
+已生成输出样例路径：
 
 - `demo_outputs/formatted_result_sample.docx`
 - `demo_outputs/report_sample.json`
@@ -19,9 +19,9 @@
 
 注意：
 
-- 以上是建议路径和推荐命名。
-- 如果这些真实文件当前不存在，不要说仓库已经内置真实论文样本。
-- 后续可以把脱敏后的真实论文样本、模板样本和一次真实运行输出放入这些目录。
+- 这些文件从 `v0.6.3-real-demo-files` 开始已经存在。
+- 样本是人工构造的脱敏模拟文本，不来自真实用户论文。
+- 输出样例由现有 local 模式处理流程生成，详见 `docs/DEMO_RESULT.md`。
 
 ## 1. 开场介绍，约 30 秒
 
@@ -39,10 +39,10 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v0.6.2-demo-samples`。
+- 当前版本：`v0.6.3-real-demo-files`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
-- Demo 样本约定：`demo_inputs/` 放输入样本，`demo_outputs/` 放运行后输出样例。
+- Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
 - 项目边界：不是 RAG，不是 LangGraph，不是 Milvus，不是数据库系统，不是论文代写。
 
 可说：
@@ -71,12 +71,12 @@
 
 参考 `docs/DEMO_CASE.md`。
 
-推荐样本特征：
+内置样本特征：
 
 - 标题格式不统一。
 - 正文缩进或行距不规范。
-- 参考文献编号或引用存在可检查点。
-- 图表编号存在可检查点。
+- 参考文献编号存在可检查点。
+- 图表编号和正文图号引用存在可检查点。
 
 演示步骤：
 
@@ -107,7 +107,7 @@
 - `fallback_used`：是否使用 fallback。
 - `message`：给用户或开发者看的简短说明。
 
-如果保存输出样例，推荐保存为：
+当前已保存输出样例：
 
 - `demo_outputs/agent_trace_sample.json`
 
@@ -126,12 +126,12 @@
 - `after_score`
 - `download_url`
 
-如果运行后需要保留样例，推荐保存为：
+当前已保存样例：
 
 - `demo_outputs/formatted_result_sample.docx`
 - `demo_outputs/report_sample.json`
 
-注意：如果这些文件尚未由真实运行生成，不要声称它们已经存在或已经 PASS。
+注意：这些文件由 `v0.6.3` 的 local 模式真实运行生成；不要把它讲成 AI 深度内容改写结果。
 
 ## 7. 演示 ai fallback，约 1 分钟
 
@@ -176,13 +176,13 @@ python test_smoke_agent_flow.py
 - 当前不是论文代写，不生成实验结果或参考文献。
 - 复杂 Word 对象支持有限，例如目录、脚注、公式、页眉页脚。
 - AI 评分只是参考，不参与主评分，不会拉低格式规则分。
-- 当前 v0.6.2 只补充演示样本目录说明和固定演示案例，还没有内置真实脱敏 DOCX 样本。
+- 当前 v0.6.3 已内置人工构造的脱敏模拟 DOCX 样本和一次 local 模式输出样例，但尚未做 Word 渲染截图验收。
 
 ## 10. 收尾，约 30 秒
 
 可以这样总结：
 
-> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.6.2 进一步补了固定 demo 样本路径和演示案例说明，下一步会补脱敏真实样本、任务状态和 trace UI。
+> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.6.3 已经补齐一组可演示的模拟 DOCX 输入、模板和 local 输出样例，下一步会推进任务状态和 trace UI。
 
 ## 11. 常见演示风险
 
@@ -190,5 +190,5 @@ python test_smoke_agent_flow.py
 - 不要承诺“查重通过”。
 - 不要承诺“AI 深度润色整篇论文”。
 - 如果 AI API 没配置，直接解释 fallback 设计。
-- 如果推荐 demo 文件当前不存在，说明这是样本目录规范，不要说仓库已内置真实样本。
+- 不要把内置模拟样本说成真实用户论文。
 - 如果预览样式与 Word 不完全一致，说明预览是结构化 HTML，不是像素级还原。

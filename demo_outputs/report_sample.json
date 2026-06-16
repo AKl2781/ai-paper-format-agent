@@ -1,0 +1,304 @@
+{
+  "status": "ok",
+  "mode": "local",
+  "classification": {
+    "document_type": "academic_paper",
+    "label": "标准论文",
+    "confidence": 0.95,
+    "matched_features": [
+      "标题编号结构",
+      "摘要/关键词",
+      "引言/绪论",
+      "结论/结语/总结",
+      "参考文献/文献引用",
+      "正文段落数量较多"
+    ],
+    "warning": "",
+    "requires_confirmation": false
+  },
+  "before_score": 80,
+  "after_score": 86,
+  "score_breakdown": {
+    "format_score": 86,
+    "risk_score": 64,
+    "ai_language_score": null,
+    "final_score": 86,
+    "score_confidence": 0.68,
+    "score_explanation": "最终评分以格式规则评分为主；当前为本地模式，AI语言评分未启用。",
+    "local_score": 86,
+    "ai_score": null,
+    "ai_used": false,
+    "ai_added_value": []
+  },
+  "repeat_risk": {
+    "name": "重复风险检测",
+    "description": "相似度预检，不等同于任何正式查重系统。",
+    "level": "低",
+    "score": 18,
+    "score_for_quality": 76,
+    "similar_paragraphs": [
+      {
+        "paragraph_a": 1,
+        "paragraph_b": 4,
+        "similarity": 1.0,
+        "preview": "基于传感器数据分析的健康风险快速检测方法研究"
+      }
+    ],
+    "duplicate_sentences": [],
+    "suggestions": [
+      "对重复表述较多的段落重新组织论证顺序，避免只替换同义词。",
+      "保留必要术语，优先改写解释、例证、过渡句和总结句。",
+      "相似段落建议合并或拆分，减少同一观点的反复铺陈。",
+      "当前为低风险预检，提交前仍建议人工通读确认引用和原文边界。"
+    ],
+    "truncated": false,
+    "sampled_paragraphs": 22,
+    "total_paragraphs": 22,
+    "max_comparisons": 30000
+  },
+  "modification_report": {
+    "summary": "Agent 完成 4 项自动处理，最终评分 86。",
+    "fixed_issues": [
+      "统一页面边距、正文样式、标题层级和段落间距。",
+      "完成本地格式修复和重复风险预检。",
+      "根据当前模式完成语言审校或跳过 AI 增强。"
+    ],
+    "before_after": [
+      {
+        "key": "structure",
+        "label": "结构完整度",
+        "before": 95,
+        "after": 95,
+        "delta": 0,
+        "status": "良好"
+      },
+      {
+        "key": "heading_format",
+        "label": "标题格式",
+        "before": 78,
+        "after": 92,
+        "delta": 14,
+        "status": "良好"
+      },
+      {
+        "key": "body_font",
+        "label": "正文字体",
+        "before": 87,
+        "after": 90,
+        "delta": 3,
+        "status": "良好"
+      },
+      {
+        "key": "spacing_indent",
+        "label": "行距缩进",
+        "before": 70,
+        "after": 90,
+        "delta": 20,
+        "status": "良好"
+      },
+      {
+        "key": "page_margin",
+        "label": "页边距",
+        "before": 85,
+        "after": 85,
+        "delta": 0,
+        "status": "可提交前复核"
+      },
+      {
+        "key": "references",
+        "label": "参考文献基础格式",
+        "before": 68,
+        "after": 68,
+        "delta": 0,
+        "status": "需优化"
+      },
+      {
+        "key": "repeat_risk",
+        "label": "重复风险预检",
+        "before": 76,
+        "after": 76,
+        "delta": 0,
+        "status": "需优化"
+      }
+    ],
+    "format_diff_summary": {
+      "before_score": 80,
+      "after_score": 86,
+      "score_delta": 6,
+      "auto_fix_count": 4,
+      "changed_dimension_count": 3,
+      "needs_manual_review_count": 2,
+      "format_change_count": 4,
+      "language_change_count": 0,
+      "summary": "评分提升 6 分；标题格式、正文字体、行距缩进发生变化；完成 4 项自动处理，仍有 2 项建议人工复查。"
+    },
+    "changed_dimensions": [
+      {
+        "key": "heading_format",
+        "label": "标题格式",
+        "before": 78,
+        "after": 92,
+        "delta": 14,
+        "status": "良好"
+      },
+      {
+        "key": "body_font",
+        "label": "正文字体",
+        "before": 87,
+        "after": 90,
+        "delta": 3,
+        "status": "良好"
+      },
+      {
+        "key": "spacing_indent",
+        "label": "行距缩进",
+        "before": 70,
+        "after": 90,
+        "delta": 20,
+        "status": "良好"
+      }
+    ],
+    "score_delta_by_dimension": {
+      "structure": 0,
+      "heading_format": 14,
+      "body_font": 3,
+      "spacing_indent": 20,
+      "page_margin": 0,
+      "references": 0,
+      "repeat_risk": 0
+    },
+    "auto_fix_count": 4,
+    "needs_manual_review_count": 2,
+    "change_counts": {
+      "format_changes": 4,
+      "language_changes": 0,
+      "total": 4
+    },
+    "unresolved_issues": [
+      "页边距：仍建议人工复核。",
+      "参考文献基础格式：参考文献存在重复编号：3。",
+      "参考文献基础格式：参考文献编号不连续，缺少：2。",
+      "参考文献基础格式：文末参考文献未在正文中引用：1、3。",
+      "重复风险预检：相似度预检不能替代正式查重。"
+    ],
+    "manual_review_items": [
+      "参考文献存在重复编号：3。",
+      "正文引用的图号未找到对应图题：3。"
+    ],
+    "risk_summary": {
+      "blocking": 0,
+      "high_risk": 2,
+      "warning": 2,
+      "info": 0
+    },
+    "warning_items": [
+      "页边距：仍建议人工复核。",
+      "参考文献基础格式：参考文献编号不连续，缺少：2。",
+      "参考文献基础格式：文末参考文献未在正文中引用：1、3。",
+      "重复风险预检：相似度预检不能替代正式查重。",
+      "参考文献编号不连续，缺少：2。",
+      "文末参考文献未在正文中引用：1、3。",
+      "人工核对封面、页眉页脚、脚注、图片题注、公式编号等复杂元素。",
+      "检查参考文献真实性、引用对应关系和学校指定格式。",
+      "使用 Word 打开最终文件，确认分页和目录层级是否符合提交要求。",
+      "检测到表格，请确认表题、编号、单位和表头是否完整。"
+    ],
+    "info_items": [],
+    "score_explanation": "最终评分以格式规则评分为主；当前为本地模式，AI语言评分未启用。",
+    "template_used": "template_sample.docx"
+  },
+  "reference_check": {
+    "has_reference_section": true,
+    "reference_count": 3,
+    "citation_count": 0,
+    "reference_numbers": [
+      1,
+      3
+    ],
+    "citation_numbers": [],
+    "missing_reference_numbers": [],
+    "uncited_reference_numbers": [
+      1,
+      3
+    ],
+    "duplicate_reference_numbers": [
+      3
+    ],
+    "numbering_gaps": [
+      2
+    ],
+    "issues": [
+      "参考文献存在重复编号：3。",
+      "参考文献编号不连续，缺少：2。",
+      "文末参考文献未在正文中引用：1、3。"
+    ],
+    "risk_items": [
+      {
+        "code": "duplicate_reference_numbers",
+        "level": "high_risk",
+        "message": "参考文献存在重复编号：3。"
+      },
+      {
+        "code": "reference_numbering_gaps",
+        "level": "warning",
+        "message": "参考文献编号不连续，缺少：2。"
+      },
+      {
+        "code": "uncited_reference_numbers",
+        "level": "warning",
+        "message": "文末参考文献未在正文中引用：1、3。"
+      }
+    ],
+    "risk_summary": {
+      "blocking": 0,
+      "high_risk": 1,
+      "warning": 2,
+      "info": 0
+    },
+    "highest_risk_level": "high_risk"
+  },
+  "figure_table_check": {
+    "figure_numbers": [
+      1
+    ],
+    "table_numbers": [
+      1
+    ],
+    "figure_gaps": [],
+    "table_gaps": [],
+    "duplicate_figures": [],
+    "duplicate_tables": [],
+    "missing_figure_captions": [],
+    "missing_table_captions": [],
+    "missing_referenced_figures": [
+      3
+    ],
+    "missing_referenced_tables": [],
+    "issues": [
+      "正文引用的图号未找到对应图题：3。"
+    ],
+    "risk_items": [
+      {
+        "code": "missing_referenced_figures",
+        "level": "high_risk",
+        "message": "正文引用的图号未找到对应图题：3。"
+      }
+    ],
+    "risk_summary": {
+      "blocking": 0,
+      "high_risk": 1,
+      "warning": 0,
+      "info": 0
+    },
+    "highest_risk_level": "high_risk"
+  },
+  "language_review": {
+    "mode": "local",
+    "error": null
+  },
+  "source_files": {
+    "paper": "demo_inputs/messy_paper_sample.docx",
+    "template": "demo_inputs/template_sample.docx",
+    "output": "demo_outputs/formatted_result_sample.docx"
+  }
+}

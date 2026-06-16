@@ -1,5 +1,63 @@
 # Development Log
 
+## 2026-06-17 v0.6.3-real-demo-files
+
+### 修改目标
+
+在 `v0.6.2-demo-samples` 稳定节点基础上，补充一组可用于面试演示的人工构造脱敏模拟 DOCX 输入样本、模板样本，以及一次 local 模式真实运行输出，让项目从“有 demo 样本目录说明”升级为“有可演示输入/输出样例”。
+
+### 修改范围
+
+- 新增 `demo_inputs/messy_paper_sample.docx`
+  - 标题为“基于传感器数据分析的健康风险快速检测方法研究”。
+  - 包含封面、中文摘要、英文摘要、关键词、正文 5 节、图表标题和参考文献。
+  - 故意保留标题层级、正文缩进、行距、图表编号引用和参考文献编号检查点。
+  - 内容为人工构造的脱敏模拟文本，不来自真实用户论文。
+- 新增 `demo_inputs/template_sample.docx`
+  - 包含一级标题、二级标题、正文、摘要、参考文献、图题和表题样式示例。
+- 新增 `demo_outputs/formatted_result_sample.docx`
+  - 由当前现有 `run_agent_pipeline(...)` local 模式处理生成。
+- 新增 `demo_outputs/report_sample.json`
+  - 保存本次运行的分类、评分、`score_breakdown`、`modification_report`、`reference_check`、`figure_table_check`、`repeat_risk` 等重点字段。
+- 新增 `demo_outputs/agent_trace_sample.json`
+  - 保存本次运行的逐步 `agent_trace`。
+- 新增 `docs/DEMO_RESULT.md`
+  - 记录 demo 输入/输出路径、故意设置的格式问题、运行方式、重点字段、限制和验收情况。
+- 更新 `docs/DEMO_CASE.md`、`docs/DEMO_SCRIPT.md`、`README.md`
+  - 将 demo 文件状态从推荐路径更新为当前已内置的模拟输入和 local 输出样例。
+- 更新 `PROJECT_STATUS.md` 和 `TODO.md`
+  - 标记当前版本和下一阶段任务。
+
+### 未修改范围
+
+- 没有修改核心业务逻辑。
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `/agent/run`。
+- 没有修改 `paper_agent.py`。
+- 没有修改 formatter、analyzer、language reviewer。
+- 没有修改前端交互。
+- 没有修改已有返回字段结构或测试断言。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+
+### v0.6.3 运行与验收
+
+- 基线检查：PASS
+  - `git status --short` 初始为空。
+  - `git log --oneline --decorate -5` 显示 HEAD 位于 `v0.6.2-demo-samples`。
+- DOCX 输入生成：PASS
+  - `messy_paper_sample.docx` 和 `template_sample.docx` 已生成。
+- DOCX 结构检查：PASS
+  - 三个 DOCX 均可通过 `python-docx` 打开并读取段落和表格。
+- local 处理流程：PASS
+  - 直接调用现有 `run_agent_pipeline(...)`，未启动常驻服务。
+  - `status=ok`，`mode=local`，`classification.document_type=academic_paper`，`confidence=0.95`。
+  - `before_score=80`，`after_score=86`。
+  - local 模式保持 `ai_score=null`、`ai_used=false`。
+- DOCX 渲染视觉 QA：SKIPPED
+  - 当前环境缺少 LibreOffice/`soffice`，`render_docx.py` 无法生成 PNG。
+- 完整后端测试、smoke test、前端构建：SKIPPED
+  - 本轮只新增 DOCX/JSON/Markdown 演示资产与文档，未修改 Python/前端业务代码、测试断言或依赖文件。
+
 ## 2026-06-14 v0.6.2-demo-samples
 
 ### 修改目标

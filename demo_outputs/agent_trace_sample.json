@@ -1,0 +1,65 @@
+[
+  {
+    "step": "识别文档类型",
+    "status": "ok",
+    "duration_ms": 18,
+    "fallback_used": false,
+    "message": "文档类型：标准论文，置信度 95%。"
+  },
+  {
+    "step": "读取论文",
+    "status": "ok",
+    "duration_ms": 0,
+    "fallback_used": false,
+    "message": "已读取 messy_paper_sample.docx"
+  },
+  {
+    "step": "分析本地格式",
+    "status": "ok",
+    "duration_ms": 137,
+    "fallback_used": false,
+    "message": "本地模式初评 80。"
+  },
+  {
+    "step": "识别模板格式",
+    "status": "ok",
+    "duration_ms": 17,
+    "fallback_used": false,
+    "message": "已识别模板：template_sample.docx"
+  },
+  {
+    "step": "修复标题与正文格式",
+    "status": "ok",
+    "duration_ms": 99,
+    "fallback_used": false,
+    "message": "标题、正文和页面基础格式已统一。"
+  },
+  {
+    "step": "AI增强审校",
+    "status": "ok",
+    "duration_ms": 0,
+    "fallback_used": true,
+    "message": "本地规则模式不计算 AI 语言、流畅度、逻辑和学术表达评分。"
+  },
+  {
+    "step": "重复风险预检",
+    "status": "ok",
+    "duration_ms": 46,
+    "fallback_used": false,
+    "message": "重复风险等级：低，风险值 18/100。"
+  },
+  {
+    "step": "最终复查",
+    "status": "ok",
+    "duration_ms": 75,
+    "fallback_used": false,
+    "message": "最终评分 86，AI使用状态：未启用。"
+  },
+  {
+    "step": "生成最终报告",
+    "status": "ok",
+    "duration_ms": 0,
+    "fallback_used": false,
+    "message": "报告已生成，最终文件：messy_paper_sample_formatted_20260617005504.docx"
+  }
+]

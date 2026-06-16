@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.6.2-demo-samples`
+当前版本：`v0.6.3-real-demo-files`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -194,25 +194,28 @@ npm run build
 
 ## Demo Samples / 演示样本
 
-v0.6.2 增加了固定演示样本目录说明，方便后续准备暑期实习面试展示材料。
+v0.6.3 增加了一组可用于面试演示的人工构造脱敏模拟 DOCX 输入样本、模板样本，以及一次 local 模式真实运行输出。
 
 - `demo_inputs/`
-  - 用于放演示输入样本。
-  - 推荐命名：`messy_paper_sample.docx`、`template_sample.docx`。
-  - 当前 README 只说明目录用途；如果真实 DOCX 文件不存在，不应声称仓库已经内置真实论文样本。
+  - `messy_paper_sample.docx`：模拟论文输入样本，标题为“基于传感器数据分析的健康风险快速检测方法研究”。
+  - `template_sample.docx`：模板样式示例，包含一级标题、二级标题、正文、摘要、参考文献、图题和表题样式。
+  - 样本内容是人工构造的脱敏模拟文本，不来自真实用户论文。
 - `demo_outputs/`
-  - 用于放真实运行后的演示输出样例。
-  - 推荐命名：`formatted_result_sample.docx`、`report_sample.json`、`agent_trace_sample.json`。
-  - 如果尚未真实运行生成这些文件，不应声称输出样例已经存在或已经 PASS。
+  - `formatted_result_sample.docx`：使用当前 local 模式流程生成的格式处理结果。
+  - `report_sample.json`：本次运行报告样例。
+  - `agent_trace_sample.json`：本次运行的逐步 Agent Trace。
 - `docs/DEMO_CASE.md`
-  - 固定演示案例说明，描述推荐样本特征、处理流程、重点观察字段和面试讲解话术。
+  - 固定演示案例说明，描述样本特征、处理流程、重点观察字段和面试讲解话术。
+- `docs/DEMO_RESULT.md`
+  - 记录 demo 输入/输出文件、故意设置的格式问题、运行方式、重点字段、限制和验收情况。
 
-后续可以将脱敏后的真实论文和模板放入 `demo_inputs/`，并将一次真实运行结果保存到 `demo_outputs/`。
+本轮未修改核心业务逻辑、前端交互、测试断言或依赖文件。DOCX 渲染截图验收因当前环境缺少 LibreOffice/`soffice` 跳过；DOCX 结构检查和 local Agent 处理流程已通过。
 
 ## 相关文档
 
 - [架构说明](docs/ARCHITECTURE.md)
 - [固定演示案例](docs/DEMO_CASE.md)
+- [Demo 运行结果](docs/DEMO_RESULT.md)
 - [面试演示脚本](docs/DEMO_SCRIPT.md)
 - [面试问答](docs/INTERVIEW_QA.md)
 - [开发记录](docs/DEVELOPMENT_LOG.md)
