@@ -31,7 +31,36 @@
 
 ---
 
-### v0.7.1-task-state-cleanup
+### [DONE] v0.7.1-docs-sync-task-state
+
+目标：同步 task state 文档说明，明确当前真实能力、字段、架构位置、演示方式和边界。
+
+已完成：
+- README 已补充 task state 能力说明。
+- `docs/ARCHITECTURE.md` 已补充 `task_state.py` 和 `task_states/{task_id}.json`。
+- `docs/INTERVIEW_QA.md` 已补充 task state 相关问答。
+- `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
+- `docs/DEMO_RESULT.md` 已说明当前没有固定 `task_state_sample.json`。
+
+状态：已完成。仅同步文档，未修改核心业务逻辑。
+
+---
+
+### v0.7.2-task-state-sample
+
+目标：为 `demo_outputs/` 补充一次固定 task state 输出样例，方便面试演示时直接查看。
+
+计划：
+- 重新运行 v0.6.3 demo 样本或使用现有可复现流程生成 task state。
+- 保存为 `demo_outputs/task_state_sample.json`。
+- 更新 `docs/DEMO_RESULT.md`，确保文档与实际文件状态一致。
+- 不虚构 task state 样例，不声称前端已可视化。
+
+状态：规划中。
+
+---
+
+### v0.7.3-task-state-cleanup
 
 目标：为 `paper-ai/backend/task_states/` 增加轻量清理策略，避免运行产物长期膨胀。
 
@@ -54,6 +83,7 @@
 - 展示 task state 摘要，例如 `task_id`、生命周期状态、总耗时。
 - 保持现有上传、预览、下载交互不变。
 - 在实现前先确认 UI 方案和回归测试点。
+- 不把前端展示说成已经完成，必须先实现和回归后再更新状态。
 
 状态：规划中。
 
@@ -283,7 +313,7 @@
 
 目标：为 Agent 长流程增加任务状态记录，方便后续支持更清晰的运行状态、错误恢复和前端进度展示。
 
-状态：已完成最小落盘版本（v0.7.0-task-state-minimal）。后续清理策略见 `v0.7.1-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
+状态：已完成最小落盘版本（v0.7.0-task-state-minimal），并完成 v0.7.1 文档同步。后续固定样例见 `v0.7.2-task-state-sample`，清理策略见 `v0.7.3-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
 
 ---
 

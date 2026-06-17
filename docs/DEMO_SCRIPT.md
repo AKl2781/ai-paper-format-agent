@@ -1,6 +1,6 @@
 # 面试演示脚本
 
-版本：`v0.6.3-real-demo-files`
+版本：`v0.7.1-docs-sync-task-state`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
@@ -22,6 +22,7 @@
 - 这些文件从 `v0.6.3-real-demo-files` 开始已经存在。
 - 样本是人工构造的脱敏模拟文本，不来自真实用户论文。
 - 输出样例由现有 local 模式处理流程生成，详见 `docs/DEMO_RESULT.md`。
+- v0.7.0 后每次重新运行 Agent Pipeline 还会生成 task state 文件，但当前 `demo_outputs/` 尚未固定保存 `task_state_sample.json`。
 
 ## 1. 开场介绍，约 30 秒
 
@@ -39,10 +40,11 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v0.6.3-real-demo-files`。
+- 当前版本：`v0.7.1-docs-sync-task-state`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
+- Task State：v0.7.0 已支持每次运行生成 `task_id` 和 `task_state_path`，记录任务生命周期。
 - 项目边界：不是 RAG，不是 LangGraph，不是 Milvus，不是数据库系统，不是论文代写。
 
 可说：
@@ -62,6 +64,7 @@
 5. `docx_formatter.py` 修改 Word 格式。
 6. `docx_analyzer.py` 做评分、参考文献、图表编号检查。
 7. `language_reviewer.py` 处理 AI/本地语言审校 fallback。
+8. `task_state.py` 记录任务生命周期，默认写入 `paper-ai/backend/task_states/{task_id}.json`。
 
 可说：
 
@@ -115,7 +118,30 @@
 
 > 这个 trace 不是为了炫技，而是为了让 Agent 不像黑盒。出了问题时，我能知道卡在分类、模板、格式修复、AI 审校还是报告生成。
 
-## 6. 演示报告和输出，约 2 分钟
+## 6. 演示 task_state，约 1 分钟
+
+在浏览器 Network 面板或后端返回 JSON 中查看：
+
+- `task_id`
+- `task_state_path`
+
+如果是在本地后端运行，可以打开 `task_state_path` 指向的 JSON 文件，重点观察：
+
+- `status`：任务生命周期状态，例如 `running`、`succeeded`、`failed`。
+- `duration_ms`：本次任务总耗时。
+- `input_files`：论文和模板输入路径。
+- `output_files`：最终 DOCX 输出路径。
+- `fallback_used`：本次任务是否出现 fallback。
+- `error`：失败时的错误信息。
+
+讲解边界：
+
+- `task_state` 用于解释任务生命周期。
+- `agent_trace` 用于解释处理步骤。
+- 当前前端还没有 task_state 可视化界面；演示时通过返回 JSON 和本地 JSON 文件查看。
+- 当前不是异步队列，也不是断点续跑。
+
+## 7. 演示报告和输出，约 2 分钟
 
 重点观察：
 
@@ -133,7 +159,7 @@
 
 注意：这些文件由 `v0.6.3` 的 local 模式真实运行生成；不要把它讲成 AI 深度内容改写结果。
 
-## 7. 演示 ai fallback，约 1 分钟
+## 8. 演示 ai fallback，约 1 分钟
 
 不一定现场调用真实 LLM，可以讲 smoke test 里已经覆盖：
 
@@ -146,7 +172,7 @@
 
 > 我把 AI 当成增强项，不当成主流程唯一依赖。所以 AI 不可用时，用户仍然能拿到本地格式修复结果。
 
-## 8. 展示测试，约 2 分钟
+## 9. 展示测试，约 2 分钟
 
 展示命令，不建议现场全部跑很久；如果面试允许，可以跑 smoke 或说明已经验收。
 
@@ -166,9 +192,10 @@ python test_smoke_agent_flow.py
 - 预览接口。
 - 下载接口。
 - `agent_trace` 结构。
+- `task_state` 成功/失败状态落盘。
 - `reference_check`、`figure_table_check` 兼容字段。
 
-## 9. 项目边界说明，约 30 秒
+## 10. 项目边界说明，约 30 秒
 
 主动说明限制会更可信：
 
@@ -177,18 +204,21 @@ python test_smoke_agent_flow.py
 - 复杂 Word 对象支持有限，例如目录、脚注、公式、页眉页脚。
 - AI 评分只是参考，不参与主评分，不会拉低格式规则分。
 - 当前 v0.6.3 已内置人工构造的脱敏模拟 DOCX 样本和一次 local 模式输出样例，但尚未做 Word 渲染截图验收。
+- 当前 task_state 只是最小状态持久化能力，不是异步队列、断点续跑或前端可视化任务中心。
 
-## 10. 收尾，约 30 秒
+## 11. 收尾，约 30 秒
 
 可以这样总结：
 
-> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.6.3 已经补齐一组可演示的模拟 DOCX 输入、模板和 local 输出样例，下一步会推进任务状态和 trace UI。
+> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.7.0 已经补了最小 task_state 落盘，v0.7.1 把文档说明同步清楚；下一步会考虑固定 task_state 样例、清理策略和 trace UI。
 
-## 11. 常见演示风险
+## 12. 常见演示风险
 
 - 不要上传隐私敏感或正式提交论文。
 - 不要承诺“查重通过”。
 - 不要承诺“AI 深度润色整篇论文”。
 - 如果 AI API 没配置，直接解释 fallback 设计。
 - 不要把内置模拟样本说成真实用户论文。
+- 不要声称前端已经有 task_state 可视化界面。
+- 不要声称已经支持异步队列或断点续跑。
 - 如果预览样式与 Word 不完全一致，说明预览是结构化 HTML，不是像素级还原。

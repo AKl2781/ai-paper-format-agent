@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.7.0 / task-state-minimal
+当前版本号：v0.7.1 / docs-sync-task-state
 
 项目名称：AI论文格式修改Agent
 
@@ -41,6 +41,7 @@
 - ai模式：在 local 格式修复基础上执行 AI/语言审校，返回 AI 语言参考评分和建议；主展示评分仍以格式规则分为准。
 - Demo 文件：v0.6.3 已新增人工构造的脱敏模拟论文样本、模板样本和一次 local 模式输出样例，路径见 `docs/DEMO_RESULT.md`。
 - Task State：v0.7.0 已新增最小任务状态落盘记录，默认写入 `paper-ai/backend/task_states/{task_id}.json`，用于记录每次 Agent 运行的生命周期状态。
+- Task State 文档同步：v0.7.1 已同步 README、架构说明、面试问答、演示脚本和 demo 结果说明，明确 task state 与 agent_trace 的边界。
 
 # 最近回归测试结果
 
@@ -233,3 +234,13 @@ Current Bottleneck：
 - `/agent/run` 仍保持同步执行语义；返回结果只额外增加 `task_id` 和 `task_state_path`，旧字段继续兼容。
 - task state 记录任务生命周期；`agent_trace` 仍记录处理步骤，两者职责不互相替代。
 - 当前边界：这还不是完整断点续跑，也不是异步队列；暂未实现 task state 清理策略和前端可视化。
+
+## v0.7.1 Docs Sync Task State
+
+- 本轮只同步文档，不修改核心业务逻辑、`task_state.py`、`agent_pipeline.py`、`main.py`、前端交互或测试断言。
+- README 已补充 task state 能力、字段、写入路径和边界。
+- `docs/ARCHITECTURE.md` 已补充 `task_state.py` 在架构中的位置，以及 `paper-ai/backend/task_states/{task_id}.json` 写入说明。
+- `docs/INTERVIEW_QA.md` 已补充 task state 与 agent_trace 的区别、为什么不直接做异步队列、当前解决的问题和限制。
+- `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
+- `docs/DEMO_RESULT.md` 已说明当前没有固定 `demo_outputs/task_state_sample.json`，后续可单独补充。
+- 当前仍不是完整断点续跑或异步队列，也没有前端 task state 可视化界面。

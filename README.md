@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.7.0-task-state-minimal`
+当前版本：`v0.7.1-docs-sync-task-state`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -11,7 +11,7 @@
 - 完整主链路：上传 DOCX -> Agent 处理 -> 在线预览 -> 下载结果文件。
 - 统一调度层：`agent_pipeline.py` 负责包装 `/agent/run` 主流程，统一输出展示用 `agent_trace`。
 - 可解释 Trace：每一步记录 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
-- 任务状态落盘：每次 Agent 运行会生成 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
+- 任务状态落盘：每次 Agent Pipeline 运行会生成 `task_id`，并写入 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
 - fallback 保护：未上传模板、AI 调用失败、相似度预检异常等场景不会轻易中断主流程。
 - 旧字段兼容：保留 `modification_report`、`reference_check`、`figure_table_check` 等原有字段，降低前端和测试回归风险。
 - 测试覆盖：包含 smoke test、评分一致性、参考文献检查、图表编号检查、风险等级和 trace 结构测试。
@@ -117,8 +117,10 @@ flowchart TD
 Task State 说明：
 
 - 默认写入 `paper-ai/backend/task_states/{task_id}.json`。
-- `task_state` 描述任务生命周期，例如 `running`、`succeeded`、`failed`、输入文件、输出文件、总耗时和错误信息。
-- `agent_trace` 描述处理步骤，两者不互相替代。
+- `task_state` 是任务状态持久化雏形，描述任务生命周期，例如 `running`、`succeeded`、`failed`。
+- 记录字段包括 `status`、`input_files`、`output_files`、`duration_ms`、`fallback_used`、`error`、评分摘要和 `agent_trace_steps_count`。
+- `agent_trace` 描述处理步骤，例如分类、模板解析、格式修复、AI 审校、复查和报告生成。
+- `task_state` 描述任务生命周期，例如何时开始、是否成功、总耗时、输入输出文件和错误信息；两者不互相替代。
 - 当前版本不是异步队列，也不是完整断点续跑。
 
 ## 启动方式
@@ -202,6 +204,17 @@ npm run build
 - 在线预览不是 Word 像素级还原，只用于快速检查结构和内容。
 - 内容级 Agent 仍在规划中，当前不会自动补写论文观点、实验结果或参考文献。
 - `task_state` 当前只是运行状态持久化雏形，还没有清理策略、前端可视化或断点续跑能力。
+
+## Task State / 任务状态
+
+v0.7.0 引入了最小任务状态持久化能力，v0.7.1 对文档说明进行了同步。它的目标是提升可观测性，而不是改变主流程。
+
+- 每次 `run_agent_pipeline(...)` 运行都会生成一个 `task_id`。
+- 状态文件默认写入 `paper-ai/backend/task_states/{task_id}.json`。
+- `/agent/run` 仍保持同步返回，只额外透出 `task_id` 和 `task_state_path`。
+- `task_state` 记录任务生命周期：输入文件、输出文件、运行状态、总耗时、fallback 概览和错误信息。
+- `agent_trace` 记录处理步骤：分类、读取、分析、模板、格式修复、AI 审校、重复风险预检、最终复查和报告生成。
+- 当前没有实现任务队列、后台异步执行、前端 task state 可视化或完整断点续跑。
 
 ## Demo Samples / 演示样本
 

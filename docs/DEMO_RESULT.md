@@ -1,6 +1,6 @@
-# v0.6.3 Demo Result
+# Demo Result
 
-版本：`v0.6.3-real-demo-files`
+版本：`v0.7.1-docs-sync-task-state`
 
 本文档记录本仓库当前内置的面试演示样本和一次真实 local 模式运行输出。样本内容为人工构造的脱敏模拟文本，不来自真实用户论文，也不用于论文代写。
 
@@ -14,6 +14,8 @@
 - 格式处理后 DOCX：`demo_outputs/formatted_result_sample.docx`
 - 运行报告样例：`demo_outputs/report_sample.json`
 - Agent Trace 样例：`demo_outputs/agent_trace_sample.json`
+
+说明：当前 `demo_outputs/` 尚未固定保存 `task_state_sample.json`。
 
 ## 样本中故意设置的格式问题
 
@@ -85,6 +87,33 @@ result = run_agent_pipeline(
 
 其中 `AI增强审校` 在 local 模式下会标记为本地规则路径，不启用 AI 评分。
 
+## v0.7.0 后可观察的 task_state
+
+从 `v0.7.0-task-state-minimal` 开始，每次重新运行 demo 或 `/agent/run` 时，系统会额外生成 task state 文件：
+
+- 返回结果中会包含 `task_id`。
+- 返回结果中会包含 `task_state_path`。
+- task state 默认写入 `paper-ai/backend/task_states/{task_id}.json`。
+
+task state 可观察字段包括：
+
+- `status`
+- `duration_ms`
+- `input_files`
+- `output_files`
+- `fallback_used`
+- `error`
+- `before_score` / `after_score`
+- `ai_used` / `ai_score`
+- `agent_trace_steps_count`
+
+边界说明：
+
+- 固定 demo 输出当前仍主要是 `report_sample.json` 和 `agent_trace_sample.json`。
+- 当前没有固定的 `demo_outputs/task_state_sample.json`，不要声称该文件已经存在。
+- 后续可在 `v0.7.2-task-state-sample` 中补充一次固定 task state 输出样例。
+- task state 是任务生命周期记录，不替代 `agent_trace`、`modification_report`、`reference_check` 或 `figure_table_check`。
+
 ## 验收说明
 
 - DOCX 结构检查：PASS，三个 DOCX 均可通过 `python-docx` 打开并读取段落和表格。
@@ -97,4 +126,4 @@ result = run_agent_pipeline(
 - 当前样本是人工构造的脱敏模拟文本，不代表真实用户论文。
 - 当前输出来自 local 模式，适合展示格式处理、报告和 trace；不展示深度内容改写能力。
 - 重复风险检测 / 相似度预检不等同于正式查重。
-- 后续可进入 `v0.7-task-state`，为长流程 Agent 增加任务状态记录；也可在有 LibreOffice 的环境补做 DOCX 渲染截图验收。
+- 后续可进入 `v0.7.2-task-state-sample`，为 demo 输出补充固定 task state 样例；也可在有 LibreOffice 的环境补做 DOCX 渲染截图验收。

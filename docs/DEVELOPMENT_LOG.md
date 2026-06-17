@@ -1,5 +1,51 @@
 # Development Log
 
+## 2026-06-18 v0.7.1-docs-sync-task-state
+
+### 修改目标
+
+在 `v0.7.0-task-state-minimal` 稳定节点基础上，只同步文档，把 task state 最小任务状态持久化能力、边界和演示方式写清楚。
+
+### 修改范围
+
+- 更新 `README.md`
+  - 补充 task state 是任务状态持久化雏形。
+  - 说明每次 Agent Pipeline 运行会生成 `task_id`。
+  - 说明 task state 记录 `status`、`input_files`、`output_files`、`duration_ms`、`fallback_used`、`error` 等信息。
+  - 说明 `agent_trace` 记录处理步骤，`task_state` 记录任务生命周期。
+- 更新 `docs/ARCHITECTURE.md`
+  - 在架构图中加入 `task_state.py` 和 `task_states/{task_id}.json`。
+  - 说明 `agent_pipeline.py` 调用 `task_state.py` 进行状态落盘。
+  - 说明 `/agent/run` 同步返回仍保持兼容，只额外透出 `task_id` 和 `task_state_path`。
+  - 说明 task state 不替代 `modification_report`、`reference_check`、`figure_table_check` 或 `agent_trace`。
+- 更新 `docs/INTERVIEW_QA.md`
+  - 新增 task state 与 agent_trace 区别、为什么不直接做异步队列、当前解决的问题和后续限制等问答。
+- 更新 `docs/DEMO_SCRIPT.md`
+  - 增加 task state 展示步骤。
+  - 明确当前前端还没有 task state 可视化界面。
+- 更新 `docs/DEMO_RESULT.md`
+  - 说明 v0.7.0 后重新运行 demo 会生成 task state。
+  - 明确当前没有固定的 `demo_outputs/task_state_sample.json`。
+- 更新 `PROJECT_STATUS.md` 和 `TODO.md`
+  - 标记当前版本和后续任务。
+
+### 未修改范围
+
+- 没有修改核心业务逻辑。
+- 没有修改 `task_state.py`。
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改前端页面交互。
+- 没有修改测试断言。
+- 没有修改 demo 输入/输出样本文件。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+
+### v0.7.1 验收说明
+
+- 本轮只修改 Markdown 文档。
+- 未运行完整后端测试、smoke test 或 `npm run build`，原因是未修改 Python/前端业务代码、测试断言或依赖文件。
+- 验收命令：`git status --short`、`git diff --name-only`。
+
 ## 2026-06-17 v0.7.0-task-state-minimal
 
 ### 修改目标
