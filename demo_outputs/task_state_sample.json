@@ -1,0 +1,42 @@
+{
+  "task_id": "demo-task-state-sample",
+  "status": "succeeded",
+  "mode": "local",
+  "created_at": "2026-06-18T10:00:00+08:00",
+  "updated_at": "2026-06-18T10:00:00+08:00",
+  "started_at": "2026-06-18T10:00:00+08:00",
+  "finished_at": "2026-06-18T10:00:00+08:00",
+  "duration_ms": 392,
+  "input_files": {
+    "paper_path": "demo_inputs/messy_paper_sample.docx",
+    "template_path": "demo_inputs/template_sample.docx"
+  },
+  "output_files": {
+    "formatted_docx": "demo_outputs/formatted_result_sample.docx",
+    "report_json": "demo_outputs/report_sample.json",
+    "agent_trace_json": "demo_outputs/agent_trace_sample.json"
+  },
+  "classification": {
+    "document_type": "academic_paper",
+    "label": "标准论文",
+    "confidence": 0.95,
+    "matched_features": [
+      "标题编号结构",
+      "摘要/关键词",
+      "引言/绪论",
+      "结论/结语/总结",
+      "参考文献/文献引用",
+      "正文段落数量较多"
+    ],
+    "warning": "",
+    "requires_confirmation": false
+  },
+  "before_score": 80,
+  "after_score": 86,
+  "ai_used": false,
+  "ai_score": null,
+  "fallback_used": true,
+  "error": null,
+  "agent_trace_steps_count": 9,
+  "sample_note": "这是 v0.7.2 固定 demo task_state 样例，用于展示字段结构，不代表真实用户论文任务。duration_ms 使用固定演示样例值，不代表新的真实运行时间。"
+}

@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.7.1 / docs-sync-task-state
+当前版本号：v0.7.2 / task-state-sample
 
 项目名称：AI论文格式修改Agent
 
@@ -42,6 +42,7 @@
 - Demo 文件：v0.6.3 已新增人工构造的脱敏模拟论文样本、模板样本和一次 local 模式输出样例，路径见 `docs/DEMO_RESULT.md`。
 - Task State：v0.7.0 已新增最小任务状态落盘记录，默认写入 `paper-ai/backend/task_states/{task_id}.json`，用于记录每次 Agent 运行的生命周期状态。
 - Task State 文档同步：v0.7.1 已同步 README、架构说明、面试问答、演示脚本和 demo 结果说明，明确 task state 与 agent_trace 的边界。
+- Task State Demo 样例：v0.7.2 已新增 `demo_outputs/task_state_sample.json`，用于固定展示 task state 字段结构和 demo 生命周期状态。
 
 # 最近回归测试结果
 
@@ -242,5 +243,13 @@ Current Bottleneck：
 - `docs/ARCHITECTURE.md` 已补充 `task_state.py` 在架构中的位置，以及 `paper-ai/backend/task_states/{task_id}.json` 写入说明。
 - `docs/INTERVIEW_QA.md` 已补充 task state 与 agent_trace 的区别、为什么不直接做异步队列、当前解决的问题和限制。
 - `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
-- `docs/DEMO_RESULT.md` 已说明当前没有固定 `demo_outputs/task_state_sample.json`，后续可单独补充。
+- `docs/DEMO_RESULT.md` 在 v0.7.1 时记录了缺少固定 `demo_outputs/task_state_sample.json` 的缺口；该缺口已在 v0.7.2 补齐。
+- 当前仍不是完整断点续跑或异步队列，也没有前端 task state 可视化界面。
+
+## v0.7.2 Task State Sample
+
+- 本轮只新增固定 demo JSON 样例和同步文档，不修改核心业务逻辑、前端交互或测试断言。
+- 新增 `demo_outputs/task_state_sample.json`，字段与当前 `report_sample.json` 和 `agent_trace_sample.json` 保持一致。
+- `docs/DEMO_CASE.md` 已补充样本来源边界：人工构造、脱敏模拟、不来自真实用户论文、不来自 CAJ 原文、不用于论文代写。
+- `docs/DEMO_RESULT.md` 和 `docs/DEMO_SCRIPT.md` 已补充 task state 样例展示说明。
 - 当前仍不是完整断点续跑或异步队列，也没有前端 task state 可视化界面。

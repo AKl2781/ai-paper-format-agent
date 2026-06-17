@@ -1,6 +1,6 @@
 # 面试演示脚本
 
-版本：`v0.7.1-docs-sync-task-state`
+版本：`v0.7.2-task-state-sample`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
@@ -16,13 +16,15 @@
 - `demo_outputs/formatted_result_sample.docx`
 - `demo_outputs/report_sample.json`
 - `demo_outputs/agent_trace_sample.json`
+- `demo_outputs/task_state_sample.json`
 
 注意：
 
 - 这些文件从 `v0.6.3-real-demo-files` 开始已经存在。
 - 样本是人工构造的脱敏模拟文本，不来自真实用户论文。
 - 输出样例由现有 local 模式处理流程生成，详见 `docs/DEMO_RESULT.md`。
-- v0.7.0 后每次重新运行 Agent Pipeline 还会生成 task state 文件，但当前 `demo_outputs/` 尚未固定保存 `task_state_sample.json`。
+- v0.7.0 后每次重新运行 Agent Pipeline 还会生成 task state 文件。
+- v0.7.2 已固定保存 `demo_outputs/task_state_sample.json`，用于展示 task state 字段结构。
 
 ## 1. 开场介绍，约 30 秒
 
@@ -40,7 +42,7 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v0.7.1-docs-sync-task-state`。
+- 当前版本：`v0.7.2-task-state-sample`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
@@ -125,13 +127,18 @@
 - `task_id`
 - `task_state_path`
 
-如果是在本地后端运行，可以打开 `task_state_path` 指向的 JSON 文件，重点观察：
+固定 demo 样例可以直接打开：
+
+- `demo_outputs/task_state_sample.json`
+
+如果是在本地后端运行，也可以打开 `task_state_path` 指向的 JSON 文件。重点观察：
 
 - `status`：任务生命周期状态，例如 `running`、`succeeded`、`failed`。
 - `duration_ms`：本次任务总耗时。
 - `input_files`：论文和模板输入路径。
 - `output_files`：最终 DOCX 输出路径。
 - `fallback_used`：本次任务是否出现 fallback。
+- `agent_trace_steps_count`：对应 agent trace 的步骤数量。
 - `error`：失败时的错误信息。
 
 讲解边界：
@@ -140,6 +147,7 @@
 - `agent_trace` 用于解释处理步骤。
 - 当前前端还没有 task_state 可视化界面；演示时通过返回 JSON 和本地 JSON 文件查看。
 - 当前不是异步队列，也不是断点续跑。
+- `task_state_sample.json` 是固定 demo 样例，不代表真实用户论文任务。
 
 ## 7. 演示报告和输出，约 2 分钟
 
@@ -210,7 +218,7 @@ python test_smoke_agent_flow.py
 
 可以这样总结：
 
-> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.7.0 已经补了最小 task_state 落盘，v0.7.1 把文档说明同步清楚；下一步会考虑固定 task_state 样例、清理策略和 trace UI。
+> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.7.0 已经补了最小 task_state 落盘，v0.7.1 把文档说明同步清楚，v0.7.2 又补了固定 task_state 样例；下一步会考虑清理策略和 trace UI。
 
 ## 12. 常见演示风险
 

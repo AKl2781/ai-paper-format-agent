@@ -40,23 +40,24 @@
 - `docs/ARCHITECTURE.md` 已补充 `task_state.py` 和 `task_states/{task_id}.json`。
 - `docs/INTERVIEW_QA.md` 已补充 task state 相关问答。
 - `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
-- `docs/DEMO_RESULT.md` 已说明当前没有固定 `task_state_sample.json`。
+- `docs/DEMO_RESULT.md` 已在 v0.7.1 记录当时缺少固定 `task_state_sample.json` 的缺口；该缺口已在 v0.7.2 补齐。
 
 状态：已完成。仅同步文档，未修改核心业务逻辑。
 
 ---
 
-### v0.7.2-task-state-sample
+### [DONE] v0.7.2-task-state-sample
 
 目标：为 `demo_outputs/` 补充一次固定 task state 输出样例，方便面试演示时直接查看。
 
-计划：
-- 重新运行 v0.6.3 demo 样本或使用现有可复现流程生成 task state。
-- 保存为 `demo_outputs/task_state_sample.json`。
-- 更新 `docs/DEMO_RESULT.md`，确保文档与实际文件状态一致。
-- 不虚构 task state 样例，不声称前端已可视化。
+已完成：
+- 已保存固定样例 `demo_outputs/task_state_sample.json`。
+- 样例字段与当前 `report_sample.json`、`agent_trace_sample.json` 的关键字段保持一致。
+- 已更新 `docs/DEMO_CASE.md`，明确 demo 样本是人工构造 / 脱敏模拟，不来自真实用户论文，不来自 CAJ 原文，不用于论文代写。
+- 已更新 `docs/DEMO_RESULT.md`、`docs/DEMO_SCRIPT.md`、README、PROJECT_STATUS 和开发记录。
+- 没有把前端描述为已有 task state 可视化，也没有把系统描述为异步队列或完整断点续跑。
 
-状态：规划中。
+状态：已完成。
 
 ---
 
@@ -313,7 +314,7 @@
 
 目标：为 Agent 长流程增加任务状态记录，方便后续支持更清晰的运行状态、错误恢复和前端进度展示。
 
-状态：已完成最小落盘版本（v0.7.0-task-state-minimal），并完成 v0.7.1 文档同步。后续固定样例见 `v0.7.2-task-state-sample`，清理策略见 `v0.7.3-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
+状态：已完成最小落盘版本（v0.7.0-task-state-minimal）、v0.7.1 文档同步和 v0.7.2 固定 task state 样例。后续清理策略见 `v0.7.3-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
 
 ---
 

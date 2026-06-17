@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-06-18 v0.7.2-task-state-sample
+
+### 修改目标
+
+在 `v0.7.1-docs-sync-task-state` 稳定节点基础上，补充固定 `demo_outputs/task_state_sample.json`，并修复 `docs/DEMO_CASE.md` 中样本来源边界说明不够明确的问题。
+
+### 修改范围
+
+- 新增 `demo_outputs/task_state_sample.json`
+  - 使用固定 `task_id=demo-task-state-sample`。
+  - `status=succeeded`，`mode=local`。
+  - `before_score=80`，`after_score=86`，与 `report_sample.json` 一致。
+  - `ai_used=false`，`ai_score=null`，保持 local 模式语义。
+  - `agent_trace_steps_count=9`，与 `agent_trace_sample.json` 一致。
+  - `fallback_used=true`，来自当前 trace 样例中的 local AI 审校 fallback 标记。
+  - 增加 `sample_note`，明确这是固定 demo 样例，不代表真实用户论文任务。
+- 更新 `docs/DEMO_CASE.md`
+  - 明确 demo 输入是人工构造 / 脱敏模拟样本。
+  - 明确不来自真实用户论文，不来自 CAJ 原文，不用于论文代写。
+  - 补充 `task_state_sample.json` 作为固定输出样例。
+- 更新 `docs/DEMO_RESULT.md`、`docs/DEMO_SCRIPT.md`、README、PROJECT_STATUS 和 TODO
+  - 同步 v0.7.2 状态。
+  - 说明 `task_state_sample.json` 与 `agent_trace_sample.json` 的区别。
+  - 保持当前仍不是异步队列、完整断点续跑或前端 task state 可视化的边界。
+
+### 未修改范围
+
+- 没有修改核心业务逻辑。
+- 没有修改 `task_state.py`。
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改前端页面交互。
+- 没有修改测试断言。
+- 没有修改 demo 输入 DOCX、格式化输出 DOCX、report 样例或 agent trace 样例。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+
+### v0.7.2 验收说明
+
+- 本轮只新增固定 demo JSON 样例和 Markdown 文档。
+- 未运行完整后端测试、smoke test 或 `npm run build`，原因是未修改 Python/前端业务代码、测试断言或依赖文件。
+- 验收命令：`git status --short`、`git diff --name-only`、Python JSON 合法性和字段一致性检查。
+
 ## 2026-06-18 v0.7.1-docs-sync-task-state
 
 ### 修改目标
@@ -25,7 +67,7 @@
   - 明确当前前端还没有 task state 可视化界面。
 - 更新 `docs/DEMO_RESULT.md`
   - 说明 v0.7.0 后重新运行 demo 会生成 task state。
-  - 明确当前没有固定的 `demo_outputs/task_state_sample.json`。
+  - v0.7.1 当时明确记录了缺少固定 `demo_outputs/task_state_sample.json` 的缺口。
 - 更新 `PROJECT_STATUS.md` 和 `TODO.md`
   - 标记当前版本和后续任务。
 
