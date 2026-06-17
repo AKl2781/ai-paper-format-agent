@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-06-18 v0.7.3-task-state-cleanup
+
+### 修改目标
+
+在 `v0.7.2-task-state-sample` 稳定节点基础上，补充 task state 运行产物治理，避免 `paper-ai/backend/task_states/` 下的运行 JSON 污染 Git 工作区；同时补齐上轮只读检查发现的文档边界说明。
+
+### 修改范围
+
+- 更新 `.gitignore`
+  - 新增 `paper-ai/backend/task_states/`。
+  - 只忽略运行时 task state 目录。
+  - 不影响 `demo_outputs/task_state_sample.json`，该文件仍作为固定 demo 样例保留在 Git 中。
+- 更新 README
+  - 标记当前版本为 `v0.7.3-task-state-cleanup`。
+  - 补充当前不是完整工业级 Agent。
+  - 说明 `task_states/` 是运行产物目录，`demo_outputs/task_state_sample.json` 是固定演示样例，两者不能混淆。
+- 更新 `docs/ARCHITECTURE.md`
+  - 补充 task state 运行产物与固定 demo 样例的区别。
+- 更新 `docs/DEMO_SCRIPT.md` 和 `docs/DEMO_RESULT.md`
+  - 补充 demo 样本不来自 CAJ 原文。
+  - 保持“不来自真实用户论文、不用于论文代写”的边界说明。
+- 更新 `PROJECT_STATUS.md` 和 `TODO.md`
+  - 标记 v0.7.3 完成。
+  - 将轻量清理函数或维护命令规划到 `v0.7.4-task-state-cleanup-function`。
+
+### 未修改范围
+
+- 没有修改 `task_state.py`。
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改前端页面交互。
+- 没有修改测试断言。
+- 没有修改 demo 输入/输出样本文件。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+
+### v0.7.3 验收说明
+
+- 本轮只修改 `.gitignore` 和 Markdown 文档。
+- 未运行完整后端测试、smoke test 或 `npm run build`，原因是未修改 Python/前端业务代码、测试断言或依赖文件。
+- 未运行 `py_compile`，原因是本轮未修改 Python 文件。
+- 验收命令：`git status --short`、`git diff --name-only`、`git check-ignore paper-ai/backend/task_states/example.json`。
+
 ## 2026-06-18 v0.7.2-task-state-sample
 
 ### 修改目标

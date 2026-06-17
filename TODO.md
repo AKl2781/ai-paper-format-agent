@@ -61,14 +61,31 @@
 
 ---
 
-### v0.7.3-task-state-cleanup
+### [DONE] v0.7.3-task-state-cleanup
 
 目标：为 `paper-ai/backend/task_states/` 增加轻量清理策略，避免运行产物长期膨胀。
 
+已完成：
+- 已在 `.gitignore` 中新增 `paper-ai/backend/task_states/`。
+- 已明确 `paper-ai/backend/task_states/{task_id}.json` 是运行产物，不应提交。
+- 已明确 `demo_outputs/task_state_sample.json` 是固定 demo 样例，应继续保留在 Git 中。
+- 已补充 README、架构、演示脚本、demo 结果和项目状态说明。
+- 未修改 `task_state.py`，未改变 `/agent/run` 同步语义。
+
+状态：已完成。当前只做运行产物治理，尚未实现自动清理函数。
+
+---
+
+### v0.7.4-task-state-cleanup-function
+
+目标：为 `paper-ai/backend/task_states/` 增加轻量清理函数或维护命令。
+
 计划：
-- 设计保留最近 N 个 task state 或按时间清理的策略。
-- 明确清理动作是否自动触发，或仅作为维护脚本/文档命令。
-- 保持现有 `/agent/run` 行为不变。
+- 可选新增 `cleanup_task_states(task_states_dir, keep_latest=20)`。
+- 只用标准库。
+- 默认保留最近 20 个 task state JSON。
+- 只删除 `task_states/` 目录内的 `.json` 文件。
+- 不自动接入 pipeline，不改变当前 `/agent/run` 行为。
 
 状态：规划中。
 
@@ -314,7 +331,7 @@
 
 目标：为 Agent 长流程增加任务状态记录，方便后续支持更清晰的运行状态、错误恢复和前端进度展示。
 
-状态：已完成最小落盘版本（v0.7.0-task-state-minimal）、v0.7.1 文档同步和 v0.7.2 固定 task state 样例。后续清理策略见 `v0.7.3-task-state-cleanup`，断点续跑设计见 `v0.9-resume-draft`。
+状态：已完成最小落盘版本（v0.7.0-task-state-minimal）、v0.7.1 文档同步、v0.7.2 固定 task state 样例和 v0.7.3 运行产物治理。后续清理函数见 `v0.7.4-task-state-cleanup-function`，断点续跑设计见 `v0.9-resume-draft`。
 
 ---
 

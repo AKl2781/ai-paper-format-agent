@@ -1,6 +1,6 @@
 # 面试演示脚本
 
-版本：`v0.7.2-task-state-sample`
+版本：`v0.7.3-task-state-cleanup`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
@@ -21,7 +21,7 @@
 注意：
 
 - 这些文件从 `v0.6.3-real-demo-files` 开始已经存在。
-- 样本是人工构造的脱敏模拟文本，不来自真实用户论文。
+- 样本是人工构造的脱敏模拟文本，不来自真实用户论文，也不来自 CAJ 原文。
 - 输出样例由现有 local 模式处理流程生成，详见 `docs/DEMO_RESULT.md`。
 - v0.7.0 后每次重新运行 Agent Pipeline 还会生成 task state 文件。
 - v0.7.2 已固定保存 `demo_outputs/task_state_sample.json`，用于展示 task state 字段结构。
@@ -42,7 +42,7 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v0.7.2-task-state-sample`。
+- 当前版本：`v0.7.3-task-state-cleanup`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
@@ -209,16 +209,18 @@ python test_smoke_agent_flow.py
 
 - 当前不是正式查重，只做重复风险检测 / 相似度预检。
 - 当前不是论文代写，不生成实验结果或参考文献。
+- 内置 demo 样本不来自真实用户论文，也不来自 CAJ 原文。
 - 复杂 Word 对象支持有限，例如目录、脚注、公式、页眉页脚。
 - AI 评分只是参考，不参与主评分，不会拉低格式规则分。
 - 当前 v0.6.3 已内置人工构造的脱敏模拟 DOCX 样本和一次 local 模式输出样例，但尚未做 Word 渲染截图验收。
 - 当前 task_state 只是最小状态持久化能力，不是异步队列、断点续跑或前端可视化任务中心。
+- `paper-ai/backend/task_states/` 是运行产物目录，`demo_outputs/task_state_sample.json` 是固定演示样例，两者不要混淆。
 
 ## 11. 收尾，约 30 秒
 
 可以这样总结：
 
-> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.7.0 已经补了最小 task_state 落盘，v0.7.1 把文档说明同步清楚，v0.7.2 又补了固定 task_state 样例；下一步会考虑清理策略和 trace UI。
+> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。v0.7.0 已经补了最小 task_state 落盘，v0.7.1 把文档说明同步清楚，v0.7.2 又补了固定 task_state 样例，v0.7.3 补了运行产物治理；下一步会考虑清理函数和 trace UI 设计。
 
 ## 12. 常见演示风险
 

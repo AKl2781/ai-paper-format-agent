@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.7.2 / task-state-sample
+当前版本号：v0.7.3 / task-state-cleanup
 
 项目名称：AI论文格式修改Agent
 
@@ -43,6 +43,7 @@
 - Task State：v0.7.0 已新增最小任务状态落盘记录，默认写入 `paper-ai/backend/task_states/{task_id}.json`，用于记录每次 Agent 运行的生命周期状态。
 - Task State 文档同步：v0.7.1 已同步 README、架构说明、面试问答、演示脚本和 demo 结果说明，明确 task state 与 agent_trace 的边界。
 - Task State Demo 样例：v0.7.2 已新增 `demo_outputs/task_state_sample.json`，用于固定展示 task state 字段结构和 demo 生命周期状态。
+- Task State 运行产物治理：v0.7.3 已将 `paper-ai/backend/task_states/` 纳入 `.gitignore`，避免运行 JSON 污染 Git 工作区。
 
 # 最近回归测试结果
 
@@ -253,3 +254,12 @@ Current Bottleneck：
 - `docs/DEMO_CASE.md` 已补充样本来源边界：人工构造、脱敏模拟、不来自真实用户论文、不来自 CAJ 原文、不用于论文代写。
 - `docs/DEMO_RESULT.md` 和 `docs/DEMO_SCRIPT.md` 已补充 task state 样例展示说明。
 - 当前仍不是完整断点续跑或异步队列，也没有前端 task state 可视化界面。
+
+## v0.7.3 Task State Cleanup
+
+- 本轮只做运行产物治理和文档同步，不修改核心业务逻辑、`agent_pipeline.py`、`main.py`、前端交互或测试断言。
+- `.gitignore` 已新增 `paper-ai/backend/task_states/`，运行生成的 task state JSON 不应进入 Git。
+- `demo_outputs/task_state_sample.json` 仍是固定 demo 样例，应继续保留在 Git 中。
+- README 已补充当前不是完整工业级 Agent。
+- `docs/DEMO_SCRIPT.md` 和 `docs/DEMO_RESULT.md` 已补充 demo 样本不来自 CAJ 原文。
+- 本轮未修改 `task_state.py`，后续如需自动清理可单独做轻量清理函数或维护命令。

@@ -1,8 +1,8 @@
 # Demo Result
 
-版本：`v0.7.2-task-state-sample`
+版本：`v0.7.3-task-state-cleanup`
 
-本文档记录本仓库当前内置的面试演示样本和一次真实 local 模式运行输出。样本内容为人工构造的脱敏模拟文本，不来自真实用户论文，也不用于论文代写。
+本文档记录本仓库当前内置的面试演示样本和一次真实 local 模式运行输出。样本内容为人工构造的脱敏模拟文本，不来自真实用户论文，不来自 CAJ 原文，也不用于论文代写。
 
 ## Demo 输入文件
 
@@ -121,6 +121,7 @@ result = run_agent_pipeline(
 边界说明：
 
 - `task_state_sample.json` 是固定 demo 样例，用于展示字段结构，不代表真实用户论文任务。
+- `demo_outputs/task_state_sample.json` 是固定演示样例；`paper-ai/backend/task_states/{task_id}.json` 是运行时产物，两者用途不同。
 - 文件中的时间字段是固定 demo 时间字符串，不是新的真实运行时间。
 - `duration_ms` 使用固定演示样例值，用于配合当前 `agent_trace_sample.json` 展示结构。
 - task state 是任务生命周期记录，不替代 `agent_trace`、`modification_report`、`reference_check` 或 `figure_table_check`。
@@ -137,6 +138,7 @@ result = run_agent_pipeline(
 ## 当前限制和下一步
 
 - 当前样本是人工构造的脱敏模拟文本，不代表真实用户论文。
+- 当前样本不来自 CAJ 原文。
 - 当前输出来自 local 模式，适合展示格式处理、报告和 trace；不展示深度内容改写能力。
 - 重复风险检测 / 相似度预检不等同于正式查重。
 - 后续可进入 `v0.7.3-task-state-cleanup`，为运行生成的 `paper-ai/backend/task_states/` 增加清理策略；也可在有 LibreOffice 的环境补做 DOCX 渲染截图验收。
