@@ -3,6 +3,13 @@
 import { useMemo, useState } from "react";
 
 type AgentStep = { name: string; status: "running" | "done" | "error"; message: string };
+type AgentTraceItem = {
+  step?: string;
+  status?: string;
+  duration_ms?: number;
+  fallback_used?: boolean;
+  message?: string;
+};
 type ScoreDimension = { key: string; label: string; score: number; group: "local" | "ai"; status: string; issues: string[] };
 type Classification = {
   document_type: string;
@@ -103,6 +110,10 @@ type AgentResult = {
   filename: string;
   after_analysis: Analysis;
   modification_report: ModificationReport;
+  agent_trace?: AgentTraceItem[];
+  agent_trace_detail?: Record<string, unknown>;
+  task_id?: string;
+  task_state_path?: string;
 };
 type PreviewResult = { title: string; html: string };
 
@@ -300,6 +311,7 @@ export default function Home() {
             </div>
 
             <ScoreOverview result={result} />
+            <TracePanel result={result} />
 
             <section className="preview-panel">
               <div className="section-title">
@@ -400,6 +412,65 @@ function ProgressPanel({ running, steps }: { running: boolean; steps: AgentStep[
         ))}
       </ol>
     </section>
+  );
+}
+
+function TracePanel({ result }: { result: AgentResult }) {
+  const traceItems = Array.isArray(result.agent_trace) ? result.agent_trace : [];
+  const hasTaskStateSummary = Boolean(result.task_id || result.task_state_path);
+
+  if (!traceItems.length && !hasTaskStateSummary) {
+    return null;
+  }
+
+  return (
+    <details className="trace-panel">
+      <summary>
+        <span>Agent Trace / 任务状态摘要</span>
+        <strong>{traceItems.length ? `${traceItems.length} 个步骤` : "仅状态摘要"}</strong>
+      </summary>
+
+      <div className="trace-intro">
+        <p>agent_trace 是步骤级执行记录；task_id 和 task_state_path 是后端本地任务状态摘要。</p>
+        <p>当前仍是同步执行接口，不是异步队列，也不是完整断点续跑。前端不读取 task_state 文件内容。</p>
+      </div>
+
+      {hasTaskStateSummary ? (
+        <div className="trace-state">
+          {result.task_id ? (
+            <div>
+              <span>task_id</span>
+              <code>{result.task_id}</code>
+            </div>
+          ) : null}
+          {result.task_state_path ? (
+            <div>
+              <span>task_state_path</span>
+              <code>{result.task_state_path}</code>
+            </div>
+          ) : null}
+          <p>task_state_path 为后端本地运行产物路径，仅用于开发/演示排查。</p>
+        </div>
+      ) : null}
+
+      {traceItems.length ? (
+        <ol className="trace-list">
+          {traceItems.map((item, index) => (
+            <li className={traceStatusTone(item.status)} key={`${item.step ?? "trace"}-${index}`}>
+              <div className="trace-item-head">
+                <strong>{item.step || `step_${index + 1}`}</strong>
+                <span>{traceStatusLabel(item.status)}</span>
+              </div>
+              {item.message ? <p>{item.message}</p> : null}
+              <div className="trace-meta">
+                <span>{formatTraceDuration(item.duration_ms)}</span>
+                <span>{item.fallback_used ? "已使用 fallback / 本地规则" : "未标记 fallback"}</span>
+              </div>
+            </li>
+          ))}
+        </ol>
+      ) : null}
+    </details>
   );
 }
 
@@ -589,6 +660,26 @@ function formatNumbers(numbers: number[]) {
 function formatDelta(delta: number) {
   if (delta > 0) return `+${delta}`;
   return String(delta);
+}
+
+function formatTraceDuration(duration?: number) {
+  return typeof duration === "number" ? `${duration} ms` : "未记录耗时";
+}
+
+function traceStatusLabel(status?: string) {
+  if (!status) return "unknown";
+  if (status === "done" || status === "ok" || status === "succeeded") return "done";
+  if (status === "error" || status === "failed") return "error";
+  if (status === "running") return "running";
+  return status;
+}
+
+function traceStatusTone(status?: string) {
+  const normalized = traceStatusLabel(status);
+  if (normalized === "done") return "done";
+  if (normalized === "error") return "error";
+  if (normalized === "running") return "running";
+  return "neutral";
 }
 
 function riskTone(level: string) {

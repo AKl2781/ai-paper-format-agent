@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.7.3 / task-state-cleanup
+当前版本号：v0.8.1 / trace-ui-minimal
 
 项目名称：AI论文格式修改Agent
 
@@ -44,6 +44,7 @@
 - Task State 文档同步：v0.7.1 已同步 README、架构说明、面试问答、演示脚本和 demo 结果说明，明确 task state 与 agent_trace 的边界。
 - Task State Demo 样例：v0.7.2 已新增 `demo_outputs/task_state_sample.json`，用于固定展示 task state 字段结构和 demo 生命周期状态。
 - Task State 运行产物治理：v0.7.3 已将 `paper-ai/backend/task_states/` 纳入 `.gitignore`，避免运行 JSON 污染 Git 工作区。
+- Agent Trace 前端展示：v0.8.1 已在结果页增加默认折叠的 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 摘要；未读取 task state 文件内容，未改变后端同步接口或核心 pipeline。
 
 # 最近回归测试结果
 
@@ -263,3 +264,11 @@ Current Bottleneck：
 - README 已补充当前不是完整工业级 Agent。
 - `docs/DEMO_SCRIPT.md` 和 `docs/DEMO_RESULT.md` 已补充 demo 样本不来自 CAJ 原文。
 - 本轮未修改 `task_state.py`，后续如需自动清理可单独做轻量清理函数或维护命令。
+
+## v0.8.1 Trace UI Minimal
+
+- 本轮只在前端结果页增加最小 Agent Trace 展示，不修改后端核心业务逻辑、`agent_pipeline.py`、`main.py` 或 `/agent/run` 同步语义。
+- `paper-ai/frontend/app/page.tsx` 已新增默认折叠的 Trace 面板，展示 `agent_trace` 的 `step`、`status`、`message`、`duration_ms`、`fallback_used`。
+- Trace 面板同时展示 `task_id` 和 `task_state_path` 摘要，明确 `task_state_path` 是后端本地运行产物路径，仅用于开发/演示排查。
+- 前端不读取 task state 文件内容，不展示 `agent_trace_detail`，不把 `fallback_used=true` 表述为严重失败。
+- 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。

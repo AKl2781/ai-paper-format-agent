@@ -323,6 +323,143 @@ p {
   margin-bottom: 2px;
 }
 
+.trace-panel {
+  display: grid;
+  gap: 14px;
+  padding: 18px;
+  border: 1px solid #d6dee9;
+  border-radius: 8px;
+  background: #ffffff;
+}
+
+.trace-panel summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  color: #162033;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.trace-panel summary::marker {
+  color: #1f4b99;
+}
+
+.trace-panel summary strong {
+  color: #1f4b99;
+  font-size: 14px;
+}
+
+.trace-panel[open] {
+  gap: 16px;
+}
+
+.trace-intro,
+.trace-state,
+.trace-list {
+  margin-top: 14px;
+}
+
+.trace-intro {
+  display: grid;
+  gap: 6px;
+  color: #56657a;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.trace-state {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border: 1px solid #dbe3ee;
+  border-radius: 8px;
+  background: #f8fafc;
+}
+
+.trace-state div {
+  display: grid;
+  grid-template-columns: 130px 1fr;
+  gap: 10px;
+  align-items: start;
+}
+
+.trace-state span,
+.trace-meta span {
+  color: #56657a;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.trace-state code {
+  overflow-wrap: anywhere;
+  color: #162033;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 13px;
+}
+
+.trace-state p {
+  color: #56657a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.trace-list {
+  display: grid;
+  gap: 10px;
+  padding: 0;
+  list-style: none;
+}
+
+.trace-list li {
+  display: grid;
+  gap: 8px;
+  padding: 12px;
+  border: 1px solid #e1e7ef;
+  border-left: 4px solid #94a3b8;
+  border-radius: 8px;
+  background: #fbfcfe;
+}
+
+.trace-list li.done {
+  border-left-color: #16a34a;
+}
+
+.trace-list li.error {
+  border-left-color: #dc2626;
+}
+
+.trace-list li.running {
+  border-left-color: #1f4b99;
+}
+
+.trace-item-head,
+.trace-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.trace-item-head strong {
+  color: #162033;
+}
+
+.trace-item-head span {
+  padding: 3px 8px;
+  border-radius: 999px;
+  background: #eef4fb;
+  color: #1f4b99;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.trace-list p {
+  color: #56657a;
+  line-height: 1.6;
+}
+
 .score-overview {
   grid-template-columns: 1.4fr 0.8fr 0.8fr;
 }
@@ -702,5 +839,17 @@ p {
   .doc-preview {
     max-height: 68vh;
     padding: 22px;
+  }
+
+  .trace-state div,
+  .trace-item-head,
+  .trace-meta {
+    grid-template-columns: 1fr;
+    align-items: start;
+  }
+
+  .trace-item-head,
+  .trace-meta {
+    display: grid;
   }
 }

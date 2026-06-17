@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.7.3-task-state-cleanup`
+当前版本：`v0.8.1-trace-ui-minimal`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -11,6 +11,7 @@
 - 完整主链路：上传 DOCX -> Agent 处理 -> 在线预览 -> 下载结果文件。
 - 统一调度层：`agent_pipeline.py` 负责包装 `/agent/run` 主流程，统一输出展示用 `agent_trace`。
 - 可解释 Trace：每一步记录 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 前端 Trace 展示：结果页可默认折叠展示 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 任务状态摘要。
 - 任务状态落盘：每次 Agent Pipeline 运行会生成 `task_id`，并写入 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
 - fallback 保护：未上传模板、AI 调用失败、相似度预检异常等场景不会轻易中断主流程。
 - 旧字段兼容：保留 `modification_report`、`reference_check`、`figure_table_check` 等原有字段，降低前端和测试回归风险。
@@ -113,6 +114,12 @@ flowchart TD
 - `agent_trace_detail`：保留旧解释型 trace，包含任务计划、工具调用、fallback 原因、人工复查判断和置信度。
 - `task_id`：本次 Agent 运行的任务 ID。
 - `task_state_path`：本次任务状态 JSON 的落盘路径。
+
+前端展示说明：
+- v0.8.1 起，结果页会默认折叠展示 `agent_trace` 的步骤、状态、消息、耗时和 fallback 标记。
+- 结果页会展示 `task_id` 和 `task_state_path` 摘要，`task_state_path` 仅表示后端本地运行产物路径，用于开发/演示排查。
+- 前端不会读取 `task_state_path` 对应文件内容，也不会展示 `agent_trace_detail`。
+- 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。
 
 Task State 说明：
 
@@ -217,7 +224,8 @@ v0.7.0 引入了最小任务状态持久化能力，v0.7.1 对文档说明进行
 - `task_state` 记录任务生命周期：输入文件、输出文件、运行状态、总耗时、fallback 概览和错误信息。
 - `agent_trace` 记录处理步骤：分类、读取、分析、模板、格式修复、AI 审校、重复风险预检、最终复查和报告生成。
 - `demo_outputs/task_state_sample.json` 是 v0.7.2 固定 demo 样例，用于展示任务状态持久化结果结构。
-- 当前没有实现任务队列、后台异步执行、前端 task state 可视化或完整断点续跑；也没有自动清理函数，后续可单独补充轻量清理命令。
+- v0.8.1 已在前端结果页展示 `agent_trace` 折叠列表和 `task_id` / `task_state_path` 摘要，但没有读取 task state 文件内容。
+- 当前没有实现任务队列、后台异步执行、完整 task state 文件内容可视化或完整断点续跑；也没有自动清理函数，后续可单独补充轻量清理命令。
 
 ## Demo Samples / 演示样本
 

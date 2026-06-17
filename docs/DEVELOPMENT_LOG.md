@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-06-18 v0.8.1-trace-ui-minimal
+
+### 修改目标
+
+在 `v0.7.3-task-state-cleanup` 稳定节点基础上，给前端结果页增加最小 Agent 执行过程展示：默认折叠展示 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 任务状态摘要。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - 新增 `AgentTraceItem` 类型。
+  - 在 `AgentResult` 中新增可选字段：`agent_trace`、`agent_trace_detail`、`task_id`、`task_state_path`。
+  - 新增默认折叠的 `TracePanel`。
+  - 展示 `agent_trace` 的 `step`、`status`、`message`、`duration_ms`、`fallback_used`。
+  - 展示 `task_id` 和 `task_state_path` 摘要。
+  - 不展示 `agent_trace_detail`。
+  - 不读取 `task_state_path` 对应文件内容。
+- 更新 `paper-ai/frontend/app/globals.css`
+  - 新增 `trace-panel`、`trace-list`、`trace-state`、`trace-meta` 等局部样式。
+  - 未改上传、预览、下载按钮样式。
+- 更新 README、PROJECT_STATUS 和 TODO
+  - 标记当前版本为 `v0.8.1-trace-ui-minimal`。
+  - 说明当前只是最小前端 trace 展示和 task state 摘要展示。
+  - 说明当前仍不是异步队列、完整 task state 可视化、完整断点续跑或完整工业级 Agent。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+
+### v0.8.1 验收说明
+
+- `git status --short`：PASS，改动范围仅包含允许的前端文件和文档文件。
+- `git diff --name-only`：PASS，未出现后端核心代码、依赖文件、demo 样本文件或测试断言改动。
+- `npm run build`：PASS。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：PASS，local 模式仍保持 `ai_score=null`、`ai_used=false`，`agent_trace` 和 `task_state` 契约仍通过 smoke 校验。
+
 ## 2026-06-18 v0.7.3-task-state-cleanup
 
 ### 修改目标

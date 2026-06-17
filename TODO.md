@@ -91,17 +91,31 @@
 
 ---
 
-### v0.8-trace-ui
+### [DONE] v0.8.1-trace-ui-minimal
 
-目标：在前端可视化展示 `agent_trace`，并可选展示 task state 摘要，让演示时能直接看到每一步处理状态、耗时和 fallback 信息。
+目标：在前端结果页增加最小 Agent 执行过程展示，同时保持上传、预览、下载主流程不变。
+
+已完成：
+- 已在结果页增加默认折叠的 `agent_trace` 展示区域。
+- 已展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
+- 已展示 `task_id` 和 `task_state_path` 摘要。
+- 未读取 `task_state_path` 对应文件内容。
+- 未展示 `agent_trace_detail`。
+- 未修改后端核心 pipeline、`/agent/run` 同步语义或测试断言。
+
+状态：已完成。当前只是最小前端展示，不是异步队列、完整 task state 可视化或完整断点续跑。
+
+---
+
+### v0.8.2-trace-ui-polish
+
+目标：优化 trace 展示文案、空状态和异常态，让 fallback 与失败状态更容易区分。
 
 计划：
-- 设计结果页 trace 展示区域。
-- 展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
-- 展示 task state 摘要，例如 `task_id`、生命周期状态、总耗时。
-- 保持现有上传、预览、下载交互不变。
-- 在实现前先确认 UI 方案和回归测试点。
-- 不把前端展示说成已经完成，必须先实现和回归后再更新状态。
+- 优化 `fallback_used=true` 的温和提示，不把 fallback 表述为严重失败。
+- 增加 trace 缺失时的轻量空状态或保持静默隐藏。
+- 视需要优化移动端折叠面板的可读性。
+- 保持上传、预览、下载交互不变。
 
 状态：规划中。
 
@@ -335,15 +349,17 @@
 
 ---
 
-### v0.8 trace UI
+### [DONE] v0.8 trace UI
 
 目标：将后端 `agent_trace` 展示到前端 UI，让用户能看到每一步处理、耗时和 fallback 状态。
 
-计划：
+已完成：
 
 - 在结果页增加执行轨迹区域。
 - 展示 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
-- 对 fallback 步骤做温和提示，例如“已使用通用规则”或“AI 不可用，已本地处理”。
+- 对 fallback 步骤做温和提示，不把 fallback 显示为严重失败。
+- 展示 `task_id` 和 `task_state_path` 摘要，但不读取 task state 文件内容。
 - 保持原有上传、预览、下载交互不变。
+- 如后续需要完整 task state 可视化，应新增安全读取接口，而不是让前端直接读本地路径。
 
-状态：规划中。实现前需先确认 UI 方案和回归测试点。
+状态：已完成最小展示版本（v0.8.1-trace-ui-minimal）。后续展示文案和异常态优化见 `v0.8.2-trace-ui-polish`。
