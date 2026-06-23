@@ -99,6 +99,7 @@ type ModificationReport = {
 };
 type AgentResult = {
   status: "ok" | "requires_confirmation";
+  mode?: string;
   requires_confirmation: boolean;
   classification: Classification;
   steps: AgentStep[];
@@ -267,36 +268,49 @@ export default function Home() {
           <p className="eyebrow">AI Paper Agent</p>
           <h1>AI论文格式修改Agent</h1>
           <p>上传论文后，Agent 会完成文档识别、格式修复、语言审校、重复风险预检、修改报告和在线预览。</p>
+          <div className="hero-badges" aria-label="当前能力">
+            <span>格式审查</span>
+            <span>自动排版</span>
+            <span>可解释 Trace</span>
+          </div>
         </header>
 
-        <section className="upload-grid" aria-label="上传文件">
-          <FilePicker title="论文 docx" filename={paperFilename} onChange={onPaperChange} required />
-          <FilePicker title="模板 docx" filename={templateFilename} onChange={onTemplateChange} />
-        </section>
+        <section className="setup-panel" aria-label="上传与运行">
+          <div className="section-title">
+            <span>开始处理</span>
+            <strong>{paperFilename ? "论文已选择" : "等待上传"}</strong>
+          </div>
+          <p className="section-note">先上传论文 DOCX；模板 DOCX 可选，用于提供学校或学院格式规则参考。</p>
 
-        <section className="mode-switch" aria-label="Agent 模式">
-          <button className={agentMode === "local" ? "active" : ""} onClick={() => setAgentMode("local")} type="button">
-            本地规则模式
-            <span>只执行格式修复与重复风险预检</span>
-          </button>
-          <button className={agentMode === "ai" ? "active" : ""} onClick={() => setAgentMode("ai")} type="button">
-            AI增强模式
-            <span>增加语言、逻辑和学术表达评估</span>
-          </button>
+          <section className="upload-grid" aria-label="上传文件">
+            <FilePicker title="论文 docx" description="必选。Agent 会读取并生成格式处理结果。" filename={paperFilename} onChange={onPaperChange} required />
+            <FilePicker title="模板 docx" description="可选。上传后会优先参考模板样式。" filename={templateFilename} onChange={onTemplateChange} />
+          </section>
+
+          <section className="mode-switch" aria-label="Agent 模式">
+            <button className={agentMode === "local" ? "active" : ""} onClick={() => setAgentMode("local")} type="button">
+              本地规则模式
+              <span>只执行格式修复与重复风险预检</span>
+            </button>
+            <button className={agentMode === "ai" ? "active" : ""} onClick={() => setAgentMode("ai")} type="button">
+              AI增强模式
+              <span>增加语言、逻辑和学术表达评估</span>
+            </button>
+          </section>
+
+          <div className="action-row">
+            <button className="agent-button" disabled={buttonDisabled} onClick={runAgent}>
+              {running ? "Agent 执行中..." : result ? "重新运行Agent" : "启动论文修改 Agent"}
+            </button>
+            {result ? (
+              <button className="secondary-button" disabled={previewLoading} onClick={() => loadPreview(result.filename)}>
+                {previewLoading ? "生成预览中..." : "刷新在线预览"}
+              </button>
+            ) : null}
+          </div>
         </section>
 
         {classification ? <ClassificationCard classification={classification} confirmed={confirmedNonPaper} onConfirm={setConfirmedNonPaper} /> : null}
-
-        <div className="action-row">
-          <button className="agent-button" disabled={buttonDisabled} onClick={runAgent}>
-            {running ? "Agent 执行中..." : result ? "重新运行Agent" : "启动论文修改 Agent"}
-          </button>
-          {result ? (
-            <button className="secondary-button" disabled={previewLoading} onClick={() => loadPreview(result.filename)}>
-              {previewLoading ? "生成预览中..." : "刷新在线预览"}
-            </button>
-          ) : null}
-        </div>
 
         {message ? <p className={message.includes("失败") || message.includes("必须") ? "message error" : "message"}>{message}</p> : null}
 
@@ -304,6 +318,17 @@ export default function Home() {
 
         {result?.download_url ? (
           <section className="result-panel" aria-label="Agent 结果">
+            <div className="result-heading">
+              <div>
+                <p className="eyebrow">Result Overview</p>
+                <h2>处理结果总览</h2>
+                <p>核心评分、修改报告、检查结果和 Agent 执行过程都在这里汇总展示。</p>
+              </div>
+              <a className="download compact" href={`${API_BASE}${result.download_url}`} download>
+                下载最终docx
+              </a>
+            </div>
+
             <div className="completion-strip">
               <span>Agent修改完成</span>
               <span>已生成修改报告</span>
@@ -311,28 +336,6 @@ export default function Home() {
             </div>
 
             <ScoreOverview result={result} />
-            <TracePanel result={result} />
-
-            <section className="preview-panel">
-              <div className="section-title">
-                <span>在线预览</span>
-                <strong>{preview?.title ?? (previewError ? "预览暂不可用" : "预览生成中")}</strong>
-              </div>
-              {previewLoading ? <div className="preview-status">正在生成修改后的论文预览...</div> : null}
-              {previewError ? (
-                <div className="preview-error">
-                  <strong>在线预览生成失败</strong>
-                  <span>{previewError}</span>
-                </div>
-              ) : null}
-              {preview ? <article className="doc-preview" dangerouslySetInnerHTML={{ __html: preview.html }} /> : null}
-              {!preview && !previewError ? <div className="preview-loading">正在生成修改后的论文预览...</div> : null}
-            </section>
-
-            <ScoreModules title="格式规则评分" items={result.after_analysis.report.local_breakdown} />
-            {result.score_breakdown.ai_used ? <ScoreModules title="AI语言参考评分" items={result.after_analysis.report.ai_breakdown} /> : null}
-            {result.after_analysis.reference_check ? <ReferenceCheckPanel check={result.after_analysis.reference_check} /> : null}
-            {result.after_analysis.figure_table_check ? <FigureTableCheckPanel check={result.after_analysis.figure_table_check} /> : null}
 
             <section className="report-panel">
               <div className="section-title">
@@ -349,6 +352,14 @@ export default function Home() {
               </div>
             </section>
 
+            <ScoreModules title="格式规则评分" items={result.after_analysis.report.local_breakdown} />
+            {result.score_breakdown.ai_used ? <ScoreModules title="AI语言参考评分" items={result.after_analysis.report.ai_breakdown} /> : null}
+
+            <section className="checks-grid" aria-label="检查结果">
+              {result.after_analysis.reference_check ? <ReferenceCheckPanel check={result.after_analysis.reference_check} /> : null}
+              {result.after_analysis.figure_table_check ? <FigureTableCheckPanel check={result.after_analysis.figure_table_check} /> : null}
+            </section>
+
             <section className="risk-box">
               <div className="section-title">
                 <span>重复风险与人工复查</span>
@@ -360,9 +371,26 @@ export default function Home() {
               </div>
             </section>
 
-            <a className="download" href={`${API_BASE}${result.download_url}`} download>
-              下载最终docx
-            </a>
+            <TracePanel result={result} />
+
+            <section className="preview-panel">
+              <div className="section-title">
+                <span>在线预览与下载</span>
+                <strong>{preview?.title ?? (previewError ? "预览暂不可用" : "预览生成中")}</strong>
+              </div>
+              {previewLoading ? <div className="preview-status">正在生成修改后的论文预览...</div> : null}
+              {previewError ? (
+                <div className="preview-error">
+                  <strong>在线预览生成失败</strong>
+                  <span>{previewError}</span>
+                </div>
+              ) : null}
+              {preview ? <article className="doc-preview" dangerouslySetInnerHTML={{ __html: preview.html }} /> : null}
+              {!preview && !previewError ? <div className="preview-loading">正在生成修改后的论文预览...</div> : null}
+              <a className="download" href={`${API_BASE}${result.download_url}`} download>
+                下载最终docx
+              </a>
+            </section>
           </section>
         ) : null}
       </section>
@@ -486,15 +514,22 @@ function ScoreOverview({ result }: { result: AgentResult }) {
   const formatScore = result.score_breakdown.format_score ?? result.score_breakdown.local_score;
   const aiLanguageScore = result.score_breakdown.ai_language_score ?? result.score_breakdown.ai_score;
   const aiIsReferenceOnly = typeof aiLanguageScore === "number" && aiLanguageScore < formatScore;
+  const scoreDelta = result.after_score - result.before_score;
+  const deltaLabel = scoreDelta > 0 ? `+${scoreDelta}` : String(scoreDelta);
+  const modeLabel = result.mode === "local" ? "本地规则模式" : result.mode === "ai" ? "AI增强模式" : "当前模式";
 
   return (
     <div className="score-overview">
-      <div>
-        <span>最终评分</span>
-        <strong>{result.score_breakdown.final_score}</strong>
-        <p>{result.after_analysis.report.summary}</p>
+      <div className="score-card primary">
+        <span>评分变化</span>
+        <div className="score-pair">
+          <b>{result.before_score}</b>
+          <i>→</i>
+          <strong>{result.after_score}</strong>
+        </div>
+        <p>提升值 {deltaLabel}。{result.after_analysis.report.summary}</p>
       </div>
-      <div className="score-change">
+      <div className="score-card score-change">
         <span>格式规则分</span>
         <b>{formatScore}</b>
         <span>风险稳定分</span>
@@ -504,10 +539,15 @@ function ScoreOverview({ result }: { result: AgentResult }) {
         <small>可信度 {result.score_breakdown.score_confidence ?? "待评估"}</small>
         {aiIsReferenceOnly ? <p className="score-note">AI语言评分仅作参考，不影响最终评分。</p> : null}
       </div>
-      <div className={`risk-pill ${riskTone(result.repeat_risk.level)}`}>
+      <div className={`score-card risk-pill ${riskTone(result.repeat_risk.level)}`}>
         <span>重复风险</span>
         <strong>{result.repeat_risk.level}</strong>
         <small>{result.repeat_risk.score}/100</small>
+        <div className="result-meta">
+          <span>{modeLabel}</span>
+          <span>{result.score_breakdown.ai_used ? "AI参考已参与" : "AI参考未参与评分"}</span>
+          {result.task_id ? <span>任务 ID：{result.task_id}</span> : null}
+        </div>
       </div>
     </div>
   );
@@ -529,13 +569,14 @@ function ScoreModules({ title, items }: { title: string; items: ScoreDimension[]
   );
 }
 
-function FilePicker({ title, filename, required = false, onChange }: { title: string; filename: string; required?: boolean; onChange: (file: File | null) => void }) {
+function FilePicker({ title, description, filename, required = false, onChange }: { title: string; description: string; filename: string; required?: boolean; onChange: (file: File | null) => void }) {
   return (
     <label className="file-card">
       <span>
         {title}
         <b>{required ? "必选" : "可选"}</b>
       </span>
+      <p>{description}</p>
       <strong>{filename || "选择 Word 文件"}</strong>
       <input accept=".docx" type="file" onChange={(event) => onChange(event.target.files?.[0] ?? null)} />
     </label>
@@ -559,11 +600,12 @@ function ScoreModule({ item }: { item: ScoreDimension }) {
 }
 
 function ReportList({ title, items }: { title: string; items: string[] }) {
+  const safeItems = items.length ? items : ["暂无需要展示的内容。"];
   return (
     <div className="report-list">
       <h2>{title}</h2>
       <ul>
-        {items.map((item) => (
+        {safeItems.map((item) => (
           <li key={item}>{item}</li>
         ))}
       </ul>

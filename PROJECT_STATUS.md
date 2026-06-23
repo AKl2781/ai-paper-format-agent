@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.8.2 / trace-ui-polish
+当前版本号：v0.8.4 / ui-polish-layout
 
 项目名称：AI论文格式修改Agent
 
@@ -46,6 +46,7 @@
 - Task State 运行产物治理：v0.7.3 已将 `paper-ai/backend/task_states/` 纳入 `.gitignore`，避免运行 JSON 污染 Git 工作区。
 - Agent Trace 前端展示：v0.8.1 已在结果页增加默认折叠的 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 摘要；未读取 task state 文件内容，未改变后端同步接口或核心 pipeline。
 - Agent Trace 展示打磨：v0.8.2 已小范围优化 TracePanel 文案、fallback 兜底提示、task state 摘要说明和缺字段保护；未改变上传、预览、下载主流程。
+- 前端演示布局打磨：v0.8.4 已优化上传操作区、结果总览、评分变化、修改报告、检查结果、TracePanel、预览与下载的页面层次；未改变后端同步接口、核心 pipeline 或上传/预览/下载主流程。
 
 # 最近回归测试结果
 
@@ -281,3 +282,12 @@ Current Bottleneck：
 - `task_id` 显示为“任务 ID”，`task_state_path` 显示为“后端任务状态文件路径”，并说明前端当前不会读取该文件内容，也不代表异步队列或任务恢复能力。
 - 对缺失 `message`、`duration_ms`、`status` 的 trace 项增加温和默认展示，避免出现 `undefined` 或 `NaN`。
 - 本轮未修改后端接口、核心 pipeline、上传/预览/下载主流程或测试断言。
+
+## v0.8.4 UI Polish Layout
+
+- 本轮主要优化前端页面层次和演示观感，不修改后端业务逻辑。
+- 上传区已整理为“开始处理”工作区，论文上传、模板上传、模式选择和运行按钮层次更清楚。
+- 结果页已按总览、评分变化、修改报告、评分模块、检查结果、重复风险、Agent 执行过程、预览与下载组织。
+- before_score / after_score 在结果总览中更醒目，并展示提升值、模式、AI 参考参与状态和任务 ID。
+- TracePanel 仍默认折叠，继续只展示 `agent_trace` 列表和 `task_id` / `task_state_path` 摘要，不读取 task state 文件内容，不展示 `agent_trace_detail`。
+- 本轮未修改 `/agent/run` 同步语义、核心 pipeline、上传/预览/下载主流程或测试断言。

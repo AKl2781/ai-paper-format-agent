@@ -1,5 +1,49 @@
 # Development Log
 
+## 2026-06-24 v0.8.4-ui-polish-layout
+
+### 修改目标
+
+在 `v0.8.2-trace-ui-polish` 稳定节点基础上，只做前端页面布局与展示层次打磨，让项目更适合演示和实习展示。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - 顶部增加能力标签，让页面开头更像正式工具产品。
+  - 上传论文、上传模板、模式选择和运行按钮整理到“开始处理”区域。
+  - 结果区按总览、评分变化、修改报告、评分模块、检查结果、重复风险、Agent 执行过程、预览与下载重新组织。
+  - before_score / after_score 在总览区更醒目，并展示提升值、模式、AI 参考参与状态和任务 ID。
+  - TracePanel 保持默认折叠，继续只展示 `agent_trace` 列表和 `task_id` / `task_state_path` 摘要。
+  - 不展示 `agent_trace_detail`，不读取 task state 文件内容。
+- 更新 `paper-ai/frontend/app/globals.css`
+  - 增加 `setup-panel`、`result-heading`、`score-pair`、`checks-grid`、结果元信息标签等局部样式。
+  - 优化上传卡片、运行按钮、结果总览、报告卡片、TracePanel 和移动端布局。
+  - 未引入新 UI 库，未改上传、预览、下载按钮功能。
+- 更新 README、PROJECT_STATUS 和 TODO
+  - 标记当前版本为 `v0.8.4-ui-polish-layout`。
+  - 说明本轮是前端展示层次和演示观感优化。
+  - 后续路线指向 `v0.8.5-ui-polish-details`、`v0.8.6-demo-ui-check` 和 `v0.9-resume-draft`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改 `/agent/run` 同步语义。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.8.4 验收说明
+
+- `git status --short`：待最终检查。
+- `git diff --name-only`：待最终检查。
+- `npm run build`：待最终检查。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：计划跳过；本轮未修改后端，且该脚本会覆盖 Git 跟踪的 smoke 模板文件。
+
 ## 2026-06-18 v0.8.2-trace-ui-polish
 
 ### 修改目标
