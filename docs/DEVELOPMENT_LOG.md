@@ -1,5 +1,48 @@
 # Development Log
 
+## 2026-06-18 v0.8.2-trace-ui-polish
+
+### 修改目标
+
+在 `v0.8.1-trace-ui-minimal` 稳定节点基础上，只对前端 TracePanel 做小范围展示打磨：优化步骤列表文案、fallback 兜底提示、task state 摘要说明和缺字段保护。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - TracePanel 标题调整为“Agent 执行过程”。
+  - 说明 `agent_trace` 是步骤级执行记录，用于展示处理链路、耗时和 fallback 情况。
+  - `fallback_used=true` 显示为“已使用 fallback / 本地规则兜底”，不表述为严重失败。
+  - `task_id` 显示为“任务 ID”，`task_state_path` 显示为“后端任务状态文件路径”。
+  - 补充说明前端不会读取 task state 文件内容，也不代表异步队列或任务恢复能力。
+  - 缺失 `message`、`duration_ms`、`status` 时使用温和默认展示。
+- 更新 `paper-ai/frontend/app/globals.css`
+  - 小范围补充 TracePanel、状态标签、fallback 标签和空状态样式。
+  - 未改上传、预览、下载按钮样式或页面主布局。
+- 更新 README、PROJECT_STATUS 和 TODO
+  - 标记当前版本为 `v0.8.2-trace-ui-polish`。
+  - 说明当前只是 TracePanel 展示体验打磨。
+  - 后续路线指向 `v0.8.3-demo-ui-check` 和 `v0.9-resume-draft`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增异步队列、完整断点续跑或 task state 文件内容读取能力。
+- 没有展示 `agent_trace_detail`。
+
+### v0.8.2 验收说明
+
+- `git status --short`：PASS，改动范围仅包含允许的前端文件和文档文件。
+- `git diff --name-only`：PASS，未出现后端核心代码、依赖文件、demo 样本文件或测试断言改动。
+- `npm run build`：PASS。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：SKIPPED；本轮未修改后端，且该脚本会生成运行产物，本轮重点验证前端构建。
+
 ## 2026-06-18 v0.8.1-trace-ui-minimal
 
 ### 修改目标

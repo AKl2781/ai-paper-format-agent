@@ -426,45 +426,49 @@ function TracePanel({ result }: { result: AgentResult }) {
   return (
     <details className="trace-panel">
       <summary>
-        <span>Agent Trace / 任务状态摘要</span>
-        <strong>{traceItems.length ? `${traceItems.length} 个步骤` : "仅状态摘要"}</strong>
+        <span>Agent 执行过程</span>
+        <strong>{traceItems.length ? `${traceItems.length} 个步骤` : "任务状态摘要"}</strong>
       </summary>
 
       <div className="trace-intro">
-        <p>agent_trace 是步骤级执行记录；task_id 和 task_state_path 是后端本地任务状态摘要。</p>
-        <p>当前仍是同步执行接口，不是异步队列，也不是完整断点续跑。前端不读取 task_state 文件内容。</p>
+        <p>agent_trace 是步骤级执行记录，用于查看处理链路、耗时和 fallback 情况。</p>
+        <p>当前仍是同步执行接口，不是异步队列，也不是完整断点续跑；前端不会读取 task_state 文件内容。</p>
       </div>
 
       {hasTaskStateSummary ? (
         <div className="trace-state">
           {result.task_id ? (
             <div>
-              <span>task_id</span>
+              <span>任务 ID</span>
               <code>{result.task_id}</code>
             </div>
           ) : null}
           {result.task_state_path ? (
             <div>
-              <span>task_state_path</span>
+              <span>后端任务状态文件路径</span>
               <code>{result.task_state_path}</code>
             </div>
           ) : null}
-          <p>task_state_path 为后端本地运行产物路径，仅用于开发/演示排查。</p>
+          <p className="trace-state-note">该路径用于开发/演示排查；前端当前不会读取该文件内容，也不代表异步队列或任务恢复能力。</p>
         </div>
       ) : null}
+
+      {!traceItems.length ? <p className="trace-empty">本次结果未返回 agent_trace 步骤列表，仅展示任务状态摘要。</p> : null}
 
       {traceItems.length ? (
         <ol className="trace-list">
           {traceItems.map((item, index) => (
             <li className={traceStatusTone(item.status)} key={`${item.step ?? "trace"}-${index}`}>
               <div className="trace-item-head">
-                <strong>{item.step || `step_${index + 1}`}</strong>
-                <span>{traceStatusLabel(item.status)}</span>
+                <strong>{formatTraceStepName(item.step, index)}</strong>
+                <span className={`trace-status ${traceStatusTone(item.status)}`}>{traceStatusLabel(item.status)}</span>
               </div>
-              {item.message ? <p>{item.message}</p> : null}
+              <p>{item.message || "该步骤未返回详细说明"}</p>
               <div className="trace-meta">
                 <span>{formatTraceDuration(item.duration_ms)}</span>
-                <span>{item.fallback_used ? "已使用 fallback / 本地规则" : "未标记 fallback"}</span>
+                <span className={item.fallback_used ? "trace-fallback-badge" : undefined}>
+                  {item.fallback_used ? "已使用 fallback / 本地规则兜底" : "未标记 fallback"}
+                </span>
               </div>
             </li>
           ))}
@@ -472,6 +476,10 @@ function TracePanel({ result }: { result: AgentResult }) {
       ) : null}
     </details>
   );
+}
+
+function formatTraceStepName(step: string | undefined, index: number) {
+  return step?.trim() ? step : `步骤 ${index + 1}`;
 }
 
 function ScoreOverview({ result }: { result: AgentResult }) {
@@ -663,23 +671,35 @@ function formatDelta(delta: number) {
 }
 
 function formatTraceDuration(duration?: number) {
-  return typeof duration === "number" ? `${duration} ms` : "未记录耗时";
+  return typeof duration === "number" && Number.isFinite(duration) ? `${duration} ms` : "未记录耗时";
 }
 
 function traceStatusLabel(status?: string) {
-  if (!status) return "unknown";
-  if (status === "done" || status === "ok" || status === "succeeded") return "done";
-  if (status === "error" || status === "failed") return "error";
-  if (status === "running") return "running";
-  return status;
+  const normalized = normalizeTraceStatus(status);
+  if (!normalized) return "未记录状态";
+  if (normalized === "done") return "已完成";
+  if (normalized === "error") return "需查看";
+  if (normalized === "running") return "执行中";
+  if (normalized === "skipped") return "已跳过";
+  return status?.trim() || "未记录状态";
 }
 
 function traceStatusTone(status?: string) {
-  const normalized = traceStatusLabel(status);
+  const normalized = normalizeTraceStatus(status);
   if (normalized === "done") return "done";
   if (normalized === "error") return "error";
   if (normalized === "running") return "running";
   return "neutral";
+}
+
+function normalizeTraceStatus(status?: string) {
+  const normalized = status?.trim().toLowerCase();
+  if (!normalized) return "";
+  if (normalized === "done" || normalized === "ok" || normalized === "succeeded" || normalized === "success") return "done";
+  if (normalized === "error" || normalized === "failed" || normalized === "failure") return "error";
+  if (normalized === "running") return "running";
+  if (normalized === "skipped") return "skipped";
+  return normalized;
 }
 
 function riskTone(level: string) {

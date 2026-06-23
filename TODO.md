@@ -107,15 +107,30 @@
 
 ---
 
-### v0.8.2-trace-ui-polish
+### [DONE] v0.8.2-trace-ui-polish
 
 目标：优化 trace 展示文案、空状态和异常态，让 fallback 与失败状态更容易区分。
 
-计划：
-- 优化 `fallback_used=true` 的温和提示，不把 fallback 表述为严重失败。
-- 增加 trace 缺失时的轻量空状态或保持静默隐藏。
-- 视需要优化移动端折叠面板的可读性。
+已完成：
+- TracePanel 标题和说明已优化为“Agent 执行过程”，强调它是步骤级执行记录。
+- `fallback_used=true` 已显示为“已使用 fallback / 本地规则兜底”，不表述为严重失败。
+- `task_id` / `task_state_path` 摘要说明已补充“前端不会读取文件内容、不代表异步队列或任务恢复能力”。
+- 已增加缺失 `message`、`duration_ms`、`status` 时的温和默认展示。
 - 保持上传、预览、下载交互不变。
+
+状态：已完成。当前只是展示体验打磨，不是完整 task state 可视化、异步队列或完整断点续跑。
+
+---
+
+### v0.8.3-demo-ui-check
+
+目标：对 demo 输入输出和前端 TracePanel 做人工演示检查或截图检查，确认面试展示路径清晰。
+
+计划：
+- 使用 `demo_inputs/messy_paper_sample.docx` 和 `demo_inputs/template_sample.docx` 做一次人工演示检查。
+- 确认结果页评分、报告、下载、预览和 TracePanel 展示不互相遮挡。
+- 检查 fallback 文案、task state 摘要和缺字段状态是否容易解释。
+- 如需截图验收，优先只记录检查结果，不修改核心流程。
 
 状态：规划中。
 
@@ -362,4 +377,4 @@
 - 保持原有上传、预览、下载交互不变。
 - 如后续需要完整 task state 可视化，应新增安全读取接口，而不是让前端直接读本地路径。
 
-状态：已完成最小展示版本（v0.8.1-trace-ui-minimal）。后续展示文案和异常态优化见 `v0.8.2-trace-ui-polish`。
+状态：已完成最小展示版本（v0.8.1-trace-ui-minimal）和展示打磨版本（v0.8.2-trace-ui-polish）。后续可进入 `v0.8.3-demo-ui-check` 或 `v0.9-resume-draft`。

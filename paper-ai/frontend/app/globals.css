@@ -349,6 +349,7 @@ p {
 .trace-panel summary strong {
   color: #1f4b99;
   font-size: 14px;
+  white-space: nowrap;
 }
 
 .trace-panel[open] {
@@ -366,6 +367,17 @@ p {
   gap: 6px;
   color: #56657a;
   font-size: 14px;
+  line-height: 1.6;
+}
+
+.trace-empty {
+  margin-top: 14px;
+  padding: 10px 12px;
+  border: 1px dashed #cbd5e1;
+  border-radius: 8px;
+  background: #f8fafc;
+  color: #56657a;
+  font-size: 13px;
   line-height: 1.6;
 }
 
@@ -405,6 +417,11 @@ p {
   line-height: 1.6;
 }
 
+.trace-state .trace-state-note {
+  padding-top: 4px;
+  border-top: 1px solid #e1e7ef;
+}
+
 .trace-list {
   display: grid;
   gap: 10px;
@@ -434,6 +451,10 @@ p {
   border-left-color: #1f4b99;
 }
 
+.trace-list li.neutral {
+  border-left-color: #94a3b8;
+}
+
 .trace-item-head,
 .trace-meta {
   display: flex;
@@ -446,7 +467,7 @@ p {
   color: #162033;
 }
 
-.trace-item-head span {
+.trace-status {
   padding: 3px 8px;
   border-radius: 999px;
   background: #eef4fb;
@@ -455,9 +476,41 @@ p {
   font-weight: 800;
 }
 
+.trace-status.done {
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.trace-status.error {
+  background: #fff7ed;
+  color: #b45309;
+}
+
+.trace-status.running {
+  background: #eef4fb;
+  color: #1f4b99;
+}
+
+.trace-status.neutral {
+  background: #f1f5f9;
+  color: #475569;
+}
+
 .trace-list p {
   color: #56657a;
   line-height: 1.6;
+}
+
+.trace-meta {
+  flex-wrap: wrap;
+}
+
+.trace-fallback-badge {
+  padding: 3px 8px;
+  border: 1px solid #b7e4d8;
+  border-radius: 999px;
+  background: #ecfdf5;
+  color: #0f766e;
 }
 
 .score-overview {
