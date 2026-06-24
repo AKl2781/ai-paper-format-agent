@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.8.6-template-runtime-cleanup`
+当前版本：`v0.9.0-ui-landing-redesign`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -13,6 +13,7 @@
 - 可解释 Trace：每一步记录 `step`、`status`、`duration_ms`、`fallback_used`、`message`。
 - 前端结果展示：结果页按总览、评分变化、修改报告、检查结果、Agent 执行过程、预览与下载分区展示，更适合演示讲解。
 - 前端 Trace 展示：结果页可默认折叠展示 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 任务状态摘要；v0.8.2 已优化步骤文案、fallback 提示和缺字段保护，v0.8.4 已进一步优化布局层次。
+- 前端视觉升级：v0.9.0 已将首页升级为更适合演示的 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格。
 - 响应式细节：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、按钮、长文本和 TracePanel 展示。
 - 运行产物治理：v0.8.6 已忽略后端模板上传运行副本，避免 demo 后 `paper-ai/backend/templates/*.docx` 污染 Git 工作区。
 - 任务状态落盘：每次 Agent Pipeline 运行会生成 `task_id`，并写入 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
@@ -123,6 +124,7 @@ flowchart TD
 - v0.8.2 起，TracePanel 文案更明确：fallback 会显示为本地规则兜底，不会被表述为严重失败；缺失消息或耗时时会使用温和默认值。
 - v0.8.4 起，结果页更强调演示友好的模块化布局：结果总览、评分变化、修改报告、检查结果、Agent 执行过程、预览与下载分区更清楚。
 - v0.8.5 起，小屏布局补充了横向溢出保护：上传卡片、模式卡片、主按钮、TracePanel 和长路径文本会在窄屏下自然收缩或换行。
+- v0.9.0 起，首页首屏更接近 AI SaaS 产品页：Hero、能力卡片、上传工作台和静态仪表盘预览放在同一演示入口中；结果区继续以 dashboard 方式展示评分、报告、检查结果、TracePanel、预览和下载。
 - 结果页会展示 `task_id` 和 `task_state_path` 摘要，`task_state_path` 仅表示后端本地运行产物路径，用于开发/演示排查，不代表异步队列或任务恢复能力。
 - 前端不会读取 `task_state_path` 对应文件内容，也不会展示 `agent_trace_detail`。
 - 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。
@@ -231,6 +233,7 @@ v0.7.0 引入了最小任务状态持久化能力，v0.7.1 对文档说明进行
 - `agent_trace` 记录处理步骤：分类、读取、分析、模板、格式修复、AI 审校、重复风险预检、最终复查和报告生成。
 - `demo_outputs/task_state_sample.json` 是 v0.7.2 固定 demo 样例，用于展示任务状态持久化结果结构。
 - v0.8.1 已在前端结果页展示 `agent_trace` 折叠列表和 `task_id` / `task_state_path` 摘要；v0.8.2 对展示文案、fallback 状态和 task state 摘要边界做了小范围打磨；v0.8.4 优化了结果页模块化布局和演示层次；v0.8.5 修复了小屏横向溢出，但仍没有读取 task state 文件内容。
+- v0.9.0 进一步强化前端演示观感，让 TracePanel 更像 Agent 执行过程展示，但仍只展示接口返回的摘要与步骤列表。
 - 当前没有实现任务队列、后台异步执行、完整 task state 文件内容可视化或完整断点续跑；也没有自动清理函数，后续可单独补充轻量清理命令。
 
 ## Demo Samples / 演示样本

@@ -1,5 +1,47 @@
 # Development Log
 
+## 2026-06-25 v0.9.0-ui-landing-redesign
+
+### 修改目标
+
+在 `v0.8.6-template-runtime-cleanup` 稳定节点基础上，只做前端视觉和布局升级，让首页更接近 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格，提升演示吸引力。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - 首屏改为 Hero、能力卡片、静态仪表盘预览和上传工作台组合。
+  - 上传论文、上传模板、模式选择和启动 Agent 仍保留原有 input、state 和 fetch 语义。
+  - 结果区继续展示评分、修改报告、检查结果、TracePanel、预览和下载。
+- 更新 `paper-ai/frontend/app/globals.css`
+  - 升级页面背景、Hero、能力卡片、上传卡片、模式选择、主按钮和结果 dashboard 视觉层次。
+  - 保留 390px 窄屏下的单列收敛、长文本换行和横向溢出保护。
+  - TracePanel 继续默认折叠，展开后更像 Agent 执行时间线。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.9.0-ui-landing-redesign`。
+  - 说明本轮只做前端视觉升级，不改变后端接口或核心流程。
+  - 后续路线指向 `v0.9.1-ui-final-demo-check`、`v0.9.2-interview-demo-package` 和 `v1.0-demo-release-candidate`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改 `/agent/run` 接口调用逻辑或同步语义。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增 UI 库、异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.9.0 验收说明
+
+- `git status --short`：PASS，仅显示本轮允许修改的 6 个文件。
+- `git diff --name-only`：PASS，仅包含 `paper-ai/frontend/app/page.tsx`、`paper-ai/frontend/app/globals.css`、`README.md`、`PROJECT_STATUS.md`、`TODO.md`、`docs/DEVELOPMENT_LOG.md`。
+- `npm run build`：PASS，无 warning。
+- 桌面 / 390px 窄屏页面观察：PASS；1440px 和 390px 视口下 `scrollWidth == innerWidth`，未发现横向溢出。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：SKIPPED；本轮未修改后端逻辑、接口语义或测试断言。
+
 ## 2026-06-25 v0.8.6-template-runtime-cleanup
 
 ### 修改目标

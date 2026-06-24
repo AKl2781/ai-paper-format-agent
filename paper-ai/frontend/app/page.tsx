@@ -264,50 +264,89 @@ export default function Home() {
   return (
     <main className="page">
       <section className="workspace">
-        <header className="hero">
-          <p className="eyebrow">AI Paper Agent</p>
-          <h1>AI论文格式修改Agent</h1>
-          <p>上传论文后，Agent 会完成文档识别、格式修复、语言审校、重复风险预检、修改报告和在线预览。</p>
-          <div className="hero-badges" aria-label="当前能力">
-            <span>格式审查</span>
-            <span>自动排版</span>
-            <span>可解释 Trace</span>
-          </div>
-        </header>
+        <section className="landing-shell" aria-label="产品首页与处理工作台">
+          <header className="hero">
+            <div className="hero-copy">
+              <p className="eyebrow">AI Paper Agent</p>
+              <h1>AI论文格式修改Agent</h1>
+              <p className="hero-lead">面向 DOCX 论文/报告的本地格式 Agent：模板格式审查、自动排版、修改报告和 Agent Trace 可观测，一次上传即可进入处理链路。</p>
+              <div className="hero-badges" aria-label="当前能力">
+                <span>格式 Agent</span>
+                <span>同步处理</span>
+                <span>本地 fallback</span>
+              </div>
+              <div className="capability-grid" aria-label="核心能力">
+                <div>
+                  <strong>模板格式对齐</strong>
+                  <span>读取模板规则，统一标题、正文、段落和页边距。</span>
+                </div>
+                <div>
+                  <strong>修改报告生成</strong>
+                  <span>汇总评分变化、修复项、风险项和人工复查建议。</span>
+                </div>
+                <div>
+                  <strong>Agent Trace 可观测</strong>
+                  <span>展示处理步骤、耗时和本地规则兜底状态。</span>
+                </div>
+              </div>
+            </div>
 
-        <section className="setup-panel" aria-label="上传与运行">
-          <div className="section-title">
-            <span>开始处理</span>
-            <strong>{paperFilename ? "论文已选择" : "等待上传"}</strong>
-          </div>
-          <p className="section-note">先上传论文 DOCX；模板 DOCX 可选，用于提供学校或学院格式规则参考。</p>
+            <div className="hero-visual" aria-label="演示仪表盘预览">
+              <div className="hero-visual-head">
+                <span>Live Dashboard</span>
+                <strong>{result ? `${result.before_score} -> ${result.after_score}` : "80 -> 86"}</strong>
+              </div>
+              <div className="hero-score-line">
+                <span>格式规则分</span>
+                <b>{result?.score_breakdown.format_score ?? result?.score_breakdown.local_score ?? 86}</b>
+              </div>
+              <div className="hero-metric-grid">
+                <span>报告</span>
+                <span>Trace</span>
+                <span>预览</span>
+              </div>
+              <ol>
+                <li>识别文档类型</li>
+                <li>模板规则匹配</li>
+                <li>生成修改报告</li>
+              </ol>
+            </div>
+          </header>
 
-          <section className="upload-grid" aria-label="上传文件">
-            <FilePicker title="论文 docx" description="必选。Agent 会读取并生成格式处理结果。" filename={paperFilename} onChange={onPaperChange} required />
-            <FilePicker title="模板 docx" description="可选。上传后会优先参考模板样式。" filename={templateFilename} onChange={onTemplateChange} />
-          </section>
+          <section className="setup-panel" aria-label="上传与运行">
+            <div className="section-title">
+              <span>开始处理</span>
+              <strong>{paperFilename ? "论文已选择" : "等待上传"}</strong>
+            </div>
+            <p className="section-note">先上传论文 DOCX；模板 DOCX 可选，用于提供学校或学院格式规则参考。</p>
 
-          <section className="mode-switch" aria-label="Agent 模式">
-            <button className={agentMode === "local" ? "active" : ""} onClick={() => setAgentMode("local")} type="button">
-              本地规则模式
-              <span>只执行格式修复与重复风险预检</span>
-            </button>
-            <button className={agentMode === "ai" ? "active" : ""} onClick={() => setAgentMode("ai")} type="button">
-              AI增强模式
-              <span>增加语言、逻辑和学术表达评估</span>
-            </button>
-          </section>
+            <section className="upload-grid" aria-label="上传文件">
+              <FilePicker title="论文 docx" description="必选。Agent 会读取并生成格式处理结果。" filename={paperFilename} onChange={onPaperChange} required />
+              <FilePicker title="模板 docx" description="可选。上传后会优先参考模板样式。" filename={templateFilename} onChange={onTemplateChange} />
+            </section>
 
-          <div className="action-row">
-            <button className="agent-button" disabled={buttonDisabled} onClick={runAgent}>
-              {running ? "Agent 执行中..." : result ? "重新运行Agent" : "启动论文修改 Agent"}
-            </button>
-            {result ? (
-              <button className="secondary-button" disabled={previewLoading} onClick={() => loadPreview(result.filename)}>
-                {previewLoading ? "生成预览中..." : "刷新在线预览"}
+            <section className="mode-switch" aria-label="Agent 模式">
+              <button className={agentMode === "local" ? "active" : ""} onClick={() => setAgentMode("local")} type="button">
+                本地规则模式
+                <span>只执行格式修复与重复风险预检</span>
               </button>
-            ) : null}
-          </div>
+              <button className={agentMode === "ai" ? "active" : ""} onClick={() => setAgentMode("ai")} type="button">
+                AI增强模式
+                <span>增加语言、逻辑和学术表达评估</span>
+              </button>
+            </section>
+
+            <div className="action-row">
+              <button className="agent-button" disabled={buttonDisabled} onClick={runAgent}>
+                {running ? "Agent 执行中..." : result ? "重新运行Agent" : "启动论文修改 Agent"}
+              </button>
+              {result ? (
+                <button className="secondary-button" disabled={previewLoading} onClick={() => loadPreview(result.filename)}>
+                  {previewLoading ? "生成预览中..." : "刷新在线预览"}
+                </button>
+              ) : null}
+            </div>
+          </section>
         </section>
 
         {classification ? <ClassificationCard classification={classification} confirmed={confirmedNonPaper} onConfirm={setConfirmedNonPaper} /> : null}

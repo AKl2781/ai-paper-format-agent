@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.8.6 / template-runtime-cleanup
+当前版本号：v0.9.0 / ui-landing-redesign
 
 项目名称：AI论文格式修改Agent
 
@@ -49,6 +49,7 @@
 - 前端演示布局打磨：v0.8.4 已优化上传操作区、结果总览、评分变化、修改报告、检查结果、TracePanel、预览与下载的页面层次；未改变后端同步接口、核心 pipeline 或上传/预览/下载主流程。
 - 前端窄屏细节修复：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、模式按钮、主按钮和长文本换行；未改变后端核心逻辑或上传/预览/下载主流程。
 - 模板运行产物治理：v0.8.6 已忽略 `paper-ai/backend/templates/*.docx` 上传模板副本，避免 demo 后未跟踪运行产物污染 Git 工作区；未改变后端核心逻辑、前端 UI 或上传/预览/下载主流程。
+- 前端产品化视觉升级：v0.9.0 已将首页升级为 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格，增强第一屏吸引力和演示效果；未改变后端核心逻辑、`/agent/run`、上传/预览/下载主流程或依赖文件。
 
 # 最近回归测试结果
 
@@ -309,3 +310,13 @@ Current Bottleneck：
 - 已在 `.gitignore` 中新增 `paper-ai/backend/templates/*.docx`，未来上传模板副本不应进入 Git 工作区。
 - `demo_inputs/template_sample.docx` 仍是固定 demo 输入样本，应继续被 Git 跟踪。
 - 本轮未修改后端核心逻辑、前端 UI、接口语义、上传/预览/下载主流程或测试断言。
+
+## v0.9.0 UI Landing Redesign
+
+- 本轮只做前端视觉和布局升级，将首页从普通工具页提升为更适合演示的 AI SaaS 产品页风格。
+- 首屏已组织为 Hero、能力卡片、静态仪表盘预览和上传工作台。
+- 上传论文、上传模板、模式选择和启动 Agent 仍沿用原有 state、input 和 fetch 语义。
+- 结果区继续按 dashboard 风格展示评分变化、修改报告、检查结果、TracePanel、预览和下载。
+- TracePanel 仍默认折叠，只展示 `agent_trace` 步骤列表和 `task_id` / `task_state_path` 摘要；不读取 task state 文件内容，不展示 `agent_trace_detail`。
+- 本轮未修改后端核心逻辑、`/agent/run` 同步接口、上传/预览/下载主流程、测试断言或依赖文件。
+- 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。

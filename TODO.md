@@ -195,6 +195,51 @@
 
 ---
 
+### [DONE] v0.9.0-ui-landing-redesign
+
+目标：把前端首页从普通后台工具页升级为更适合演示的 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格。
+
+已完成：
+- 首屏已组织为 Hero、能力卡片、静态仪表盘预览和上传工作台。
+- 上传论文、上传模板、模式选择和启动 Agent 的主流程语义保持不变。
+- 结果区继续以 dashboard 形式展示评分变化、修改报告、参考文献检查、图表检查、TracePanel、预览和下载。
+- TracePanel 仍默认折叠，只展示 `agent_trace` 步骤和 `task_id` / `task_state_path` 摘要。
+- 未修改后端核心逻辑、`/agent/run`、测试断言、依赖文件或 demo 样本。
+
+状态：已完成。当前仍不是异步队列、完整 task state 可视化、完整断点续跑或完整工业级 Agent。
+
+---
+
+### v0.9.1-ui-final-demo-check
+
+目标：重新做完整 demo 演示检查和截图检查，确认 v0.9.0 视觉升级后桌面与窄屏都适合现场展示。
+
+计划：
+- 使用 `demo_inputs/messy_paper_sample.docx` 和 `demo_inputs/template_sample.docx` 做完整前端演示。
+- 检查首屏、上传工作台、结果仪表盘、TracePanel、预览和下载。
+- 检查 1440px 桌面和 390px 窄屏是否无横向溢出。
+- 检查 demo 后 Git 工作区仍保持干净。
+
+状态：规划中。
+
+---
+
+### v0.9.2-interview-demo-package
+
+目标：整理面试展示包，把演示脚本、截图、固定 demo 输入输出和讲解重点合并成可复用材料。
+
+状态：规划中。
+
+---
+
+### v1.0-demo-release-candidate
+
+目标：准备演示候选版本，冻结当前可展示能力、边界说明和回归检查清单。
+
+状态：规划中。
+
+---
+
 ## 后续补充说明
 
 - 如需完整 task state 可视化，需要后续新增安全读取接口，而不是让前端直接读取本地 `task_state_path`。
