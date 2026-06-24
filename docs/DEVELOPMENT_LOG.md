@@ -1,5 +1,44 @@
 # Development Log
 
+## 2026-06-25 v0.8.5-ui-polish-details
+
+### 修改目标
+
+在 `v0.8.4-ui-polish-layout` 稳定节点基础上，只修前端 UI 细节，重点解决 390px 左右窄屏下页面轻微横向溢出问题，并优化小屏展示观感。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/globals.css`
+  - 为 `html/body`、`.page`、`.workspace` 和主要页面区块增加横向溢出保护。
+  - 为上传卡片、模式按钮、主按钮、结果区、TracePanel、报告卡片等补充 `min-width: 0`、`max-width: 100%`、自然换行和小屏内边距规则。
+  - 窄屏下将 `mode-switch`、上传区、结果区、检查区和操作区收敛为单列。
+  - 优化 `task_state_path`、任务 ID、文件名和说明文字的换行，避免长文本撑破页面。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.8.5-ui-polish-details`。
+  - 说明本轮只修前端响应式细节，不改变后端接口或核心流程。
+  - 后续路线指向 `v0.8.6-demo-ui-check` 和 `v0.9-resume-draft`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改 `/agent/run` 同步语义。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.8.5 验收说明
+
+- `git status --short`：PASS，仅包含本轮允许的前端样式与文档文件改动。
+- `git diff --name-only`：PASS，未出现后端核心代码、接口、测试断言、依赖文件或 demo 样本改动。
+- `npm run build`：PASS，无 warning。
+- 桌面 / 390px 窄屏截图检查：PASS；桌面布局保持正常，390px 视口下 `scrollWidth == innerWidth`，未发现横向溢出。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：SKIPPED；本轮未修改后端，且该脚本会覆盖 Git 跟踪的 smoke 模板文件。
+
 ## 2026-06-24 v0.8.4-ui-polish-layout
 
 ### 修改目标

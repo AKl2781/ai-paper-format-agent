@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.8.4 / ui-polish-layout
+当前版本号：v0.8.5 / ui-polish-details
 
 项目名称：AI论文格式修改Agent
 
@@ -47,6 +47,7 @@
 - Agent Trace 前端展示：v0.8.1 已在结果页增加默认折叠的 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 摘要；未读取 task state 文件内容，未改变后端同步接口或核心 pipeline。
 - Agent Trace 展示打磨：v0.8.2 已小范围优化 TracePanel 文案、fallback 兜底提示、task state 摘要说明和缺字段保护；未改变上传、预览、下载主流程。
 - 前端演示布局打磨：v0.8.4 已优化上传操作区、结果总览、评分变化、修改报告、检查结果、TracePanel、预览与下载的页面层次；未改变后端同步接口、核心 pipeline 或上传/预览/下载主流程。
+- 前端窄屏细节修复：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、模式按钮、主按钮和长文本换行；未改变后端核心逻辑或上传/预览/下载主流程。
 
 # 最近回归测试结果
 
@@ -291,3 +292,11 @@ Current Bottleneck：
 - before_score / after_score 在结果总览中更醒目，并展示提升值、模式、AI 参考参与状态和任务 ID。
 - TracePanel 仍默认折叠，继续只展示 `agent_trace` 列表和 `task_id` / `task_state_path` 摘要，不读取 task state 文件内容，不展示 `agent_trace_detail`。
 - 本轮未修改 `/agent/run` 同步语义、核心 pipeline、上传/预览/下载主流程或测试断言。
+
+## v0.8.5 UI Polish Details
+
+- 本轮只修前端 UI 细节，重点解决 390px 左右窄屏下页面轻微横向溢出问题。
+- 已为页面根容器、工作区、主要卡片、按钮、TracePanel 和报告卡片补充 `max-width`、`min-width: 0`、自然换行和小屏内边距规则。
+- 窄屏下上传卡片、模式卡片、操作按钮、结果区和检查区会收敛为单列，避免撑破 viewport。
+- `task_state_path`、任务 ID、文件名、说明文字等长文本继续允许换行，不撑破页面。
+- 本轮未修改后端核心逻辑、`/agent/run` 同步语义、上传/预览/下载主流程或测试断言。

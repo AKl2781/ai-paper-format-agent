@@ -2,11 +2,14 @@
   box-sizing: border-box;
 }
 
+html,
 body {
   margin: 0;
   background: #eef2f6;
   color: #162033;
   font-family: Arial, "Microsoft YaHei", sans-serif;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 
 button,
@@ -15,12 +18,16 @@ input {
 }
 
 .page {
+  width: 100%;
   min-height: 100vh;
   padding: 32px;
+  overflow-x: hidden;
 }
 
 .workspace {
   width: min(1120px, 100%);
+  max-width: 100%;
+  min-width: 0;
   margin: 0 auto;
   display: grid;
   gap: 20px;
@@ -39,6 +46,8 @@ input {
 .risk-box,
 .classification {
   width: 100%;
+  max-width: 100%;
+  min-width: 0;
 }
 
 .hero {
@@ -58,8 +67,9 @@ input {
 
 h1 {
   margin: 0;
-  font-size: 38px;
+  font-size: clamp(28px, 5vw, 38px);
   line-height: 1.2;
+  overflow-wrap: anywhere;
 }
 
 h2,
@@ -77,6 +87,7 @@ p {
 .report-summary {
   color: #56657a;
   line-height: 1.7;
+  overflow-wrap: anywhere;
 }
 
 .upload-grid,
@@ -129,6 +140,7 @@ p {
 }
 
 .mode-switch button {
+  min-width: 0;
   border: 1px solid #cbd5e1;
   border-radius: 8px;
   background: #ffffff;
@@ -139,6 +151,7 @@ p {
   font-size: 16px;
   font-weight: 700;
   appearance: none;
+  overflow-wrap: anywhere;
 }
 
 .mode-switch button span {
@@ -171,6 +184,7 @@ p {
 }
 
 .file-card {
+  min-width: 0;
   min-height: 154px;
   display: grid;
   align-content: space-between;
@@ -222,6 +236,7 @@ p {
 .agent-button,
 .secondary-button,
 .download {
+  min-width: 0;
   min-height: 48px;
   display: grid;
   place-items: center;
@@ -356,10 +371,13 @@ p {
 
 .section-title {
   font-weight: 800;
+  flex-wrap: wrap;
+  align-items: flex-start;
 }
 
 .section-title strong {
   color: #1f4b99;
+  overflow-wrap: anywhere;
 }
 
 .timeline {
@@ -408,6 +426,7 @@ p {
 }
 
 .trace-panel {
+  min-width: 0;
   display: grid;
   gap: 14px;
   padding: 18px;
@@ -420,6 +439,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 12px;
   color: #162033;
   font-weight: 800;
@@ -480,7 +500,7 @@ p {
 
 .trace-state div {
   display: grid;
-  grid-template-columns: 130px 1fr;
+  grid-template-columns: minmax(0, 130px) minmax(0, 1fr);
   gap: 10px;
   align-items: start;
 }
@@ -518,6 +538,7 @@ p {
 }
 
 .trace-list li {
+  min-width: 0;
   display: grid;
   gap: 8px;
   padding: 14px;
@@ -548,6 +569,7 @@ p {
   display: flex;
   align-items: center;
   justify-content: space-between;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -640,6 +662,7 @@ p {
 .score-pair {
   display: flex;
   align-items: baseline;
+  flex-wrap: wrap;
   gap: 10px;
 }
 
@@ -712,6 +735,7 @@ p {
 }
 
 .result-meta span {
+  max-width: 100%;
   border-color: #dbe3ee;
   background: #f8fafc;
   color: #475569;
@@ -887,6 +911,7 @@ p {
 }
 
 .module-card {
+  min-width: 0;
   display: grid;
   gap: 10px;
   padding: 14px;
@@ -917,6 +942,7 @@ p {
 }
 
 .report-list {
+  min-width: 0;
   display: grid;
   gap: 10px;
   padding: 14px;
@@ -981,6 +1007,7 @@ p {
 
 .compare-table {
   display: grid;
+  max-width: 100%;
   overflow: hidden;
   border: 1px solid #d6dee9;
   border-radius: 8px;
@@ -1022,6 +1049,7 @@ p {
   }
 
   .upload-grid,
+  .mode-switch,
   .score-overview,
   .report-grid,
   .checks-grid,
@@ -1035,6 +1063,32 @@ p {
 
   .result-heading {
     display: grid;
+  }
+
+  .setup-panel,
+  .agent-panel,
+  .result-panel,
+  .module-panel,
+  .report-panel,
+  .risk-box,
+  .preview-panel,
+  .trace-panel,
+  .classification {
+    padding: 16px;
+  }
+
+  .file-card {
+    min-height: 128px;
+    padding: 16px;
+  }
+
+  .mode-switch button {
+    padding: 12px 14px;
+  }
+
+  .secondary-button,
+  .download {
+    width: 100%;
   }
 
   .doc-preview {
@@ -1052,5 +1106,46 @@ p {
   .trace-item-head,
   .trace-meta {
     display: grid;
+  }
+}
+
+@media (max-width: 420px) {
+  .page {
+    padding: 14px;
+  }
+
+  .workspace {
+    gap: 16px;
+  }
+
+  .setup-panel,
+  .agent-panel,
+  .result-panel,
+  .module-panel,
+  .report-panel,
+  .risk-box,
+  .preview-panel,
+  .trace-panel,
+  .classification {
+    padding: 14px;
+  }
+
+  .hero-badges span,
+  .result-meta span {
+    max-width: 100%;
+  }
+
+  .score-pair b {
+    font-size: 28px;
+  }
+
+  .score-pair strong {
+    font-size: 42px;
+  }
+
+  .completion-strip span,
+  .report-list,
+  .diff-report {
+    padding: 12px;
   }
 }
