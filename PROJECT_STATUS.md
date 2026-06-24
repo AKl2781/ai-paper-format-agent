@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.8.5 / ui-polish-details
+当前版本号：v0.8.6 / template-runtime-cleanup
 
 项目名称：AI论文格式修改Agent
 
@@ -48,6 +48,7 @@
 - Agent Trace 展示打磨：v0.8.2 已小范围优化 TracePanel 文案、fallback 兜底提示、task state 摘要说明和缺字段保护；未改变上传、预览、下载主流程。
 - 前端演示布局打磨：v0.8.4 已优化上传操作区、结果总览、评分变化、修改报告、检查结果、TracePanel、预览与下载的页面层次；未改变后端同步接口、核心 pipeline 或上传/预览/下载主流程。
 - 前端窄屏细节修复：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、模式按钮、主按钮和长文本换行；未改变后端核心逻辑或上传/预览/下载主流程。
+- 模板运行产物治理：v0.8.6 已忽略 `paper-ai/backend/templates/*.docx` 上传模板副本，避免 demo 后未跟踪运行产物污染 Git 工作区；未改变后端核心逻辑、前端 UI 或上传/预览/下载主流程。
 
 # 最近回归测试结果
 
@@ -300,3 +301,11 @@ Current Bottleneck：
 - 窄屏下上传卡片、模式卡片、操作按钮、结果区和检查区会收敛为单列，避免撑破 viewport。
 - `task_state_path`、任务 ID、文件名、说明文字等长文本继续允许换行，不撑破页面。
 - 本轮未修改后端核心逻辑、`/agent/run` 同步语义、上传/预览/下载主流程或测试断言。
+
+## v0.8.6 Template Runtime Cleanup
+
+- 本轮只做运行产物治理，修复 demo 上传模板后生成 `paper-ai/backend/templates/template_sample.docx` 未跟踪文件的问题。
+- 已删除当前未跟踪运行产物 `paper-ai/backend/templates/template_sample.docx`。
+- 已在 `.gitignore` 中新增 `paper-ai/backend/templates/*.docx`，未来上传模板副本不应进入 Git 工作区。
+- `demo_inputs/template_sample.docx` 仍是固定 demo 输入样本，应继续被 Git 跟踪。
+- 本轮未修改后端核心逻辑、前端 UI、接口语义、上传/预览/下载主流程或测试断言。

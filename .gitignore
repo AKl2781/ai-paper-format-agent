@@ -15,6 +15,7 @@ build/
 paper-ai/backend/uploads/*
 !paper-ai/backend/uploads/.gitkeep
 paper-ai/backend/outputs/*
+paper-ai/backend/templates/*.docx
 paper-ai/backend/task_states/
 paper-ai/backend/regression_results/*
 !paper-ai/backend/regression_results/.gitkeep

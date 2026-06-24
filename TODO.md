@@ -167,14 +167,29 @@
 
 ---
 
-### v0.8.6-demo-ui-check
+### [DONE] v0.8.6-template-runtime-cleanup
 
-目标：使用 demo 输入文件做人工演示检查或截图检查，确认布局打磨后的展示效果。
+目标：治理 demo 上传模板后产生的后端模板运行副本，避免 `paper-ai/backend/templates/template_sample.docx` 这类未跟踪文件污染 Git 工作区。
+
+已完成：
+- 已删除当前未跟踪运行产物 `paper-ai/backend/templates/template_sample.docx`。
+- 已在 `.gitignore` 中新增 `paper-ai/backend/templates/*.docx`。
+- 已明确 `demo_inputs/template_sample.docx` 是固定 demo 输入样本，应继续被 Git 跟踪。
+- 未修改后端核心逻辑、前端 UI、上传/预览/下载主流程或测试断言。
+
+状态：已完成。当前只是运行产物治理，不是业务功能增强。
+
+---
+
+### v0.8.7-demo-ui-final-check
+
+目标：重新使用 demo 输入文件做人工演示检查或截图检查，确认模板运行产物被忽略后，demo 后 Git 工作区仍保持干净。
 
 计划：
 - 使用 `demo_inputs/messy_paper_sample.docx` 和 `demo_inputs/template_sample.docx` 做人工演示。
 - 检查上传、运行、评分、报告、TracePanel、预览、下载是否适合现场展示。
-- 只记录检查结果，除非发现明确前端展示问题。
+- 检查运行后 `git status --short` 不再出现 `paper-ai/backend/templates/template_sample.docx`。
+- 只记录检查结果，除非发现明确展示问题或新的运行产物污染。
 
 状态：规划中。
 

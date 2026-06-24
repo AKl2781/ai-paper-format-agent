@@ -1,5 +1,45 @@
 # Development Log
 
+## 2026-06-25 v0.8.6-template-runtime-cleanup
+
+### 修改目标
+
+在 `v0.8.5-ui-polish-details` 稳定节点基础上，只做运行产物治理，修复 demo 上传模板后产生 `paper-ai/backend/templates/template_sample.docx` 未跟踪文件的问题。
+
+### 修改范围
+
+- 删除未跟踪运行产物 `paper-ai/backend/templates/template_sample.docx`。
+- 更新 `.gitignore`
+  - 新增 `paper-ai/backend/templates/*.docx`。
+  - 用于忽略后端上传模板运行副本，避免 demo 后污染 Git 工作区。
+  - 不影响 `demo_inputs/template_sample.docx`，该文件仍是固定 demo 输入样本。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.8.6-template-runtime-cleanup`。
+  - 说明本轮是运行产物治理，不是业务功能增强。
+  - 后续路线指向 `v0.8.7-demo-ui-final-check` 和 `v0.9-resume-draft`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改后端 smoke 测试断言。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改前端 UI。
+- 没有修改 `/agent/run` 同步语义。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.8.6 验收说明
+
+- `git status --short`：PASS，仅包含 `.gitignore` 和状态文档改动，未出现未跟踪模板副本。
+- `git diff --name-only`：PASS，仅包含 `.gitignore`、README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG。
+- `git check-ignore -v paper-ai/backend/templates/template_sample.docx`：PASS，命中 `.gitignore:18:paper-ai/backend/templates/*.docx`。
+- `npm run build`：SKIPPED；本轮未修改前端代码、前端依赖或页面样式。
+- `python paper-ai/backend/test_smoke_agent_flow.py`：SKIPPED；本轮未修改后端逻辑、接口语义或测试断言。
+
 ## 2026-06-25 v0.8.5-ui-polish-details
 
 ### 修改目标
