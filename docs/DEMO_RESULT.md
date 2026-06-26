@@ -1,8 +1,10 @@
 # Demo Result
 
-版本：`v0.7.3-task-state-cleanup`
+版本：`v0.9.3-interview-demo-package`
 
 本文档记录本仓库当前内置的面试演示样本和一次真实 local 模式运行输出。样本内容为人工构造的脱敏模拟文本，不来自真实用户论文，不来自 CAJ 原文，也不用于论文代写。
+
+当前推荐演示代码基线为 `v0.9.2-ui-fetch-compat-fix`。v0.9.2 final demo check 已确认真实页面点击 demo 可通过：`/document/classify`、`/agent/run`、`/preview/{filename}` 和下载接口均正常，TracePanel、评分、报告、参考文献检查和图表编号检查均可观察。
 
 ## Demo 输入文件
 
@@ -59,6 +61,28 @@ result = run_agent_pipeline(
 - `after_score`: `86`
 - `score_breakdown.ai_score`: `null`
 - `score_breakdown.ai_used`: `false`
+
+## v0.9.2 页面演示补充
+
+v0.9.2 final demo check 使用真实前端页面完成了完整演示验收。由于 Windows + Chromium/Edge CDP 自动化在中文仓库路径下可能出现文件句柄读取异常，自动化演示建议临时复制同内容 demo 文件到 ASCII 路径，例如：
+
+- `C:\Temp\paper-ai-demo\messy_paper_sample.docx`
+- `C:\Temp\paper-ai-demo\template_sample.docx`
+
+该临时路径只用于自动化上传，不改变仓库内固定 demo 文件来源。检查完成后应删除临时文件。
+
+页面验收结果：
+
+- 上传论文：PASS。
+- 上传模板：PASS。
+- 本地规则模式：PASS。
+- `/document/classify`: 200。
+- `/agent/run`: 200。
+- `/preview/{filename}`: 200。
+- 下载接口：PASS。
+- 评分示例：`80 -> 86`。
+- TracePanel：PASS，默认折叠，包含 9 个步骤。
+- demo 后 `git status --short`：干净。
 
 ## 输出样例重点字段
 

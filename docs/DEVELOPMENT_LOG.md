@@ -1,5 +1,48 @@
 # Development Log
 
+## 2026-06-27 v0.9.3-interview-demo-package
+
+### 修改目标
+
+在 `v0.9.2-ui-fetch-compat-fix` 稳定节点基础上，整理面试/演示材料，让项目从“能跑”进一步变成“能讲、能展示、能回答追问”。本轮基于 v0.9.2 final demo check 的真实结果整理材料，不修改核心代码。
+
+### 修改范围
+
+- 新增 `docs/INTERVIEW_DEMO_PACKAGE.md`
+  - 整理项目一句话介绍、30 秒介绍、2 分钟演示流程、技术架构讲法、项目亮点、当前边界和面试追问。
+  - 明确推荐演示代码基线为 `v0.9.2-ui-fetch-compat-fix`。
+  - 记录 ASCII 临时路径上传建议、评分 `80 -> 86`、TracePanel 9 步、preview/download PASS 和 demo 后 Git 干净。
+- 更新 `docs/DEMO_SCRIPT.md`
+  - 同步到 v0.9.3 演示口径。
+  - 补充 v0.9.2 final demo check 结果和 ASCII 临时路径说明。
+- 更新 `docs/INTERVIEW_QA.md`
+  - 补充 v0.9.0-v0.9.2 后的新追问，包括产品化首页、API base URL、ASCII 临时路径、`ERR_ALPN_NEGOTIATION_FAILED` 定位和 Git 运行产物治理。
+- 更新 `docs/DEMO_RESULT.md` 和 `docs/DEMO_CASE.md`
+  - 补充当前推荐演示基线和真实页面 demo 验收结果。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.9.3-interview-demo-package`。
+  - 后续路线指向 `v0.9.4-demo-screenshot-package`、`v1.0-demo-release-candidate`、`v1.1-resume-draft-design` 和 `v1.2-real-user-case`。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改前端 UI。
+- 没有修改接口语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增异步队列、完整断点续跑、前端 task state 文件读取或完整工业级能力。
+
+### v0.9.3 验收说明
+
+- `git status --short`：PASS，仅包含本轮允许的文档改动和新增 `docs/INTERVIEW_DEMO_PACKAGE.md`。
+- `git diff --name-only`：PASS，仅包含 README、PROJECT_STATUS、TODO、DEVELOPMENT_LOG、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT、DEMO_CASE 等文档文件；未出现代码、接口、依赖或 demo 样本改动。
+- `npm run build`：SKIPPED，本轮只改文档，不修改前端代码、依赖或构建配置。
+- 后端 smoke：SKIPPED，本轮只改文档，不修改后端逻辑、接口或测试断言。
+- 能力边界检查：PASS，文档继续明确不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
+
 ## 2026-06-26 v0.9.2-ui-fetch-compat-fix
 
 ### 修改目标

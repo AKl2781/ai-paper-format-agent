@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.9.2-ui-fetch-compat-fix`
+当前版本：`v0.9.3-interview-demo-package`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -22,6 +22,24 @@
 - fallback 保护：未上传模板、AI 调用失败、相似度预检异常等场景不会轻易中断主流程。
 - 旧字段兼容：保留 `modification_report`、`reference_check`、`figure_table_check` 等原有字段，降低前端和测试回归风险。
 - 测试覆盖：包含 smoke test、评分一致性、参考文献检查、图表编号检查、风险等级和 trace 结构测试。
+
+## 当前稳定演示版本
+
+当前推荐演示 tag：`v0.9.2-ui-fetch-compat-fix`。
+
+v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PASS，`/document/classify` 200，`/agent/run` 200，preview/download PASS，TracePanel PASS，桌面和 390px 窄屏无横向溢出，demo 后 `git status` 干净。
+
+推荐演示流程：
+
+1. 启动 FastAPI 后端和 Next.js 前端。
+2. 上传 `demo_inputs/messy_paper_sample.docx`。
+3. 上传 `demo_inputs/template_sample.docx`。
+4. 自动化演示时可先复制到 ASCII 临时路径，例如 `C:\Temp\paper-ai-demo\`。
+5. 选择本地规则模式。
+6. 点击启动 Agent。
+7. 展示评分 `80 -> 86`、修改报告、参考文献检查、图表编号检查、TracePanel、在线预览和下载。
+
+完整面试演示材料见：`docs/INTERVIEW_DEMO_PACKAGE.md`。
 
 ## 技术栈
 

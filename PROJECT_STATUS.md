@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.9.2 / ui-fetch-compat-fix
+当前版本号：v0.9.3 / interview-demo-package
 
 项目名称：AI论文格式修改Agent
 
@@ -52,6 +52,7 @@
 - 前端产品化视觉升级：v0.9.0 已将首页升级为 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格，增强第一屏吸引力和演示效果；未改变后端核心逻辑、`/agent/run`、上传/预览/下载主流程或依赖文件。
 - 前端运行链路修复：v0.9.1 已修复页面点击运行 Agent 时错误提示过于笼统、分类失败后继续运行未透传确认状态的问题；浏览器页面上传 demo 文件、点击运行、生成报告、TracePanel、预览和下载链路已验收通过。
 - 前端 fetch 兼容修复：v0.9.2 已统一前端后端请求 base URL，支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖，默认 `http://127.0.0.1:8000`；网络错误会显示实际请求地址，便于定位本地浏览器到 FastAPI 的连接问题。
+- 面试演示包：v0.9.3 已新增 `docs/INTERVIEW_DEMO_PACKAGE.md`，并同步 README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT 和 DEMO_CASE，用于说明 v0.9.2 稳定演示基线、演示流程、架构讲法、项目亮点、边界和面试追问。
 
 # 最近回归测试结果
 
@@ -337,3 +338,11 @@ Current Bottleneck：
 - `document/classify`、`agent/run`、`preview` 和下载链接不再分散拼接 host，避免本地调试时混用 `localhost` / `127.0.0.1` 或 `http` / `https`。
 - 网络错误提示会包含实际请求 URL，便于定位后端未启动、端口不一致或浏览器本地文件上传兼容问题。
 - 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。
+
+## v0.9.3 Interview Demo Package
+
+- 当前 v0.9.2 是面试/演示稳定代码基线，已通过 final demo check。
+- 本轮主要整理展示材料，新增 `docs/INTERVIEW_DEMO_PACKAGE.md`。
+- README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT、DEMO_CASE 和 DEVELOPMENT_LOG 已同步 v0.9.3 演示口径。
+- 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
+- 当前仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。

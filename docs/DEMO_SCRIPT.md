@@ -1,8 +1,10 @@
 # 面试演示脚本
 
-版本：`v0.7.3-task-state-cleanup`
+版本：`v0.9.3-interview-demo-package`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
+
+当前推荐演示代码基线：`v0.9.2-ui-fetch-compat-fix`。v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PASS，`/document/classify` 200，`/agent/run` 200，preview/download PASS，TracePanel PASS，桌面和 390px 窄屏无横向溢出，demo 后 `git status` 干净。
 
 ## 0. 演示准备
 
@@ -25,6 +27,7 @@
 - 输出样例由现有 local 模式处理流程生成，详见 `docs/DEMO_RESULT.md`。
 - v0.7.0 后每次重新运行 Agent Pipeline 还会生成 task state 文件。
 - v0.7.2 已固定保存 `demo_outputs/task_state_sample.json`，用于展示 task state 字段结构。
+- 自动化演示建议把 demo 文件临时复制到 ASCII 路径，例如 `C:\Temp\paper-ai-demo\`，避免 Windows + CDP 在中文路径下出现文件句柄读取异常。
 
 ## 1. 开场介绍，约 30 秒
 
@@ -88,17 +91,21 @@
 1. 打开前端页面。
 2. 上传论文 DOCX。推荐路径：`demo_inputs/messy_paper_sample.docx`。
 3. 可选上传模板 DOCX。推荐路径：`demo_inputs/template_sample.docx`。
-4. 选择 `local` 模式或 `ai` 模式。
+4. 选择本地规则模式，便于展示 local 模式下 `ai_score=null`、`ai_used=false` 的真实边界。
 5. 启动 Agent。
-6. 展示执行步骤、评分、修改报告。
-7. 展示在线预览。
-8. 下载最终 DOCX。
+6. 展示评分变化：`80 -> 86`。
+7. 展示修改报告、参考文献检查和图表编号检查。
+8. 展开 TracePanel，展示 9 个步骤、耗时和 fallback 状态。
+9. 展示 `task_id` / `task_state_path` 摘要。
+10. 展示在线预览。
+11. 下载最终 DOCX。
 
 讲解重点：
 
 - 未上传模板时走通用论文规则 fallback。
 - local 模式必须返回 `ai_score=null`、`ai_used=false`。
 - 修改报告说明改了什么、还有哪些人工复查建议。
+- v0.9.2 之后前端统一使用 `NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"`，避免本地演示时混用 host 或协议。
 
 ## 5. 演示 agent_trace，约 2 分钟
 

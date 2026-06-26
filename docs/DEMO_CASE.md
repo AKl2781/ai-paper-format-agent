@@ -1,8 +1,10 @@
 # Fixed Demo Case
 
-Version: `v0.7.2-task-state-sample`
+Version: `v0.9.3-interview-demo-package`
 
 This document describes the fixed interview demo case for the AI Paper Formatting Agent. Starting from `v0.6.3-real-demo-files`, the repository includes an artificial de-identified DOCX paper sample, a DOCX template sample, and one local-mode output set. Starting from `v0.7.2-task-state-sample`, the fixed demo output set also includes a task state JSON sample.
+
+Current recommended demo baseline: `v0.9.2-ui-fetch-compat-fix`. The v0.9.2 final demo check passed with the real frontend page, ASCII temporary upload paths for browser automation, `/document/classify` 200, `/agent/run` 200, preview/download PASS, TracePanel PASS, and a clean Git worktree after the demo.
 
 ## Demo Goal
 
@@ -28,6 +30,8 @@ Built-in input paths:
 
 - Paper sample: `demo_inputs/messy_paper_sample.docx`
 - Template sample: `demo_inputs/template_sample.docx`
+
+For browser automation on Windows, it is safer to copy the same files to an ASCII-only temporary path such as `C:\Temp\paper-ai-demo\`. This avoids CDP file-handle issues seen with Chinese workspace paths. The repository demo files remain the source of truth.
 
 These files are artificial demo samples. They do not come from real user papers, do not come from CAJ source text, and should not be described as user-submitted research.
 
@@ -105,6 +109,8 @@ During the demo, focus on these fields:
   - Shows task lifecycle fields such as status, input files, output files, total duration, fallback summary, and trace step count.
 - `before_score` / `after_score`
   - Shows the score before and after processing.
+
+For the current recommended local-mode demo, the key score change is `80 -> 86`, and the TracePanel shows 9 execution steps.
 
 Generated output paths from the v0.6.3 local run:
 
