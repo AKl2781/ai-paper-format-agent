@@ -210,9 +210,24 @@
 
 ---
 
-### v0.9.1-ui-final-demo-check
+### [DONE] v0.9.1-ui-run-flow-fix
 
-目标：重新做完整 demo 演示检查和截图检查，确认 v0.9.0 视觉升级后桌面与窄屏都适合现场展示。
+目标：修复 v0.9.0 后完整 demo 检查中发现的页面点击运行 Agent 失败/错误提示过于笼统问题。
+
+已完成：
+- 已确认前端字段名与后端 `/agent/run` 字段一致：`paper`、`template`、`mode`、`allow_non_paper`。
+- 已补充前端响应读取保护，支持读取 JSON、空响应和非 JSON 错误文本，避免真实错误被吞成笼统提示。
+- 已补充分类型失败后的继续运行语义：当分类请求失败但用户继续运行时，向后端透传 `allow_non_paper=true`。
+- 已通过浏览器真实点击 demo 流程验收：上传论文、上传模板、选择本地规则模式、点击运行、报告、TracePanel、预览和下载均可用。
+- 未修改后端核心逻辑、UI 视觉布局、上传/预览/下载主流程语义或依赖文件。
+
+状态：已完成。当前仍不是异步队列、完整断点续跑或完整工业级 Agent。
+
+---
+
+### v0.9.2-ui-final-demo-check
+
+目标：重新做完整 demo 演示检查和截图检查，确认 v0.9.1 修复后桌面与窄屏都适合现场展示。
 
 计划：
 - 使用 `demo_inputs/messy_paper_sample.docx` 和 `demo_inputs/template_sample.docx` 做完整前端演示。
@@ -224,7 +239,7 @@
 
 ---
 
-### v0.9.2-interview-demo-package
+### v0.9.3-interview-demo-package
 
 目标：整理面试展示包，把演示脚本、截图、固定 demo 输入输出和讲解重点合并成可复用材料。
 

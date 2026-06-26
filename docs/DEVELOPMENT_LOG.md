@@ -1,5 +1,48 @@
 # Development Log
 
+## 2026-06-26 v0.9.1-ui-run-flow-fix
+
+### 修改目标
+
+在 `v0.9.0-ui-landing-redesign` 稳定节点基础上，只排查并修复前端页面点击运行 Agent 失败/错误提示过于笼统的问题。后端 `/agent/run` 直接调用已成功，本轮重点确认浏览器页面上传、点击运行、报告、TracePanel、预览和下载链路。
+
+### 问题定位
+
+- 前端 `runAgent()` 的字段名与后端一致：`paper`、`template`、`mode`、`allow_non_paper`。
+- 后端 `/agent/run` 接收字段也一致，接口直调 demo 文件返回 `status=ok`。
+- 原前端在 `fetch` 后直接 `response.json()`，一旦遇到空响应、非 JSON 错误或网络异常，只会进入笼统 catch，显示“Agent 启动失败，请确认后端服务正在运行”，不利于定位真实原因。
+- 原前端在文档分类请求失败但用户继续运行时，仍传 `allow_non_paper=false`，与页面“仍可启动 Agent”的提示不完全一致。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - 新增轻量响应读取函数，支持 JSON、空响应和非 JSON 文本。
+  - 新增统一错误信息提取函数，优先展示后端 `detail.failed_step`、`detail.error`、`detail.message` 或文本错误。
+  - `runAgent()` 在分类失败但用户继续运行时透传 `allow_non_paper=true`。
+  - 保持原有上传、预览、下载、TracePanel 和 `/agent/run` 同步调用语义不变。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.9.1-ui-run-flow-fix`。
+  - 记录本轮只修前端运行链路，不改后端核心逻辑或 UI 视觉布局。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增依赖、异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.9.1 验收说明
+
+- `git status --short`：PASS，仅包含 `paper-ai/frontend/app/page.tsx` 与 README、PROJECT_STATUS、TODO、DEVELOPMENT_LOG 文档改动。
+- `git diff --name-only`：PASS，仅包含本轮允许修改的 5 个文件，未出现后端核心代码、依赖文件或 demo 样本改动。
+- `npm run build`：PASS，无 warning。
+- 浏览器真实点击 demo 流程：PASS；上传 `messy_paper_sample.docx` 和 `template_sample.docx`，选择本地规则模式，点击运行后 `/agent/run` 返回 200，`/preview` 返回 200，页面存在下载链接。
+- 页面结果：PASS；评分变化、修改报告、参考文献检查、图表检查、TracePanel、`task_id` / `task_state_path` 摘要、在线预览和下载均可观察。
+- 运行产物治理：PASS；`paper-ai/backend/templates/template_sample.docx` 与 `paper-ai/backend/task_states/example.json` 均命中 `.gitignore` 规则，运行产物不会污染 Git 工作区。
+
 ## 2026-06-25 v0.9.0-ui-landing-redesign
 
 ### 修改目标

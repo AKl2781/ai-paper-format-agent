@@ -121,6 +121,41 @@ type PreviewResult = { title: string; html: string };
 const API_BASE = "http://127.0.0.1:8000";
 const defaultSteps = ["识别文档类型", "读取论文", "分析本地格式", "识别模板格式", "修复标题样式", "AI增强审校", "重复风险预检", "最终复查", "生成最终报告"];
 
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return Boolean(value && typeof value === "object" && !Array.isArray(value));
+}
+
+async function readResponseData(response: Response): Promise<Record<string, unknown>> {
+  const text = await response.text();
+  if (!text) return {};
+  try {
+    return JSON.parse(text) as Record<string, unknown>;
+  } catch {
+    return { detail: text };
+  }
+}
+
+function apiErrorMessage(data: Record<string, unknown>, fallback: string) {
+  const detail = data.detail;
+  if (typeof detail === "string") return detail;
+  if (isRecord(detail)) {
+    const failedStep = typeof detail.failed_step === "string" ? detail.failed_step : "";
+    const error = typeof detail.error === "string" ? detail.error : "";
+    if (failedStep || error) return failedStep ? `Agent 在「${failedStep}」失败：${error || "未返回详细错误"}` : error;
+    const message = typeof detail.message === "string" ? detail.message : "";
+    if (message) return message;
+  }
+  const message = typeof data.message === "string" ? data.message : "";
+  return message || fallback;
+}
+
+function networkErrorMessage(error: unknown, fallback: string) {
+  if (error instanceof Error && error.message) {
+    return `${fallback}（${error.message}）`;
+  }
+  return fallback;
+}
+
 export default function Home() {
   const [paperFile, setPaperFile] = useState<File | null>(null);
   const [paperFilename, setPaperFilename] = useState("");
@@ -177,15 +212,16 @@ export default function Home() {
     setMessage("正在识别文档类型...");
     try {
       const response = await fetch(`${API_BASE}/document/classify`, { method: "POST", body: formData });
-      const data = await response.json();
+      const data = await readResponseData(response);
       if (!response.ok) {
-        setMessage(data.detail ?? "文档类型识别失败。");
+        setMessage(apiErrorMessage(data, "文档类型识别失败。"));
         return;
       }
-      setClassification(data);
-      setMessage(data.requires_confirmation ? "该文档可能不适合直接套用论文格式，请确认后继续。" : "已识别为标准论文，可以启动 Agent。");
-    } catch {
-      setMessage("文档类型识别失败。你仍可在确认文件无误后启动 Agent。");
+      const nextClassification = data as Classification;
+      setClassification(nextClassification);
+      setMessage(nextClassification.requires_confirmation ? "该文档可能不适合直接套用论文格式，请确认后继续。" : "已识别为标准论文，可以启动 Agent。");
+    } catch (error) {
+      setMessage(networkErrorMessage(error, "文档类型识别失败。你仍可在确认文件无误后启动 Agent。"));
     } finally {
       setClassifying(false);
     }
@@ -202,9 +238,10 @@ export default function Home() {
     }
 
     const formData = new FormData();
+    const allowNonPaper = Boolean(confirmedNonPaper || !classification);
     formData.append("paper", paperFile);
     formData.append("mode", agentMode);
-    formData.append("allow_non_paper", String(Boolean(confirmedNonPaper)));
+    formData.append("allow_non_paper", String(allowNonPaper));
     if (templateFile) formData.append("template", templateFile);
 
     setRunning(true);
@@ -214,24 +251,25 @@ export default function Home() {
     setMessage("论文修改 Agent 正在自主处理文档...");
     try {
       const response = await fetch(`${API_BASE}/agent/run`, { method: "POST", body: formData });
-      const data = await response.json();
-      if (data.status === "requires_confirmation") {
-        setClassification(data.classification);
-        setMessage(data.message);
+      const data = await readResponseData(response);
+      const status = typeof data.status === "string" ? data.status : "";
+      if (status === "requires_confirmation") {
+        setClassification(data.classification as Classification);
+        setMessage(typeof data.message === "string" ? data.message : "该文档可能不适合直接套用论文格式，请确认后继续。");
         return;
       }
-      if (!response.ok) {
-        const detail = data.detail;
-        setMessage(detail?.failed_step ? `Agent 在「${detail.failed_step}」失败：${detail.error}` : data.detail ?? "Agent 执行失败。");
+      if (!response.ok || status === "error") {
+        setMessage(apiErrorMessage(data, "Agent 执行失败。"));
         return;
       }
-      setResult(data);
-      setClassification(data.classification);
+      const nextResult = data as unknown as AgentResult;
+      setResult(nextResult);
+      setClassification(nextResult.classification);
       setMessage("Agent 修改完成，正在生成在线预览。");
-      const previewReady = await loadPreview(data.filename);
+      const previewReady = await loadPreview(nextResult.filename);
       setMessage(previewReady ? "Agent 修改完成，已生成修改报告和在线预览。" : "Agent 修改完成，修改报告和下载文件已生成，在线预览暂不可用。");
-    } catch {
-      setMessage("Agent 启动失败，请确认后端服务正在运行。");
+    } catch (error) {
+      setMessage(networkErrorMessage(error, "Agent 启动失败，请确认后端服务正在运行。"));
     } finally {
       setRunning(false);
     }
@@ -242,17 +280,17 @@ export default function Home() {
     setPreviewError("");
     try {
       const response = await fetch(`${API_BASE}/preview/${encodeURIComponent(filename)}`);
-      const data = await response.json();
+      const data = await readResponseData(response);
       if (!response.ok) {
-        const detail = data.detail ?? "在线预览生成失败。";
+        const detail = apiErrorMessage(data, "在线预览生成失败。");
         setPreviewError(detail);
         setMessage(detail);
         return false;
       }
-      setPreview(data);
+      setPreview(data as PreviewResult);
       return true;
-    } catch {
-      const detail = "在线预览生成失败，请稍后重试。";
+    } catch (error) {
+      const detail = networkErrorMessage(error, "在线预览生成失败，请稍后重试。");
       setPreviewError(detail);
       setMessage(detail);
       return false;
