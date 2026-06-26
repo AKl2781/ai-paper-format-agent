@@ -1,5 +1,50 @@
 # Development Log
 
+## 2026-06-26 v0.9.2-ui-fetch-compat-fix
+
+### 修改目标
+
+在 `v0.9.1-ui-run-flow-fix` 稳定节点基础上，只排查并修复前端浏览器请求本地 FastAPI 后端时出现 `Failed to fetch` / `ERR_ALPN_NEGOTIATION_FAILED` 的兼容问题。
+
+### 问题定位
+
+- 后端 `/agent/run` 使用同一组 demo 文件 Python 直调返回 200，说明不是后端字段不匹配，也不是后端 4xx/5xx。
+- 后端本地服务为 HTTP，默认端口 8000；CORS 已允许 `http://localhost:3000` 和 `http://127.0.0.1:3000`。
+- 前端原先硬编码 `http://127.0.0.1:8000`，所有请求虽然基本一致，但缺少集中配置和错误 URL 展示，不利于定位本地浏览器、代理、host 或协议问题。
+- 自动化复现中，Chromium/Edge CDP 对当前中文仓库路径下的文件句柄存在读取异常；同内容 demo 文件复制到 ASCII 临时路径后，浏览器真实点击流程可通过。该现象会在 Network 中表现为上传请求 `ERR_ALPN_NEGOTIATION_FAILED`。
+
+### 修改范围
+
+- 更新 `paper-ai/frontend/app/page.tsx`
+  - 新增 `DEFAULT_API_BASE_URL` 和 `API_BASE`，默认使用 `http://127.0.0.1:8000`。
+  - 支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖本地后端地址。
+  - 新增 `apiUrl(...)`，统一拼接 `/document/classify`、`/agent/run`、`/preview/{filename}` 和下载链接。
+  - 网络错误提示会包含实际请求 URL，便于定位后端地址、端口、协议或浏览器本地上传兼容问题。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.9.2-ui-fetch-compat-fix`。
+  - 记录本轮只修前端 fetch 兼容层，不改后端核心逻辑或 UI 视觉布局。
+
+### 未修改范围
+
+- 没有修改 `agent_pipeline.py`。
+- 没有修改 `main.py`。
+- 没有修改 `task_state.py`。
+- 没有修改 formatter/analyzer/language reviewer 核心业务逻辑。
+- 没有修改 UI 视觉布局。
+- 没有修改上传、预览、下载主流程语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 demo 输入/输出样本文件。
+- 没有新增依赖、异步队列、完整断点续跑或 task state 文件内容读取能力。
+
+### v0.9.2 验收说明
+
+- `npm run build`：PASS，无 warning。
+- 浏览器请求：PASS；同内容 demo 文件从 ASCII 临时路径上传时，`/document/classify`、`/agent/run` 和 `/preview/{filename}` 均返回 200，未再出现 `ERR_ALPN_NEGOTIATION_FAILED`。
+- 页面结果：PASS；评分、修改报告、参考文献检查、图表检查、默认折叠 TracePanel、`task_id` / `task_state_path` 摘要、在线预览和下载均可观察。
+- 下载接口：PASS；下载链接返回 200，content-type 为 Word docx。
+- 响应式检查：PASS；1440px 和 390px 视口下未发现横向溢出。
+- 运行产物治理：PASS；后端模板上传副本和 `task_states/` 运行产物继续命中 `.gitignore`。
+
 ## 2026-06-26 v0.9.1-ui-run-flow-fix
 
 ### 修改目标

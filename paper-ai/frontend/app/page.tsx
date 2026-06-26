@@ -118,8 +118,13 @@ type AgentResult = {
 };
 type PreviewResult = { title: string; html: string };
 
-const API_BASE = "http://127.0.0.1:8000";
+const DEFAULT_API_BASE_URL = "http://127.0.0.1:8000";
+const API_BASE = (process.env.NEXT_PUBLIC_API_BASE_URL || DEFAULT_API_BASE_URL).replace(/\/+$/, "");
 const defaultSteps = ["识别文档类型", "读取论文", "分析本地格式", "识别模板格式", "修复标题样式", "AI增强审校", "重复风险预检", "最终复查", "生成最终报告"];
+
+function apiUrl(path: string) {
+  return `${API_BASE}${path.startsWith("/") ? path : `/${path}`}`;
+}
 
 function isRecord(value: unknown): value is Record<string, unknown> {
   return Boolean(value && typeof value === "object" && !Array.isArray(value));
@@ -149,11 +154,12 @@ function apiErrorMessage(data: Record<string, unknown>, fallback: string) {
   return message || fallback;
 }
 
-function networkErrorMessage(error: unknown, fallback: string) {
+function networkErrorMessage(error: unknown, fallback: string, requestUrl?: string) {
+  const suffix = requestUrl ? `请求地址：${requestUrl}。请确认后端服务地址和端口可访问。` : "";
   if (error instanceof Error && error.message) {
-    return `${fallback}（${error.message}）`;
+    return suffix ? `${fallback}：${error.message}。${suffix}` : `${fallback}（${error.message}）`;
   }
-  return fallback;
+  return suffix ? `${fallback}。${suffix}` : fallback;
 }
 
 export default function Home() {
@@ -211,7 +217,8 @@ export default function Home() {
     setClassifying(true);
     setMessage("正在识别文档类型...");
     try {
-      const response = await fetch(`${API_BASE}/document/classify`, { method: "POST", body: formData });
+      const requestUrl = apiUrl("/document/classify");
+      const response = await fetch(requestUrl, { method: "POST", body: formData });
       const data = await readResponseData(response);
       if (!response.ok) {
         setMessage(apiErrorMessage(data, "文档类型识别失败。"));
@@ -221,7 +228,7 @@ export default function Home() {
       setClassification(nextClassification);
       setMessage(nextClassification.requires_confirmation ? "该文档可能不适合直接套用论文格式，请确认后继续。" : "已识别为标准论文，可以启动 Agent。");
     } catch (error) {
-      setMessage(networkErrorMessage(error, "文档类型识别失败。你仍可在确认文件无误后启动 Agent。"));
+      setMessage(networkErrorMessage(error, "文档类型识别失败。你仍可在确认文件无误后启动 Agent", apiUrl("/document/classify")));
     } finally {
       setClassifying(false);
     }
@@ -250,7 +257,8 @@ export default function Home() {
     setResult(null);
     setMessage("论文修改 Agent 正在自主处理文档...");
     try {
-      const response = await fetch(`${API_BASE}/agent/run`, { method: "POST", body: formData });
+      const requestUrl = apiUrl("/agent/run");
+      const response = await fetch(requestUrl, { method: "POST", body: formData });
       const data = await readResponseData(response);
       const status = typeof data.status === "string" ? data.status : "";
       if (status === "requires_confirmation") {
@@ -269,7 +277,7 @@ export default function Home() {
       const previewReady = await loadPreview(nextResult.filename);
       setMessage(previewReady ? "Agent 修改完成，已生成修改报告和在线预览。" : "Agent 修改完成，修改报告和下载文件已生成，在线预览暂不可用。");
     } catch (error) {
-      setMessage(networkErrorMessage(error, "Agent 启动失败，请确认后端服务正在运行。"));
+      setMessage(networkErrorMessage(error, "Agent 启动失败", apiUrl("/agent/run")));
     } finally {
       setRunning(false);
     }
@@ -279,7 +287,8 @@ export default function Home() {
     setPreviewLoading(true);
     setPreviewError("");
     try {
-      const response = await fetch(`${API_BASE}/preview/${encodeURIComponent(filename)}`);
+      const requestUrl = apiUrl(`/preview/${encodeURIComponent(filename)}`);
+      const response = await fetch(requestUrl);
       const data = await readResponseData(response);
       if (!response.ok) {
         const detail = apiErrorMessage(data, "在线预览生成失败。");
@@ -290,7 +299,7 @@ export default function Home() {
       setPreview(data as PreviewResult);
       return true;
     } catch (error) {
-      const detail = networkErrorMessage(error, "在线预览生成失败，请稍后重试。");
+      const detail = networkErrorMessage(error, "在线预览生成失败", apiUrl(`/preview/${encodeURIComponent(filename)}`));
       setPreviewError(detail);
       setMessage(detail);
       return false;
@@ -401,7 +410,7 @@ export default function Home() {
                 <h2>处理结果总览</h2>
                 <p>核心评分、修改报告、检查结果和 Agent 执行过程都在这里汇总展示。</p>
               </div>
-              <a className="download compact" href={`${API_BASE}${result.download_url}`} download>
+              <a className="download compact" href={apiUrl(result.download_url)} download>
                 下载最终docx
               </a>
             </div>
@@ -464,7 +473,7 @@ export default function Home() {
               ) : null}
               {preview ? <article className="doc-preview" dangerouslySetInnerHTML={{ __html: preview.html }} /> : null}
               {!preview && !previewError ? <div className="preview-loading">正在生成修改后的论文预览...</div> : null}
-              <a className="download" href={`${API_BASE}${result.download_url}`} download>
+              <a className="download" href={apiUrl(result.download_url)} download>
                 下载最终docx
               </a>
             </section>

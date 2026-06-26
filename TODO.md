@@ -225,9 +225,24 @@
 
 ---
 
-### v0.9.2-ui-final-demo-check
+### [DONE] v0.9.2-ui-fetch-compat-fix
 
-目标：重新做完整 demo 演示检查和截图检查，确认 v0.9.1 修复后桌面与窄屏都适合现场展示。
+目标：修复真实浏览器页面请求本地 FastAPI 后端时出现 `ERR_ALPN_NEGOTIATION_FAILED` / `Failed to fetch` 的兼容排查问题。
+
+已完成：
+- 已确认后端 `/agent/run`、`/preview/{filename}`、`/download/{filename}` 直调可用，问题不属于后端字段不匹配或 4xx/5xx。
+- 已统一前端 API base URL，默认 `http://127.0.0.1:8000`，并支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖。
+- 已将 `/document/classify`、`/agent/run`、`/preview/{filename}` 和下载链接统一通过 `apiUrl(...)` 拼接。
+- 已增强网络错误提示，失败时展示实际请求地址，方便定位本地服务地址、端口或浏览器上传兼容问题。
+- 未修改后端核心逻辑、UI 视觉布局、上传/预览/下载主流程语义或依赖文件。
+
+状态：已完成。当前仍不是异步队列、完整断点续跑或完整工业级 Agent。
+
+---
+
+### v0.9.3-ui-final-demo-check
+
+目标：重新做完整 demo 演示检查和截图检查，确认 v0.9.2 修复后桌面与窄屏都适合现场展示。
 
 计划：
 - 使用 `demo_inputs/messy_paper_sample.docx` 和 `demo_inputs/template_sample.docx` 做完整前端演示。
@@ -239,7 +254,7 @@
 
 ---
 
-### v0.9.3-interview-demo-package
+### v0.9.4-interview-demo-package
 
 目标：整理面试展示包，把演示脚本、截图、固定 demo 输入输出和讲解重点合并成可复用材料。
 

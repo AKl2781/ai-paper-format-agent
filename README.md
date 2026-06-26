@@ -1,6 +1,6 @@
 # AI论文格式修改Agent
 
-当前版本：`v0.9.1-ui-run-flow-fix`
+当前版本：`v0.9.2-ui-fetch-compat-fix`
 
 这是一个面向 DOCX 论文/报告的本地格式处理 Agent。用户上传论文后，系统会完成文档分类、格式修复、模板规则适配、重复风险检测、参考文献检查、图表编号检查、修改报告生成、在线预览和最终 DOCX 下载。
 
@@ -15,6 +15,7 @@
 - 前端 Trace 展示：结果页可默认折叠展示 `agent_trace` 步骤列表，并展示 `task_id` / `task_state_path` 任务状态摘要；v0.8.2 已优化步骤文案、fallback 提示和缺字段保护，v0.8.4 已进一步优化布局层次。
 - 前端视觉升级：v0.9.0 已将首页升级为更适合演示的 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格。
 - 前端运行链路修复：v0.9.1 已修复页面点击运行时错误信息过于笼统、分类失败后继续运行未透传确认状态的问题，demo 页面点击运行链路已重新验收通过。
+- 前端 fetch 兼容修复：v0.9.2 已统一前端 API base URL，支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖，默认使用 `http://127.0.0.1:8000`，并在网络错误中展示实际请求地址。
 - 响应式细节：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、按钮、长文本和 TracePanel 展示。
 - 运行产物治理：v0.8.6 已忽略后端模板上传运行副本，避免 demo 后 `paper-ai/backend/templates/*.docx` 污染 Git 工作区。
 - 任务状态落盘：每次 Agent Pipeline 运行会生成 `task_id`，并写入 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
@@ -127,6 +128,7 @@ flowchart TD
 - v0.8.5 起，小屏布局补充了横向溢出保护：上传卡片、模式卡片、主按钮、TracePanel 和长路径文本会在窄屏下自然收缩或换行。
 - v0.9.0 起，首页首屏更接近 AI SaaS 产品页：Hero、能力卡片、上传工作台和静态仪表盘预览放在同一演示入口中；结果区继续以 dashboard 方式展示评分、报告、检查结果、TracePanel、预览和下载。
 - v0.9.1 起，前端运行链路会读取非 JSON/错误响应并展示更具体的错误信息；当文档分类请求失败但用户继续运行时，会把继续处理意图传给后端，避免页面提示和后端确认逻辑不一致。
+- v0.9.2 起，所有后端请求统一基于 `NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"`，避免前端代码中混用不同 host 或协议；下载链接也使用同一 base URL 拼接。
 - 结果页会展示 `task_id` 和 `task_state_path` 摘要，`task_state_path` 仅表示后端本地运行产物路径，用于开发/演示排查，不代表异步队列或任务恢复能力。
 - 前端不会读取 `task_state_path` 对应文件内容，也不会展示 `agent_trace_detail`。
 - 当前仍不是异步队列，也不是完整断点续跑或完整工业级 Agent。
@@ -159,6 +161,15 @@ cd D:\ai_论文修改格式\paper-ai\frontend
 npm install
 npm run dev
 ```
+
+可选前端后端地址配置：
+
+```powershell
+$env:NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
+npm run dev
+```
+
+未配置时默认请求 `http://127.0.0.1:8000`。请保持页面请求地址与本地 FastAPI 服务协议和端口一致，避免 `localhost` / `127.0.0.1` 或 `http` / `https` 混用。
 
 访问：
 
