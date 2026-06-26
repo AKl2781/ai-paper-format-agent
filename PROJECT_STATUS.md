@@ -1,6 +1,6 @@
 # 项目状态
 
-当前版本号：v0.9.3 / interview-demo-package
+当前版本号：v0.9.4 / demo-screenshot-package
 
 项目名称：AI论文格式修改Agent
 
@@ -53,6 +53,7 @@
 - 前端运行链路修复：v0.9.1 已修复页面点击运行 Agent 时错误提示过于笼统、分类失败后继续运行未透传确认状态的问题；浏览器页面上传 demo 文件、点击运行、生成报告、TracePanel、预览和下载链路已验收通过。
 - 前端 fetch 兼容修复：v0.9.2 已统一前端后端请求 base URL，支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖，默认 `http://127.0.0.1:8000`；网络错误会显示实际请求地址，便于定位本地浏览器到 FastAPI 的连接问题。
 - 面试演示包：v0.9.3 已新增 `docs/INTERVIEW_DEMO_PACKAGE.md`，并同步 README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT 和 DEMO_CASE，用于说明 v0.9.2 稳定演示基线、演示流程、架构讲法、项目亮点、边界和面试追问。
+- 截图/录屏素材指南：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理首页、上传、结果 dashboard、TracePanel、预览、下载和 390px 窄屏等素材清单，用于面试、简历、作品集和演示准备。
 
 # 最近回归测试结果
 
@@ -344,5 +345,14 @@ Current Bottleneck：
 - 当前 v0.9.2 是面试/演示稳定代码基线，已通过 final demo check。
 - 本轮主要整理展示材料，新增 `docs/INTERVIEW_DEMO_PACKAGE.md`。
 - README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT、DEMO_CASE 和 DEVELOPMENT_LOG 已同步 v0.9.3 演示口径。
+- 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
+- 当前仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
+
+## v0.9.4 Demo Screenshot Package
+
+- 本轮主要整理截图/录屏素材指南，新增 `docs/DEMO_SCREENSHOT_GUIDE.md`。
+- 截图清单覆盖首页 Hero、上传工作台、文件已选择、运行中状态、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 折叠/展开、在线预览、下载入口和 390px 窄屏。
+- `docs/DEMO_SCRIPT.md` 已补充 60-90 秒录屏顺序和重点停顿画面。
+- `docs/INTERVIEW_DEMO_PACKAGE.md` 已增加截图/录屏素材建议，并指向 `docs/DEMO_SCREENSHOT_GUIDE.md`。
 - 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
 - 当前仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。

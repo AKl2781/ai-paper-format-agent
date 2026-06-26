@@ -1,6 +1,6 @@
 # 面试演示脚本
 
-版本：`v0.9.3-interview-demo-package`
+版本：`v0.9.4-demo-screenshot-package`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
@@ -45,11 +45,12 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v0.7.3-task-state-cleanup`。
+- 当前版本：`v0.9.4-demo-screenshot-package`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
 - Task State：v0.7.0 已支持每次运行生成 `task_id` 和 `task_state_path`，记录任务生命周期。
+- 演示素材：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理截图清单、录屏脚本和自动化演示注意事项。
 - 项目边界：不是 RAG，不是 LangGraph，不是 Milvus，不是数据库系统，不是论文代写。
 
 可说：
@@ -106,6 +107,21 @@
 - local 模式必须返回 `ai_score=null`、`ai_used=false`。
 - 修改报告说明改了什么、还有哪些人工复查建议。
 - v0.9.2 之后前端统一使用 `NEXT_PUBLIC_API_BASE_URL || "http://127.0.0.1:8000"`，避免本地演示时混用 host 或协议。
+
+## 4.1 截图和录屏顺序
+
+详细素材清单见 `docs/DEMO_SCREENSHOT_GUIDE.md`。建议录屏控制在 60-90 秒，按下面顺序推进：
+
+1. 首页 Hero 区：停顿 3-5 秒，说明这是格式审查、模板对齐和 Agent 可观测工具。
+2. 上传工作台：停顿 5 秒，展示论文上传、模板上传、本地规则模式和启动按钮。
+3. 文件已选择状态：停顿 3 秒，说明 demo 使用人工构造的脱敏模拟样本。
+4. 运行中状态：短暂停顿，说明当前 `/agent/run` 是同步执行，不是异步队列。
+5. 结果 dashboard：停顿 6-8 秒，展示评分 `80 -> 86` 和结果总览。
+6. 修改报告与检查结果：停顿 8-10 秒，展示 `modification_report`、`reference_check`、`figure_table_check`。
+7. TracePanel 默认折叠：停顿 3 秒，说明主结果区不会被日志打乱。
+8. TracePanel 展开：停顿 8-10 秒，强调这是步骤级 `agent_trace`，用于展示 Agent 可观测，不要讲成完整工业级调度平台。
+9. 在线预览和下载入口：停顿 5 秒，展示最终 DOCX 可预览、可下载。
+10. 390px 窄屏适配：如做作品集素材，可补一张移动端截图，说明页面没有横向溢出。
 
 ## 5. 演示 agent_trace，约 2 分钟
 

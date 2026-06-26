@@ -255,17 +255,31 @@
 
 ---
 
-### v0.9.4-demo-screenshot-package
+### [DONE] v0.9.4-demo-screenshot-package
 
 目标：整理截图/录屏清单，为面试现场准备可视化展示材料。
 
+已完成：
+- 新增 `docs/DEMO_SCREENSHOT_GUIDE.md`。
+- 已整理 13 张推荐截图：Hero、上传工作台、文件已选择、运行中、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 折叠/展开、在线预览、下载入口和 390px 窄屏。
+- 已整理 60-90 秒录屏脚本。
+- 已补充 ASCII 临时路径、API base URL、demo 后 Git 干净和临时服务停止等自动化演示注意事项。
+- 已同步 README、PROJECT_STATUS、DEMO_SCRIPT、INTERVIEW_DEMO_PACKAGE 和 DEVELOPMENT_LOG。
+- 本轮未修改后端核心逻辑、前端 UI、接口、依赖文件或 demo 输入输出文件。
+
+状态：已完成。当前只是展示素材整理，不是业务功能增强；仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
+
+---
+
+### v0.9.5-resume-project-description
+
+目标：整理简历项目描述、作品集摘要和面试口径，方便把当前项目压缩成 3-5 条高质量简历 bullet。
+
 计划：
-- 截图首页 Hero 和上传工作台。
-- 截图评分 `80 -> 86` 的结果总览。
-- 截图修改报告、参考文献检查、图表编号检查。
-- 截图 TracePanel 展开状态。
-- 截图在线预览和下载入口。
-- 记录桌面和 390px 窄屏检查结果。
+- 输出一版中文简历项目描述。
+- 输出一版面试口头介绍。
+- 输出一版作品集 README 摘要。
+- 明确项目边界，不包装为论文代写、正式查重或完整工业级 Agent。
 
 状态：规划中。
 

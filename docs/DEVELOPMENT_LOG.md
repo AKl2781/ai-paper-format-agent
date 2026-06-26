@@ -1,5 +1,45 @@
 # Development Log
 
+## 2026-06-27 v0.9.4-demo-screenshot-package
+
+### 修改目标
+
+在 `v0.9.3-interview-demo-package` 稳定节点基础上，整理 demo 截图/录屏清单和展示素材说明，让项目更方便用于面试、简历、作品集和演示。本轮只改文档，不修改后端核心逻辑、前端 UI、接口、依赖或 demo 输入输出文件。
+
+### 修改范围
+
+- 新增 `docs/DEMO_SCREENSHOT_GUIDE.md`
+  - 整理 13 张推荐截图：首页 Hero、上传工作台、文件已选择、运行中状态、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 折叠/展开、在线预览、下载入口和 390px 窄屏。
+  - 说明每张截图适合用于 README、简历附件、面试演示、作品集、社媒展示或答辩 PPT。
+  - 补充 60-90 秒录屏脚本。
+  - 补充 ASCII 临时路径、`http://127.0.0.1:8000` API base、`NEXT_PUBLIC_API_BASE_URL`、demo 后 `git status` 干净和临时服务停止等自动化演示注意事项。
+  - 补充截图命名建议和能力边界提醒。
+- 更新 `docs/DEMO_SCRIPT.md`
+  - 版本同步到 `v0.9.4-demo-screenshot-package`。
+  - 补充截图和录屏顺序、重点停顿画面和 TracePanel 讲解边界。
+- 更新 `docs/INTERVIEW_DEMO_PACKAGE.md`
+  - 新增“截图/录屏素材建议”小节，并指向 `docs/DEMO_SCREENSHOT_GUIDE.md`。
+- 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
+  - 标记当前版本为 `v0.9.4-demo-screenshot-package`。
+  - 后续路线指向 `v0.9.5-resume-project-description` 和 `v1.0-demo-release-candidate`。
+
+### 未修改范围
+
+- 没有修改 `paper-ai/backend/**`。
+- 没有修改 `paper-ai/frontend/app/page.tsx` 或 `paper-ai/frontend/app/globals.css`。
+- 没有修改 `/agent/run`、上传、预览或下载接口语义。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改 `demo_inputs/*` 或 `demo_outputs/*`。
+- 没有新增异步队列、完整断点续跑、前端 task state 文件读取或完整工业级能力。
+
+### v0.9.4 验收说明
+
+- `git status --short`：PASS，仅包含本轮允许的文档改动和新增 `docs/DEMO_SCREENSHOT_GUIDE.md`。
+- `git diff --name-only`：PASS，仅包含 README、PROJECT_STATUS、TODO、DEVELOPMENT_LOG、DEMO_SCRIPT、INTERVIEW_DEMO_PACKAGE 等文档文件；未出现代码、接口、依赖或 demo 样本改动。
+- `npm run build`：SKIPPED，本轮只改文档，不修改前端代码、依赖或构建配置。
+- 后端 smoke：SKIPPED，本轮只改文档，不修改后端逻辑、接口或测试断言。
+- 能力边界检查：PASS，文档继续明确不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
+
 ## 2026-06-27 v0.9.3-interview-demo-package
 
 ### 修改目标

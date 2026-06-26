@@ -1,8 +1,8 @@
 # Interview Demo Package
 
-版本：`v0.9.3-interview-demo-package`
+版本：`v0.9.4-demo-screenshot-package`
 
-本文档用于面试和项目演示。它整理当前稳定演示代码基线 `v0.9.2-ui-fetch-compat-fix` 的讲解话术、演示流程、技术架构、亮点、边界和常见追问。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
+本文档用于面试和项目演示。它整理当前稳定演示代码基线 `v0.9.2-ui-fetch-compat-fix` 的讲解话术、演示流程、技术架构、亮点、边界和常见追问。v0.9.4 进一步补充截图/录屏素材指南，方便准备 README、简历附件、作品集和答辩 PPT。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
 
 ## A. 项目一句话介绍
 
@@ -59,8 +59,19 @@ v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PAS
 - 有真实可运行 demo 文件和固定 demo_outputs。
 - 有 smoke、构建和 final demo check 记录。
 - 前端已有产品化展示页，更适合现场讲解。
+- v0.9.4 已整理截图/录屏清单，让面试展示材料更容易复用到 README、简历附件、作品集和 PPT。
 
-## F. 当前边界
+## F. 截图/录屏素材建议
+
+详细清单见 `docs/DEMO_SCREENSHOT_GUIDE.md`。
+
+建议至少准备 13 张截图：首页 Hero、上传工作台、文件已选择、运行中状态、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 默认折叠、TracePanel 展开 9 步、在线预览、下载入口和 390px 窄屏适配。
+
+录屏建议控制在 60-90 秒：先展示页面定位，再上传 demo 论文和模板，选择本地规则模式，点击启动 Agent，展示评分、报告、检查结果、TracePanel、预览和下载。讲 TracePanel 时强调“Agent 可观测”，不要说成完整工业级调度平台。
+
+自动化录屏建议使用 ASCII 临时路径，例如 `C:\Temp\paper-ai-demo\`，并在结束后确认 `git status --short` 干净、临时服务已停止。
+
+## G. 当前边界
 
 - 不是论文代写，不生成实验结果、观点或参考文献正文。
 - 不是正式查重，只做重复风险检测 / 相似度预检。
@@ -72,7 +83,7 @@ v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PAS
 - 复杂模板、目录、脚注、公式、页眉页脚和复杂图文排版仍可能需要人工复核。
 - demo 样本是人工构造的脱敏模拟文本，不来自真实用户论文，也不来自 CAJ 原文。
 
-## G. 面试追问回答
+## H. 面试追问回答
 
 ### 1. 为什么不用大模型直接改 Word？
 
