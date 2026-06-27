@@ -712,6 +712,7 @@ p {
 .trace-list li {
   min-width: 0;
   display: grid;
+  grid-template-columns: 40px minmax(0, 1fr);
   gap: 8px;
   padding: 14px;
   border: 1px solid #e1e7ef;
@@ -721,11 +722,19 @@ p {
   box-shadow: 0 10px 22px rgba(15, 23, 42, 0.04);
 }
 
-.trace-list li.done {
+.trace-list li.success {
   border-left-color: #16a34a;
 }
 
-.trace-list li.error {
+.trace-list li.warning {
+  border-left-color: #d97706;
+}
+
+.trace-list li.fallback {
+  border-left-color: #0f766e;
+}
+
+.trace-list li.failed {
   border-left-color: #dc2626;
 }
 
@@ -733,8 +742,68 @@ p {
   border-left-color: #1f4b99;
 }
 
+.trace-list li.skipped {
+  border-left-color: #94a3b8;
+  background: #f8fafc;
+}
+
 .trace-list li.neutral {
   border-left-color: #94a3b8;
+}
+
+.trace-step-index {
+  display: inline-grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 1px solid #dbe3ee;
+  border-radius: 999px;
+  background: #f8fafc;
+  color: #475569;
+  font-size: 13px;
+  font-weight: 900;
+}
+
+.trace-step-index.success {
+  border-color: #bbf7d0;
+  background: #dcfce7;
+  color: #15803d;
+}
+
+.trace-step-index.warning {
+  border-color: #fed7aa;
+  background: #fff7ed;
+  color: #b45309;
+}
+
+.trace-step-index.fallback {
+  border-color: #b7e4d8;
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.trace-step-index.failed {
+  border-color: #fecaca;
+  background: #fee2e2;
+  color: #b42318;
+}
+
+.trace-step-index.running {
+  border-color: #bfdbfe;
+  background: #eef4fb;
+  color: #1f4b99;
+}
+
+.trace-step-index.skipped {
+  border-color: #e2e8f0;
+  background: #f1f5f9;
+  color: #64748b;
+}
+
+.trace-step-body {
+  min-width: 0;
+  display: grid;
+  gap: 8px;
 }
 
 .trace-item-head,
@@ -759,19 +828,34 @@ p {
   font-weight: 800;
 }
 
-.trace-status.done {
+.trace-status.success {
   background: #dcfce7;
   color: #15803d;
 }
 
-.trace-status.error {
+.trace-status.warning {
   background: #fff7ed;
   color: #b45309;
+}
+
+.trace-status.fallback {
+  background: #ecfdf5;
+  color: #0f766e;
+}
+
+.trace-status.failed {
+  background: #fee2e2;
+  color: #b42318;
 }
 
 .trace-status.running {
   background: #eef4fb;
   color: #1f4b99;
+}
+
+.trace-status.skipped {
+  background: #f1f5f9;
+  color: #64748b;
 }
 
 .trace-status.neutral {
@@ -794,6 +878,56 @@ p {
   border-radius: 999px;
   background: #ecfdf5;
   color: #0f766e;
+}
+
+.trace-detail-card {
+  display: grid;
+  gap: 10px;
+  margin-top: 14px;
+  padding: 14px;
+  border: 1px solid #dbe3ee;
+  border-radius: 12px;
+  background: #ffffff;
+}
+
+.trace-detail-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.trace-detail-head span {
+  color: #56657a;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.trace-detail-head strong {
+  color: #162033;
+}
+
+.trace-detail-card p {
+  color: #56657a;
+  font-size: 13px;
+  line-height: 1.6;
+}
+
+.trace-detail-json {
+  max-width: 100%;
+  max-height: 280px;
+  overflow: auto;
+  padding: 12px;
+  border: 1px solid #e1e7ef;
+  border-radius: 8px;
+  background: #0f172a;
+  color: #e2e8f0;
+  font-family: Consolas, "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
 }
 
 .score-overview {
@@ -1345,6 +1479,20 @@ p {
   .hero-badges span,
   .result-meta span {
     max-width: 100%;
+  }
+
+  .trace-list li {
+    grid-template-columns: 1fr;
+  }
+
+  .trace-step-index {
+    width: 28px;
+    height: 28px;
+  }
+
+  .trace-detail-json {
+    max-height: 220px;
+    font-size: 11px;
   }
 
   .score-pair b {

@@ -532,20 +532,22 @@ function ProgressPanel({ running, steps }: { running: boolean; steps: AgentStep[
 function TracePanel({ result }: { result: AgentResult }) {
   const traceItems = Array.isArray(result.agent_trace) ? result.agent_trace : [];
   const hasTaskStateSummary = Boolean(result.task_id || result.task_state_path);
+  const traceDetail = isRecord(result.agent_trace_detail) ? result.agent_trace_detail : null;
+  const hasTraceDetail = Boolean(traceDetail && Object.keys(traceDetail).length);
 
-  if (!traceItems.length && !hasTaskStateSummary) {
+  if (!traceItems.length && !hasTaskStateSummary && !hasTraceDetail) {
     return null;
   }
 
   return (
     <details className="trace-panel">
       <summary>
-        <span>Agent 执行过程</span>
+        <span>执行轨迹</span>
         <strong>{traceItems.length ? `${traceItems.length} 个步骤` : "任务状态摘要"}</strong>
       </summary>
 
       <div className="trace-intro">
-        <p>agent_trace 是步骤级执行记录，用于查看处理链路、耗时和 fallback 情况。</p>
+        <p>agent_trace 是步骤级执行记录，用于查看格式检查过程、耗时、fallback 和需人工复核项。</p>
         <p>当前仍是同步执行接口，不是异步队列，也不是完整断点续跑；前端不会读取 task_state 文件内容。</p>
       </div>
 
@@ -571,29 +573,60 @@ function TracePanel({ result }: { result: AgentResult }) {
 
       {traceItems.length ? (
         <ol className="trace-list">
-          {traceItems.map((item, index) => (
-            <li className={traceStatusTone(item.status)} key={`${item.step ?? "trace"}-${index}`}>
-              <div className="trace-item-head">
-                <strong>{formatTraceStepName(item.step, index)}</strong>
-                <span className={`trace-status ${traceStatusTone(item.status)}`}>{traceStatusLabel(item.status)}</span>
-              </div>
-              <p>{item.message || "该步骤未返回详细说明"}</p>
-              <div className="trace-meta">
-                <span>{formatTraceDuration(item.duration_ms)}</span>
-                <span className={item.fallback_used ? "trace-fallback-badge" : undefined}>
-                  {item.fallback_used ? "已使用 fallback / 本地规则兜底" : "未标记 fallback"}
+          {traceItems.map((item, index) => {
+            const tone = traceStatusTone(item.status, item.fallback_used);
+            return (
+              <li className={`trace-step ${tone}`} key={`${item.step ?? "trace"}-${index}`}>
+                <span className={`trace-step-index ${tone}`} aria-label={`步骤 ${index + 1}`}>
+                  {index + 1}
                 </span>
-              </div>
-            </li>
-          ))}
+                <div className="trace-step-body">
+                  <div className="trace-item-head">
+                    <strong>{formatTraceStepName(item.step, index)}</strong>
+                    <span className={`trace-status ${tone}`}>{traceStatusLabel(item.status, item.fallback_used)}</span>
+                  </div>
+                  <p>{formatTraceMessage(item.message)}</p>
+                  <div className="trace-meta">
+                    <span>{formatTraceDuration(item.duration_ms)}</span>
+                    <span className={item.fallback_used ? "trace-fallback-badge" : undefined}>
+                      {item.fallback_used ? "已使用 fallback / 本地规则兜底" : "未标记 fallback"}
+                    </span>
+                  </div>
+                </div>
+              </li>
+            );
+          })}
         </ol>
+      ) : null}
+
+      {hasTraceDetail && traceDetail ? (
+        <div className="trace-detail-card">
+          <div className="trace-detail-head">
+            <span>agent_trace_detail</span>
+            <strong>详细执行说明</strong>
+          </div>
+          <p>以下为后端返回的旧解释型 trace 明细，仅用于排查和演示说明；字段缺失时以前面的步骤流为准。</p>
+          <pre className="trace-detail-json">{formatTraceDetail(traceDetail)}</pre>
+        </div>
       ) : null}
     </details>
   );
 }
 
 function formatTraceStepName(step: string | undefined, index: number) {
-  return step?.trim() ? step : `步骤 ${index + 1}`;
+  return step?.trim() ? step : `未命名步骤 ${index + 1}`;
+}
+
+function formatTraceMessage(message?: string) {
+  return message?.trim() ? message : "该步骤未返回简短说明。";
+}
+
+function formatTraceDetail(detail: Record<string, unknown>) {
+  try {
+    return JSON.stringify(detail, null, 2);
+  } catch {
+    return "agent_trace_detail 无法格式化展示。";
+  }
 }
 
 function ScoreOverview({ result }: { result: AgentResult }) {
@@ -802,31 +835,39 @@ function formatTraceDuration(duration?: number) {
   return typeof duration === "number" && Number.isFinite(duration) ? `${duration} ms` : "未记录耗时";
 }
 
-function traceStatusLabel(status?: string) {
-  const normalized = normalizeTraceStatus(status);
+function traceStatusLabel(status?: string, fallbackUsed?: boolean) {
+  const normalized = normalizeTraceStatus(status, fallbackUsed);
   if (!normalized) return "未记录状态";
-  if (normalized === "done") return "已完成";
-  if (normalized === "error") return "需查看";
-  if (normalized === "running") return "执行中";
-  if (normalized === "skipped") return "已跳过";
+  if (normalized === "success") return "success";
+  if (normalized === "warning") return "warning";
+  if (normalized === "fallback") return "fallback";
+  if (normalized === "failed") return "failed";
+  if (normalized === "running") return "running";
+  if (normalized === "skipped") return "skipped";
   return status?.trim() || "未记录状态";
 }
 
-function traceStatusTone(status?: string) {
-  const normalized = normalizeTraceStatus(status);
-  if (normalized === "done") return "done";
-  if (normalized === "error") return "error";
+function traceStatusTone(status?: string, fallbackUsed?: boolean) {
+  const normalized = normalizeTraceStatus(status, fallbackUsed);
+  if (normalized === "success") return "success";
+  if (normalized === "warning") return "warning";
+  if (normalized === "fallback") return "fallback";
+  if (normalized === "failed") return "failed";
   if (normalized === "running") return "running";
+  if (normalized === "skipped") return "skipped";
   return "neutral";
 }
 
-function normalizeTraceStatus(status?: string) {
+function normalizeTraceStatus(status?: string, fallbackUsed?: boolean) {
   const normalized = status?.trim().toLowerCase();
-  if (!normalized) return "";
-  if (normalized === "done" || normalized === "ok" || normalized === "succeeded" || normalized === "success") return "done";
-  if (normalized === "error" || normalized === "failed" || normalized === "failure") return "error";
+  if (normalized === "error" || normalized === "failed" || normalized === "failure") return "failed";
+  if (normalized === "warning" || normalized === "warn") return "warning";
+  if (normalized === "fallback") return "fallback";
   if (normalized === "running") return "running";
-  if (normalized === "skipped") return "skipped";
+  if (normalized === "skipped" || normalized === "skip") return "skipped";
+  if (fallbackUsed) return "fallback";
+  if (!normalized) return "";
+  if (normalized === "done" || normalized === "ok" || normalized === "succeeded" || normalized === "success") return "success";
   return normalized;
 }
 
