@@ -262,6 +262,7 @@
 已完成：
 - 新增 `docs/DEMO_SCREENSHOT_GUIDE.md`。
 - 已整理 13 张推荐截图：Hero、上传工作台、文件已选择、运行中、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 折叠/展开、在线预览、下载入口和 390px 窄屏。
+- 已归档 2026-06-27 真实网页运行截图：`docs/assets/screenshots/real-web-2026-06-27/`，共 10 张，覆盖首页、上传、运行中、结果 dashboard、检查模块、TracePanel、在线预览和下载入口。
 - 已整理 60-90 秒录屏脚本。
 - 已补充 ASCII 临时路径、API base URL、demo 后 Git 干净和临时服务停止等自动化演示注意事项。
 - 已同步 README、PROJECT_STATUS、DEMO_SCRIPT、INTERVIEW_DEMO_PACKAGE 和 DEVELOPMENT_LOG。

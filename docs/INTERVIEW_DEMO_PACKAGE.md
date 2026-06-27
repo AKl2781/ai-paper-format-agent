@@ -65,9 +65,13 @@ v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PAS
 
 详细清单见 `docs/DEMO_SCREENSHOT_GUIDE.md`。
 
+真实网页截图已归档到 `docs/assets/screenshots/real-web-2026-06-27/`，共 10 张，覆盖首页、上传、运行中、结果 dashboard、检查模块、TracePanel、在线预览和下载入口。建议作品集主图使用 `01_home_overview_real.png`，面试流程展示按 `03_upload_waiting_real.png`、`04_running_agent_real.png`、`06_result_dashboard_real.png`、`08_trace_expanded_real.png`、`10_preview_download_real.png` 顺序展开。
+
 建议至少准备 13 张截图：首页 Hero、上传工作台、文件已选择、运行中状态、结果 dashboard、评分 `80 -> 86`、修改报告、参考文献/图表检查、TracePanel 默认折叠、TracePanel 展开 9 步、在线预览、下载入口和 390px 窄屏适配。
 
 录屏建议控制在 60-90 秒：先展示页面定位，再上传 demo 论文和模板，选择本地规则模式，点击启动 Agent，展示评分、报告、检查结果、TracePanel、预览和下载。讲 TracePanel 时强调“Agent 可观测”，不要说成完整工业级调度平台。
+
+注意：本次真实截图中的结果评分为 `81 -> 87`，历史固定 demo 输出样例为 `80 -> 86`。现场讲解时以当前展示截图为准，避免把两个样例混成同一次运行。
 
 自动化录屏建议使用 ASCII 临时路径，例如 `C:\Temp\paper-ai-demo\`，并在结束后确认 `git status --short` 干净、临时服务已停止。
 

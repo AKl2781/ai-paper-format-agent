@@ -112,6 +112,18 @@
 
 详细素材清单见 `docs/DEMO_SCREENSHOT_GUIDE.md`。建议录屏控制在 60-90 秒，按下面顺序推进：
 
+真实网页截图已归档到 `docs/assets/screenshots/real-web-2026-06-27/`。如果不现场录屏，也可以直接按以下顺序展示静态截图：
+
+1. `01_home_overview_real.png`
+2. `03_upload_waiting_real.png`
+3. `04_running_agent_real.png`
+4. `06_result_dashboard_real.png`
+5. `07_checks_reference_figures_real.png`
+6. `08_trace_expanded_real.png`
+7. `10_preview_download_real.png`
+
+本次真实截图评分为 `81 -> 87`；如果讲固定 demo 输出样例，再使用 `80 -> 86`。
+
 1. 首页 Hero 区：停顿 3-5 秒，说明这是格式审查、模板对齐和 Agent 可观测工具。
 2. 上传工作台：停顿 5 秒，展示论文上传、模板上传、本地规则模式和启动按钮。
 3. 文件已选择状态：停顿 3 秒，说明 demo 使用人工构造的脱敏模拟样本。

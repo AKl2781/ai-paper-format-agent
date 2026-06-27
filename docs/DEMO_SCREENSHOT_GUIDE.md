@@ -4,6 +4,31 @@
 
 本文档用于整理面试、简历、作品集和演示时可使用的截图/录屏素材清单。当前推荐演示代码基线仍为 `v0.9.2-ui-fetch-compat-fix`，v0.9.4 只整理展示材料，不修改前端 UI、后端接口或 demo 样本。
 
+## 已归档真实截图
+
+2026-06-27 已补充一组真实网页运行截图，目录为：
+
+```text
+docs/assets/screenshots/real-web-2026-06-27/
+```
+
+这组截图来自浏览器真实页面，不是设计稿或占位图。当前共 10 张，覆盖首页、上传工作台、运行中状态、结果 dashboard、检查模块、TracePanel、在线预览和下载入口。
+
+| 文件 | 内容 | 备注 |
+| --- | --- | --- |
+| `01_home_overview_real.png` | 首页完整首屏 | 可作为 README / 作品集主图 |
+| `02_home_hero_real.png` | Hero 与能力卡片局部 | 用于项目定位展示 |
+| `03_upload_waiting_real.png` | 等待上传状态 | 展示初始工作台 |
+| `04_running_agent_real.png` | 已选择论文并进入运行中 | 展示同步执行入口 |
+| `05_agent_steps_summary_real.png` | Agent 执行过程摘要列表 | 展示步骤级处理结果 |
+| `06_result_dashboard_real.png` | 结果 dashboard | 本次真实运行评分为 `81 -> 87` |
+| `07_checks_reference_figures_real.png` | 参考文献、图表编号和重复风险检查 | 展示检查模块 |
+| `08_trace_expanded_real.png` | TracePanel 展开 | 9 个步骤、task_id 和 task_state_path 摘要 |
+| `09_preview_cropped_real.png` | 在线预览局部窄宽截图 | 作为 QA 记录，显示预览阅读体验仍可优化 |
+| `10_preview_download_real.png` | 在线预览与最终 docx 下载入口 | 展示预览和下载闭环 |
+
+说明：历史固定 demo 输出样例为 `80 -> 86`，本次真实网页截图为 `81 -> 87`。二者都可以使用，但在简历、作品集或面试话术中应明确对应截图或样例来源。
+
 ## A. 截图清单
 
 | 序号 | 建议文件名 | 截图内容 | 重点展示 |
@@ -105,3 +130,4 @@ demo_mobile_390px_check.mp4
 - 不要声称前端可以读取 `task_state` 文件内容。
 - AI 内容修改能力仍有限，复杂模板、目录、脚注、公式、图片题注等场景仍可能需要人工复核。
 - demo 样本是人工构造 / 脱敏模拟材料，不来自真实用户论文，也不来自 CAJ 原文。
+- 已归档真实截图可用于展示主链路跑通，但截图中的样本文档特征不应被包装成正式内容审校或正式查重结论。

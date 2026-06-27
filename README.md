@@ -16,7 +16,7 @@
 - 前端视觉升级：v0.9.0 已将首页升级为更适合演示的 AI SaaS 产品页 + 工具工作台 + 结果仪表盘风格。
 - 前端运行链路修复：v0.9.1 已修复页面点击运行时错误信息过于笼统、分类失败后继续运行未透传确认状态的问题，demo 页面点击运行链路已重新验收通过。
 - 前端 fetch 兼容修复：v0.9.2 已统一前端 API base URL，支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖，默认使用 `http://127.0.0.1:8000`，并在网络错误中展示实际请求地址。
-- 演示素材整理：v0.9.4 已新增截图/录屏清单，用于面试、简历、作品集和演示材料准备。
+- 演示素材整理：v0.9.4 已新增截图/录屏清单，并已归档 2026-06-27 真实网页截图到 `docs/assets/screenshots/real-web-2026-06-27/`，用于面试、简历、作品集和演示材料准备。
 - 响应式细节：v0.8.5 已修复 390px 左右窄屏横向溢出，优化小屏卡片、按钮、长文本和 TracePanel 展示。
 - 运行产物治理：v0.8.6 已忽略后端模板上传运行副本，避免 demo 后 `paper-ai/backend/templates/*.docx` 污染 Git 工作区。
 - 任务状态落盘：每次 Agent Pipeline 运行会生成 `task_id`，并写入 `task_state.json`，记录 running/succeeded/failed 生命周期状态。
@@ -43,6 +43,8 @@ v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PAS
 完整面试演示材料见：`docs/INTERVIEW_DEMO_PACKAGE.md`。
 
 演示截图/录屏素材指南见：`docs/DEMO_SCREENSHOT_GUIDE.md`。
+
+真实网页截图目录见：`docs/assets/screenshots/real-web-2026-06-27/`。
 
 ## 技术栈
 
