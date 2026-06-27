@@ -1,10 +1,12 @@
 # 项目状态
 
-当前版本号：v0.9.4 / demo-screenshot-package
+当前版本号：v0.9.4 / demo-screenshot-package（已完成，远端 main 已同步到 `e169bfb`）
 
 项目名称：AI论文格式修改Agent
 
 当前阶段：格式Agent（进行中）
+
+当前阶段切换：v0.9.5-demo-trace-ui（规划中，先做阶段切换文档同步）
 
 完成度：
 
@@ -115,7 +117,10 @@ FAIL：
 
 Current Bottleneck：
 
-- v0.5.3 已完成 controlled beta 用户试用准备和用户反馈材料；下一阶段可收集 3-5 名可信用户的真实试用反馈，并形成 `BETA_FEEDBACK_AUDIT.md`。
+- v0.9.4 demo screenshot package 已完成，真实网页截图已归档；下一阶段优先进入 `v0.9.5-demo-trace-ui`。
+- v0.9.5 只做演示 UI 展示增强规划：增强 Agent Trace 可视化、增加模板规则摘要展示、增加修改前后 Diff 展示。
+- 本阶段不做核心格式化算法重构，不改上传、预览、下载主流程，不破坏 local/ai 模式兼容。
+- 本阶段不能改动 tag，不能移动、删除或重建 `v0.9.4-demo-screenshot-package` tag。
 
 回归后仍需关注：
 
@@ -174,6 +179,15 @@ Current Bottleneck：
 - 仅提供最终结果而缺少修改前后对照，会让用户难以判断 Agent 是否真的有效。
 
 # 下一阶段目标
+
+## v0.9.5 Demo Trace UI（当前下一阶段）
+
+- 增强 Agent Trace 可视化，让用户更清楚看到每一步处理、耗时、fallback 和任务状态摘要。
+- 增加模板规则摘要展示，让上传模板解析出的关键格式规则可以被解释和演示。
+- 增加修改前后 Diff 展示，让用户能判断 Agent 实际改了什么，而不是只看到最终文件。
+- 保持现有上传、预览、下载功能不变。
+- 保持 local/ai 模式兼容，local 模式仍必须 `ai_score=null`、`ai_used=false`。
+- 不大规模重构，不重写核心格式化算法，不改动 tag，不移动 `v0.9.4-demo-screenshot-package` tag。
 
 ## 未来1周
 
@@ -358,3 +372,13 @@ Current Bottleneck：
 - `docs/INTERVIEW_DEMO_PACKAGE.md` 已增加截图/录屏素材建议，并指向 `docs/DEMO_SCREENSHOT_GUIDE.md`。
 - 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
 - 当前仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
+
+## v0.9.5 Demo Trace UI
+
+- 下一阶段目标已切换为 `v0.9.5-demo-trace-ui`。
+- 目标一：增强 Agent Trace 可视化，提升执行链路、耗时、fallback 和任务状态解释能力。
+- 目标二：增加模板规则摘要展示，让模板解析结果能以用户可理解的方式出现在结果页。
+- 目标三：增加修改前后 Diff 展示，让报告和预览更贴近真实修改量。
+- 范围限制：这是 UI 展示增强阶段，不是核心格式化算法重构，不修改后端核心 pipeline，不改变 `/agent/run` 同步语义。
+- 兼容要求：保持现有上传、预览、下载功能不变，保持 local/ai 模式兼容。
+- 版本治理：不得改动 tag，不得移动、删除或重建 `v0.9.4-demo-screenshot-package` tag。

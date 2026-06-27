@@ -272,7 +272,24 @@
 
 ---
 
-### v0.9.5-resume-project-description
+### v0.9.5-demo-trace-ui
+
+目标：在 `v0.9.4-demo-screenshot-package` 已完成、真实网页截图已归档的基础上，增强结果页演示解释能力，让 Agent Trace、模板规则和修改前后差异更容易被用户和面试官理解。
+
+计划：
+- 增强 Agent Trace 可视化，展示更清晰的处理步骤、耗时、fallback 和任务状态摘要。
+- 增加模板规则摘要展示，解释上传模板解析出的关键格式规则。
+- 增加修改前后 Diff 展示，让用户看到 Agent 实际修改了什么。
+- 保持现有上传、预览、下载功能不变。
+- 保持 local/ai 模式兼容，local 模式仍必须 `ai_score=null`、`ai_used=false`。
+- 不大规模重构，不重写核心格式化算法，不改变 `/agent/run` 同步语义。
+- 不改动 tag，不移动、删除或重建 `v0.9.4-demo-screenshot-package` tag。
+
+状态：规划中。
+
+---
+
+### v0.9.5-resume-project-description（后续非当前优先级）
 
 目标：整理简历项目描述、作品集摘要和面试口径，方便把当前项目压缩成 3-5 条高质量简历 bullet。
 
@@ -282,7 +299,7 @@
 - 输出一版作品集 README 摘要。
 - 明确项目边界，不包装为论文代写、正式查重或完整工业级 Agent。
 
-状态：规划中。
+状态：后续规划中；当前优先级已让位给 `v0.9.5-demo-trace-ui`，避免与下一阶段路线冲突。
 
 ---
 
@@ -313,6 +330,7 @@
 ## 后续补充说明
 
 - 如需完整 task state 可视化，需要后续新增安全读取接口，而不是让前端直接读取本地 `task_state_path`。
+- `v0.9.5-demo-trace-ui` 是 UI 展示增强阶段，不是核心格式化算法重构；不得改动或移动 `v0.9.4-demo-screenshot-package` tag。
 
 ---
 

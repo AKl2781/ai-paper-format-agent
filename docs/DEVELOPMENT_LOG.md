@@ -1,5 +1,45 @@
 # Development Log
 
+## 2026-06-27 v0.9.5-demo-trace-ui roadmap sync
+
+### 修改目标
+
+在 `v0.9.4-demo-screenshot-package` 已完成、真实网页截图已归档、远端 `main` 已同步到 `e169bfb` 的基础上，先做一次阶段切换文档同步。下一阶段统一调整为 `v0.9.5-demo-trace-ui`，目标是增强 Agent Trace 可视化、模板规则摘要展示和修改前后 Diff 展示。
+
+### 修改范围
+
+- 更新 `PROJECT_STATUS.md`
+  - 明确 v0.9.4 demo screenshot package 已完成。
+  - 明确当前下一阶段为 `v0.9.5-demo-trace-ui`。
+  - 写清 v0.9.5 是 UI 展示增强阶段，不是核心格式化算法重构。
+  - 写清保持上传、预览、下载功能不变，保持 local/ai 模式兼容。
+- 更新 `TODO.md`
+  - 将当前 v0.9.5 路线调整为 `v0.9.5-demo-trace-ui`。
+  - 将旧的 `v0.9.5-resume-project-description` 降级为后续非当前优先级，避免与新阶段冲突。
+  - 补充不得移动、删除或重建 `v0.9.4-demo-screenshot-package` tag 的版本治理约束。
+- 更新 `docs/DEVELOPMENT_LOG.md`
+  - 增加本次阶段切换记录。
+  - 修正 v0.9.4 日志中的后续路线指向。
+
+### 未修改范围
+
+- 没有修改 `paper-ai/backend/**`。
+- 没有修改 `paper-ai/frontend/**`。
+- 没有修改 `services/**`。
+- 没有修改 `package.json`、lock 文件或 `requirements.txt`。
+- 没有修改任何业务代码。
+- 没有修改任何截图文件。
+- 没有改动 tag，未移动 `v0.9.4-demo-screenshot-package` tag。
+
+### v0.9.5 路线边界
+
+- 本阶段计划增强 Agent Trace 可视化。
+- 本阶段计划增加模板规则摘要展示。
+- 本阶段计划增加修改前后 Diff 展示。
+- 本阶段必须保持现有上传、预览、下载功能不变。
+- 本阶段必须保持 local/ai 模式兼容。
+- 本阶段不做大规模重构，不重写核心格式化算法，不改变 `/agent/run` 同步语义。
+
 ## 2026-06-27 v0.9.4-demo-screenshot-package
 
 ### 修改目标
@@ -21,7 +61,7 @@
   - 新增“截图/录屏素材建议”小节，并指向 `docs/DEMO_SCREENSHOT_GUIDE.md`。
 - 更新 README、PROJECT_STATUS、TODO 和 DEVELOPMENT_LOG
   - 标记当前版本为 `v0.9.4-demo-screenshot-package`。
-  - 后续路线指向 `v0.9.5-resume-project-description` 和 `v1.0-demo-release-candidate`。
+  - 后续路线指向 `v0.9.5-demo-trace-ui` 和 `v1.0-demo-release-candidate`；`v0.9.5-resume-project-description` 保留为后续非当前优先级。
 
 ### 未修改范围
 
