@@ -40,6 +40,14 @@
 - 后端 smoke：SKIPPED，本轮只改文档，不修改后端逻辑、接口或测试断言。
 - 能力边界检查：PASS，文档继续明确不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
 
+### 远端同步与素材目录状态
+
+- 本地提交 `c1741ae` 已打 tag：`v0.9.4-demo-screenshot-package`。
+- 远端同步前检查：PASS，`git status --short` 为空，当前分支为 `main`，HEAD 包含 `v0.9.4-demo-screenshot-package`，`origin` 指向 `https://github.com/AKl2781/ai-paper-format-agent.git`。
+- 远端同步结果：PASS，`git push origin main` 和 `git push origin v0.9.4-demo-screenshot-package` 均成功。
+- demo 截图素材目录已准备：`docs/assets/screenshots/`。
+- 当前没有生成截图或录屏文件；后续仍需要人工补充真实截图/录屏素材，不要伪造图片文件。
+
 ## 2026-06-27 v0.9.3-interview-demo-package
 
 ### 修改目标
