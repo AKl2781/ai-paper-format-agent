@@ -1,5 +1,55 @@
 # Development Log
 
+## 2026-07-01 v1.0-showcase release candidate docs sync
+
+### 修改目标
+
+在当前 HEAD `c73a4f8 feat: enhance agent trace visualization` 基础上做 v1.0-showcase 暑期实习展示版封版整理。当前功能层面未发现阻断级 FAIL；本轮重点是统一 README、PROJECT_STATUS、TODO 和 docs 演示材料中的版本口径，而不是继续开发新功能。
+
+### 版本口径
+
+- 当前推荐演示基线：当前 HEAD `c73a4f8 feat: enhance agent trace visualization`。
+- `v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。
+- 当前 HEAD 已包含 v0.9.5 trace UI 相关增强。
+- 当前尚未打 `v1.0-showcase` tag；建议在封版整理和最小回归 PASS 后创建。
+
+### 修改范围
+
+- 更新 `README.md`
+  - 标记当前版本为 `v1.0-showcase release candidate / 暑期实习展示版候选`。
+  - 明确当前推荐演示基线为当前 HEAD。
+  - 补充 v1.0-showcase 可展示能力和 v1.1 延期项。
+- 更新 `PROJECT_STATUS.md`
+  - 将当前阶段切换为 v1.0-showcase 封版整理。
+  - 记录当前 HEAD、上一阶段 tag 和建议封版 tag。
+  - 将深度内容修改、完整 task state 可视化、异步队列/断点续跑等放入 v1.1。
+- 更新 `TODO.md`
+  - 将 v0.9.5 trace UI 相关增强纳入当前 HEAD。
+  - 将 v1.0-showcase release candidate 标记为当前封版任务。
+  - 整理 v1.1 延期项。
+- 更新 `docs/DEMO_SCRIPT.md`、`docs/INTERVIEW_DEMO_PACKAGE.md`、`docs/DEMO_SCREENSHOT_GUIDE.md`
+  - 统一演示基线、旧 tag 含义和封版 tag 建议。
+- 新增 `docs/V1_0_SHOWCASE_SUMMARY.md`
+  - 汇总项目定位、推荐基线、可展示功能、演示流程、架构摘要、Agent trace、回归说明、限制和 v1.1 计划。
+
+### 未修改范围
+
+- 没有修改 `paper-ai/backend/**` 核心业务代码。
+- 没有修改 `paper-ai/frontend/app/page.tsx` 或上传、运行、预览、下载主流程。
+- 没有修改 API 字段结构。
+- 没有新增依赖。
+- 没有移动、删除或重建任何 tag。
+
+### v1.0-showcase 最小回归
+
+- `python -m py_compile`：PASS。
+- `python test_agent_orchestrator_trace.py`：PASS。
+- `python test_smoke_agent_flow.py`：PASS。
+- `python run_real_doc_regression.py --manifest test_documents/manifest.csv --mode local --limit 1 --run-id v1_0_showcase_manifest_smoke`：PASS，1/1。
+- `python run_real_doc_regression.py --manifest test_documents/generated_manifest.csv --mode local --limit 1 --run-id v1_0_showcase_generated_smoke`：PASS，1/1。
+- `npm run build`：PASS。
+- heavy_manifest 全量回归：本轮未执行，保留为打 tag 前可选长测；历史记录已有 heavy 1/1 PASS。
+
 ## 2026-06-27 v0.9.5-demo-trace-ui roadmap sync
 
 ### 修改目标

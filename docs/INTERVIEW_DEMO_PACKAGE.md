@@ -1,8 +1,8 @@
 # Interview Demo Package
 
-版本：`v0.9.4-demo-screenshot-package`
+版本：`v1.0-showcase release candidate / 暑期实习展示版候选`
 
-本文档用于面试和项目演示。它整理当前稳定演示代码基线 `v0.9.2-ui-fetch-compat-fix` 的讲解话术、演示流程、技术架构、亮点、边界和常见追问。v0.9.4 进一步补充截图/录屏素材指南，方便准备 README、简历附件、作品集和答辩 PPT。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
+本文档用于面试和项目演示。当前推荐演示基线是 HEAD `c73a4f8 feat: enhance agent trace visualization`，也就是 `v1.0-showcase release candidate`；`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。当前 HEAD 包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
 
 ## A. 项目一句话介绍
 
@@ -29,7 +29,7 @@
 13. 展示在线预览。
 14. 点击下载最终 DOCX。
 
-v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PASS，`/document/classify` 200，`/agent/run` 200，preview/download PASS，TracePanel PASS，桌面和 390px 窄屏无横向溢出，demo 后 `git status` 干净。
+当前 v1.0-showcase RC 沿用 v0.9.2 之后稳定的上传/预览/下载主链路，并叠加当前 HEAD 的 trace UI 增强。封版整理和最小回归 PASS 后，建议创建 tag：`v1.0-showcase`。
 
 ## D. 技术架构讲法
 
@@ -58,8 +58,9 @@ v0.9.2 final demo check 已通过：`npm run build` PASS，真实页面 demo PAS
 - 支持 task_state 最小状态持久化，用于记录任务生命周期。
 - 有真实可运行 demo 文件和固定 demo_outputs。
 - 有 smoke、构建和 final demo check 记录。
+- 有 manifest / generated_manifest / heavy_manifest 回归体系。
 - 前端已有产品化展示页，更适合现场讲解。
-- v0.9.4 已整理截图/录屏清单，让面试展示材料更容易复用到 README、简历附件、作品集和 PPT。
+- 当前 HEAD 已包含 v0.9.5 trace UI 相关增强；v0.9.4 已整理截图/录屏清单，让面试展示材料更容易复用到 README、简历附件、作品集和 PPT。
 
 ## F. 截图/录屏素材建议
 
@@ -137,10 +138,18 @@ AI 是增强项，不是主流程唯一依赖。ai 模式下 LLM 调用失败会
 
 本地 FastAPI 默认监听 HTTP 8000，统一使用 `127.0.0.1` 可以避免 `localhost` / `127.0.0.1` 或 `http` / `https` 混用。v0.9.2 也支持 `NEXT_PUBLIC_API_BASE_URL` 覆盖。
 
-### 13. 为什么自动化上传建议使用 ASCII 临时路径？
+### 13. v1.0-showcase 和旧 tag 是什么关系？
+
+`v0.9.4-demo-screenshot-package` 是上一阶段截图素材包 tag；当前 HEAD 已经在它之后继续前进，并包含 trace UI 相关增强。v1.0-showcase RC 使用当前 HEAD 作为推荐演示基线，等封版文档和最小回归通过后，再创建 `v1.0-showcase` tag。
+
+### 14. v1.1 准备做什么？
+
+v1.1 主要承接展示版之后的能力增强：深度内容级修改、完整 task state 可视化、异步队列/断点续跑、学校模板库、更强模板规则摘要、更完整修改前后 Diff、真实授权用户样本扩展、AI 评分与真实修改量强绑定，以及云端部署和多用户系统。
+
+### 15. 为什么自动化上传建议使用 ASCII 临时路径？
 
 在当前 Windows + CDP 自动化环境中，中文仓库路径下的文件句柄曾触发 `NotFoundError`，并在 Network 中表现为上传请求失败。把同内容文件复制到 ASCII 临时路径后，真实页面流程稳定通过。这是自动化环境兼容问题，不是 demo 文件来源变化。
 
-### 14. `ERR_ALPN_NEGOTIATION_FAILED` 是怎么定位的？
+### 16. `ERR_ALPN_NEGOTIATION_FAILED` 是怎么定位的？
 
 先确认 Python 直调 `/agent/run` 返回 200，排除后端字段和业务错误；再用浏览器 Network 捕获到 `/document/classify` 和 `/agent/run` 的 loadingFailed；最后对比小请求、ASCII 临时路径和真实页面流程，定位为本地浏览器自动化上传路径兼容问题，并通过统一 API base URL 和更清晰错误提示降低排查成本。

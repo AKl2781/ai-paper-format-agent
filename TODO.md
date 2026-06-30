@@ -248,7 +248,7 @@
 - 新增 `docs/INTERVIEW_DEMO_PACKAGE.md`。
 - 已整理项目一句话介绍、30 秒介绍、2 分钟演示流程、技术架构讲法、项目亮点、当前边界和面试追问。
 - 已同步 README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT、DEMO_CASE 和 DEVELOPMENT_LOG。
-- 当前推荐演示代码基线为 `v0.9.2-ui-fetch-compat-fix`。
+- 当时推荐演示代码基线为 `v0.9.2-ui-fetch-compat-fix`；v1.0-showcase RC 的当前推荐基线已切换为当前 HEAD。
 - 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
 
 状态：已完成。当前仍不是论文代写、正式查重、异步队列、完整断点续跑或完整工业级 Agent。
@@ -272,20 +272,20 @@
 
 ---
 
-### v0.9.5-demo-trace-ui
+### [DONE] v0.9.5-demo-trace-ui
 
 目标：在 `v0.9.4-demo-screenshot-package` 已完成、真实网页截图已归档的基础上，增强结果页演示解释能力，让 Agent Trace、模板规则和修改前后差异更容易被用户和面试官理解。
 
-计划：
+已完成/当前状态：
 - 增强 Agent Trace 可视化，展示更清晰的处理步骤、耗时、fallback 和任务状态摘要。
-- 增加模板规则摘要展示，解释上传模板解析出的关键格式规则。
-- 增加修改前后 Diff 展示，让用户看到 Agent 实际修改了什么。
+- 当前 HEAD `c73a4f8 feat: enhance agent trace visualization` 已包含 trace UI 相关增强。
+- 模板规则摘要和更完整修改前后 Diff 仍作为 v1.1 延期项，不在 v1.0-showcase 封版整理中继续扩展。
 - 保持现有上传、预览、下载功能不变。
 - 保持 local/ai 模式兼容，local 模式仍必须 `ai_score=null`、`ai_used=false`。
 - 不大规模重构，不重写核心格式化算法，不改变 `/agent/run` 同步语义。
 - 不改动 tag，不移动、删除或重建 `v0.9.4-demo-screenshot-package` tag。
 
-状态：规划中。
+状态：已作为当前 HEAD 的展示增强能力纳入 v1.0-showcase release candidate；封版阶段不再新增功能。
 
 ---
 
@@ -303,17 +303,36 @@
 
 ---
 
-### v1.0-demo-release-candidate
+### v1.0-showcase-release-candidate
 
-目标：准备演示候选版本，冻结当前可展示能力、边界说明、演示材料和回归检查清单。
+目标：准备 `v1.0-showcase` 暑期实习展示版候选，冻结当前可展示能力、边界说明、演示材料和回归检查清单。
 
-状态：规划中。
+任务：
+- 统一 README、PROJECT_STATUS、TODO、DEMO_SCRIPT、INTERVIEW_DEMO_PACKAGE、DEMO_SCREENSHOT_GUIDE 和 DEVELOPMENT_LOG 的版本口径。
+- 明确当前推荐演示基线为当前 HEAD，而不是旧的 `v0.9.2` 或 `v0.9.4`。
+- 明确 `v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。
+- 明确当前 HEAD 包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。
+- 补充封版摘要文档 `docs/V1_0_SHOWCASE_SUMMARY.md`。
+- 完成最小回归后再建议打 tag：`v1.0-showcase`。
+
+状态：已完成封版整理。当前等待用户确认是否创建 `v1.0-showcase` tag；本阶段只做文档和展示口径整理，未新增核心功能，未重构核心代码，未改变 API 字段结构。
 
 ---
 
-### v1.1-resume-draft-design
+### v1.1-showcase-follow-up
 
-目标：设计断点续跑能力，但暂不默认实现完整异步队列。
+目标：承接 v1.0-showcase 之后的能力增强，但不在封版整理中实现。
+
+延期项：
+- 深度内容级修改能力。
+- 完整 task state 可视化。
+- 异步队列 / 断点续跑。
+- 学校模板库。
+- 更强的模板规则摘要。
+- 更完整的修改前后 Diff。
+- 真实授权用户样本扩展。
+- AI 评分与真实修改量强绑定。
+- 云端部署与多用户系统。
 
 状态：规划中。
 
@@ -330,7 +349,8 @@
 ## 后续补充说明
 
 - 如需完整 task state 可视化，需要后续新增安全读取接口，而不是让前端直接读取本地 `task_state_path`。
-- `v0.9.5-demo-trace-ui` 是 UI 展示增强阶段，不是核心格式化算法重构；不得改动或移动 `v0.9.4-demo-screenshot-package` tag。
+- v1.0-showcase 封版整理只统一文档和展示口径，不改动后端核心 pipeline，不改动上传、预览、下载主流程。
+- 不得改动或移动 `v0.9.4-demo-screenshot-package` tag；`v1.0-showcase` 需要等最小回归 PASS 后再创建。
 
 ---
 

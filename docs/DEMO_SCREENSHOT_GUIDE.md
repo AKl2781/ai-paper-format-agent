@@ -1,8 +1,8 @@
 # Demo Screenshot Guide
 
-版本：`v0.9.4-demo-screenshot-package`
+版本：`v1.0-showcase release candidate / 暑期实习展示版候选`
 
-本文档用于整理面试、简历、作品集和演示时可使用的截图/录屏素材清单。当前推荐演示代码基线仍为 `v0.9.2-ui-fetch-compat-fix`，v0.9.4 只整理展示材料，不修改前端 UI、后端接口或 demo 样本。
+本文档用于整理面试、简历、作品集和演示时可使用的截图/录屏素材清单。当前推荐演示基线是 HEAD `c73a4f8 feat: enhance agent trace visualization`，即 v1.0-showcase release candidate。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；当前 HEAD 已包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。
 
 ## 已归档真实截图
 
@@ -13,6 +13,8 @@ docs/assets/screenshots/real-web-2026-06-27/
 ```
 
 这组截图来自浏览器真实页面，不是设计稿或占位图。当前共 10 张，覆盖首页、上传工作台、运行中状态、结果 dashboard、检查模块、TracePanel、在线预览和下载入口。
+
+说明：这些截图仍可作为 v1.0-showcase RC 的展示素材。若封版前重新截图，应保持同一演示口径：当前 HEAD 为推荐基线，`v0.9.4-demo-screenshot-package` 仅作为上一阶段截图包 tag 保留。
 
 | 文件 | 内容 | 备注 |
 | --- | --- | --- |
