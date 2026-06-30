@@ -1,10 +1,10 @@
 # 面试演示脚本
 
-版本：`v1.0-showcase release candidate / 暑期实习展示版候选`
+版本：`v1.0-showcase / 暑期实习展示版`
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
-当前推荐演示基线：当前 HEAD `c73a4f8 feat: enhance agent trace visualization`。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；当前 HEAD 已包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。本轮封版整理和最小回归 PASS 后，才建议创建 `v1.0-showcase` tag。
+当前推荐演示基线：tag `v1.0-showcase`，对应 commit `10904db docs: prepare v1.0 showcase release candidate`。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；当前版本已包含 trace UI 增强和封版文档整理。
 
 ## 0. 演示准备
 
@@ -45,12 +45,12 @@
 
 打开 `README.md`，讲：
 
-- 当前版本：`v1.0-showcase release candidate`。
+- 当前版本：`v1.0-showcase / 暑期实习展示版`。
 - 技术栈：FastAPI、python-docx、Next.js、TypeScript。
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
 - Task State：v0.7.0 已支持每次运行生成 `task_id` 和 `task_state_path`，记录任务生命周期。
-- 演示素材：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理截图清单、录屏脚本和自动化演示注意事项；v1.0-showcase RC 继续沿用这组素材，并以当前 HEAD 作为推荐演示基线。
+- 演示素材：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理截图清单、录屏脚本和自动化演示注意事项；v1.0-showcase 继续沿用这组素材，并以 tag `v1.0-showcase` 作为推荐演示基线。
 - 项目边界：不是 RAG，不是 LangGraph，不是 Milvus，不是数据库系统，不是论文代写。
 
 可说：
@@ -134,7 +134,7 @@
 8. TracePanel 展开：停顿 8-10 秒，强调这是步骤级 `agent_trace`，用于展示 Agent 可观测，不要讲成完整工业级调度平台。
 9. 在线预览和下载入口：停顿 5 秒，展示最终 DOCX 可预览、可下载。
 10. 390px 窄屏适配：如做作品集素材，可补一张移动端截图，说明页面没有横向溢出。
-11. 封版口径：说明当前 HEAD 是 v1.0-showcase RC，旧 tag `v0.9.4-demo-screenshot-package` 只是上一阶段截图包。
+11. 封版口径：说明当前推荐演示基线是 tag `v1.0-showcase`，旧 tag `v0.9.4-demo-screenshot-package` 只是上一阶段截图包。
 
 ## 5. 演示 agent_trace，约 2 分钟
 
@@ -248,7 +248,7 @@ python test_smoke_agent_flow.py
 - 内置 demo 样本不来自真实用户论文，也不来自 CAJ 原文。
 - 复杂 Word 对象支持有限，例如目录、脚注、公式、页眉页脚。
 - AI 评分只是参考，不参与主评分，不会拉低格式规则分。
-- 当前 v0.6.3 已内置人工构造的脱敏模拟 DOCX 样本和一次 local 模式输出样例，但尚未做 Word 渲染截图验收。
+- 当前已内置人工构造的脱敏模拟 DOCX 样本、一次 local 模式输出样例和真实网页截图资产；不要把它们说成真实用户论文。
 - 当前 task_state 只是最小状态持久化能力，不是异步队列、断点续跑或前端可视化任务中心。
 - `paper-ai/backend/task_states/` 是运行产物目录，`demo_outputs/task_state_sample.json` 是固定演示样例，两者不要混淆。
 
@@ -256,7 +256,7 @@ python test_smoke_agent_flow.py
 
 可以这样总结：
 
-> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。当前 HEAD 已经整理为 v1.0-showcase release candidate，适合展示完整上传、处理、报告、Trace、预览和下载闭环；后续再把深度内容修改、完整 task state 可视化、异步队列和真实用户样本扩展放到 v1.1。
+> 这个项目的重点不是堆 AI 名词，而是把一个 DOCX 格式处理需求做成稳定的 Agent 工程：有清晰模块、有 fallback、有兼容字段、有 trace、有测试。当前 `v1.0-showcase` 已经适合展示完整上传、处理、报告、Trace、预览和下载闭环；后续再把深度内容修改、完整 task state 可视化、异步队列和真实用户样本扩展放到 v1.1。
 
 ## 12. 常见演示风险
 
