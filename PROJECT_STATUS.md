@@ -120,10 +120,7 @@ PASS：
 - v0.5.0 批量回归脚本验证 PASS：`generated_manifest.csv --limit 2` 为 2/2 PASS；`manifest.csv` 完整 10 个样本为 10/10 PASS；`test_smoke_agent_flow.py` PASS。
 - v0.5.1 / real-doc-regression-boundary-pass 已完成：`run_real_doc_regression.py` 支持区分 `BOUNDARY_WARNING` 与 blocking `FAIL`；`generated_manifest.csv` 中 3 个 `reports_*` hybrid 样本标记为 `classification_boundary`，不再计入阻断级 FAIL；generated 回归为 21 PASS + 3 boundary warnings + 0 blocking FAIL。
 - v0.5.1 Heavy DOCX Stress Regression 已接入：`D:\新下载\realistic_heavy_thesis.docx` 已复制到 `test_documents/real/realistic_heavy_thesis.docx`，新增 `test_documents/heavy_manifest.csv`；74.79MB 样本 local 回归 PASS，耗时 57.558s，分类 `academic_paper`，输出 DOCX / 修改报告 / 预览 / 下载均通过，local `ai_score=null`、`ai_used=false`。
-- v0.5.1 稳定测试版已冻结：新增 `VERSION_0_5_1_SUMMARY.md`；当前回归为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS；建议 tag `v0.5.1-heavy-regression-pass`。
-- v0.5.2 Beta Readiness Audit 已完成：新增 `VERSION_0_5_2_BETA_READINESS_AUDIT.md`；manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS；当前仍建议作为格式 Agent 做 controlled beta，不应包装为深度内容改写 Agent。
-- v0.5.3 Controlled Beta Trial Prep 已完成：新增 `VERSION_0_5_3_CONTROLLED_BETA_TRIAL_PREP.md`，明确试用定位、试用用户、文档准入、试用任务、阻断标准、反馈表和退出条件；不新增功能，不修改业务代码。
-- v0.5.3 Controlled Beta Trial 用户材料已准备：新增 `BETA_TRIAL_USER_GUIDE.md` 和 `BETA_TRIAL_FEEDBACK_FORM.md`，用于向试用用户说明测试版边界、上传建议、支持能力、非承诺事项和反馈字段；不修改业务代码。
+- 历史版本总结和受控试用文档已归档到 `docs/archive/`；包括 v0.5.1-v0.5.4 总结、beta readiness、controlled beta 用户指南和反馈表。
 - `before_score` 和 `after_score` 正常返回。
 - 首页 `http://127.0.0.1:3000` 返回 200。
 - 核心接口无 404：`/health`、`/document/classify`、`/agent/run`、`/preview/{filename}`、`/download/{filename}`。
@@ -270,7 +267,7 @@ Current Bottleneck：
 - 本轮只做展示文档增强，不修改核心业务逻辑、`agent_pipeline` 执行逻辑、`/agent/run` 接口行为、前端交互、测试断言或依赖文件。
 - README 已补充项目定位、技术栈、核心功能、处理流程、启动方式、测试命令、当前版本和展示亮点。
 - `docs/ARCHITECTURE.md` 已补充架构图、`agent_pipeline`、`agent_trace`、local/ai fallback 和旧字段兼容说明。
-- 新增 `docs/DEMO_SCRIPT.md` 和 `docs/INTERVIEW_QA.md`，用于暑期实习面试演示。
+- 新增 `docs/DEMO_SCRIPT.md` 和 `docs/archive/INTERVIEW_QA.md`，用于暑期实习面试演示历史记录。
 - 当前仍定位为格式 Agent；不宣传为论文代写、正式查重或深度内容改写系统。
 ## v0.6.2 Demo Samples
 
@@ -307,7 +304,7 @@ Current Bottleneck：
 - 本轮只同步文档，不修改核心业务逻辑、`task_state.py`、`agent_pipeline.py`、`main.py`、前端交互或测试断言。
 - README 已补充 task state 能力、字段、写入路径和边界。
 - `docs/ARCHITECTURE.md` 已补充 `task_state.py` 在架构中的位置，以及 `paper-ai/backend/task_states/{task_id}.json` 写入说明。
-- `docs/INTERVIEW_QA.md` 已补充 task state 与 agent_trace 的区别、为什么不直接做异步队列、当前解决的问题和限制。
+- `docs/archive/INTERVIEW_QA.md` 已补充 task state 与 agent_trace 的区别、为什么不直接做异步队列、当前解决的问题和限制。
 - `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
 - `docs/DEMO_RESULT.md` 在 v0.7.1 时记录了缺少固定 `demo_outputs/task_state_sample.json` 的缺口；该缺口已在 v0.7.2 补齐。
 - 当前仍不是完整断点续跑或异步队列，也没有前端 task state 可视化界面。

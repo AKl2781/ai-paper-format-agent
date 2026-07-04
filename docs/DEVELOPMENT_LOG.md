@@ -154,7 +154,7 @@
 - 更新 `docs/DEMO_SCRIPT.md`
   - 同步到 v0.9.3 演示口径。
   - 补充 v0.9.2 final demo check 结果和 ASCII 临时路径说明。
-- 更新 `docs/INTERVIEW_QA.md`
+- 更新 `docs/archive/INTERVIEW_QA.md`
   - 补充 v0.9.0-v0.9.2 后的新追问，包括产品化首页、API base URL、ASCII 临时路径、`ERR_ALPN_NEGOTIATION_FAILED` 定位和 Git 运行产物治理。
 - 更新 `docs/DEMO_RESULT.md` 和 `docs/DEMO_CASE.md`
   - 补充当前推荐演示基线和真实页面 demo 验收结果。
@@ -622,7 +622,7 @@
   - 说明 `agent_pipeline.py` 调用 `task_state.py` 进行状态落盘。
   - 说明 `/agent/run` 同步返回仍保持兼容，只额外透出 `task_id` 和 `task_state_path`。
   - 说明 task state 不替代 `modification_report`、`reference_check`、`figure_table_check` 或 `agent_trace`。
-- 更新 `docs/INTERVIEW_QA.md`
+- 更新 `docs/archive/INTERVIEW_QA.md`
   - 新增 task state 与 agent_trace 区别、为什么不直接做异步队列、当前解决的问题和后续限制等问答。
 - 更新 `docs/DEMO_SCRIPT.md`
   - 增加 task state 展示步骤。
@@ -860,7 +860,7 @@
   - 说明 `agent_pipeline.py`、`agent_trace`、`agent_trace_detail`、local/ai fallback 和旧字段兼容。
 - 新增 `docs/DEMO_SCRIPT.md`
   - 整理面试演示流程，包括开场介绍、架构讲解、上传主流程、trace 展示、fallback 说明和测试展示。
-- 新增 `docs/INTERVIEW_QA.md`
+- 新增 `docs/archive/INTERVIEW_QA.md`
   - 整理 18 个高频问答，覆盖 pipeline、trace、fallback、评分、参考文献、图表编号、兼容字段、测试覆盖和项目边界。
 - 更新 `PROJECT_STATUS.md`
   - 标记当前版本为 `v0.6.1 / demo-polish`。

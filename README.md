@@ -18,6 +18,7 @@
 - 稳定展示基线：`v1.0-showcase`。
 - `v1.0-showcase` 指向：`10904db222c3894103e6cfe2aaf5ced79d372122`。
 - `main` 分支包含 `v1.0-showcase` 之后的面试材料补充和公开前清理。
+- 历史版本文档和受控试用资料已归档至 `docs/archive/`。
 
 ## 项目亮点
 

@@ -38,7 +38,7 @@
 已完成：
 - README 已补充 task state 能力说明。
 - `docs/ARCHITECTURE.md` 已补充 `task_state.py` 和 `task_states/{task_id}.json`。
-- `docs/INTERVIEW_QA.md` 已补充 task state 相关问答。
+- `docs/archive/INTERVIEW_QA.md` 已补充 task state 相关问答。
 - `docs/DEMO_SCRIPT.md` 已补充 task state 演示步骤。
 - `docs/DEMO_RESULT.md` 已在 v0.7.1 记录当时缺少固定 `task_state_sample.json` 的缺口；该缺口已在 v0.7.2 补齐。
 
@@ -525,7 +525,7 @@
 - 报告质量检查
 - 文档兼容性检查
 
-状态：已完成（v0.5.2 / beta-readiness-audit）。新增 `VERSION_0_5_2_BETA_READINESS_AUDIT.md`；本轮验收结果为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS。结论：可进入 controlled beta，但产品表述仍应定位为格式 Agent，不应包装为深度内容改写 Agent。
+状态：已完成（v0.5.2 / beta-readiness-audit）。历史审计文档已归档到 `docs/archive/VERSION_0_5_2_BETA_READINESS_AUDIT.md`；本轮验收结果为 manifest 10/10 PASS、generated 21 PASS + 3 boundary warnings + 0 blocking FAIL、heavy 1/1 PASS、smoke PASS、frontend `npm run build` PASS。结论：可进入 controlled beta，但产品表述仍应定位为格式 Agent，不应包装为深度内容改写 Agent。
 
 ---
 
@@ -541,7 +541,7 @@
 
 目标：为第一轮 controlled beta 试用准备用户筛选、文档准入、试用任务、阻断标准、反馈表和退出条件。
 
-状态：已完成（v0.5.3 / controlled-beta-trial-prep）。新增 `VERSION_0_5_3_CONTROLLED_BETA_TRIAL_PREP.md`；当前建议先收集 3-5 名可信用户的真实 DOCX 试用反馈，再决定 v0.5.4 优先做 UI polish、报告措辞修正或内容 Agent 窄能力。
+状态：已完成（v0.5.3 / controlled-beta-trial-prep）。历史准备文档已归档到 `docs/archive/VERSION_0_5_3_CONTROLLED_BETA_TRIAL_PREP.md`；当前建议先收集 3-5 名可信用户的真实 DOCX 试用反馈，再决定 v0.5.4 优先做 UI polish、报告措辞修正或内容 Agent 窄能力。
 
 ---
 
@@ -549,7 +549,7 @@
 
 目标：为 controlled beta 试用用户准备简单说明文档和反馈表，明确测试版边界、上传建议、支持能力、非承诺事项和问题反馈字段。
 
-状态：已完成。新增 `BETA_TRIAL_USER_GUIDE.md` 和 `BETA_TRIAL_FEEDBACK_FORM.md`；说明当前是测试版、建议仅上传 `.docx`、先用备份副本测试、不上传隐私敏感或正式最终提交版论文、不承诺论文代写或生成正文，并收集文档类型、大小、页数、上传/生成/下载结果、修改评分、格式错乱、图片/表格丢失、报错、截图和继续试用意愿。
+状态：已完成。受控试用用户说明和反馈表已归档到 `docs/archive/BETA_TRIAL_USER_GUIDE.md`、`docs/archive/BETA_TRIAL_FEEDBACK_FORM.md`；归档资料仅作为历史记录，当前展示入口以 README 和 v1.0-showcase 文档为准。
 ---
 
 ### [DONE] 暑期实习展示版整理
