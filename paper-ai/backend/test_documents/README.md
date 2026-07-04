@@ -4,6 +4,8 @@
 
 注意：真实论文、学生论文、模板原件和任何包含个人信息的 DOCX 默认不提交到 git。提交前必须完成脱敏，并确认文件不包含姓名、学号、电话、邮箱、导师、学校内部编号等敏感信息。
 
+公开仓库默认可复现测试以 smoke test 和 agent trace test 为主。`manifest.csv`、`generated_manifest.csv`、`heavy_manifest.csv` 对应的完整 DOCX 回归样本属于本地脱敏样本和压力测试资产，不全部随公开仓库发布；完整 manifest / heavy 回归不是公开 clone 后的默认必跑流程。
+
 ## 目录说明
 
 ```text

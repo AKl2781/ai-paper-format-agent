@@ -1,19 +1,19 @@
 # 项目状态
 
-当前版本号：v1.0-showcase release candidate / 暑期实习展示版候选
+当前版本号：v1.0-showcase / 暑期实习展示版
 
 项目名称：AI论文格式修改Agent
 
-当前阶段：v1.0-showcase 封版整理
+当前阶段：GitHub 公开前最小清理
 
-当前推荐演示基线：当前 HEAD `c73a4f8 feat: enhance agent trace visualization`
+当前稳定展示基线：tag `v1.0-showcase`，指向 commit `10904db`
 
 版本口径：
 
 - `v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。
-- 当前 HEAD 已在 `v0.9.4-demo-screenshot-package` 之后继续前进，包含 v0.9.5 trace UI 相关增强。
-- 当前 HEAD 是 v1.0-showcase release candidate 的推荐演示基线。
-- 本轮封版整理和最小回归 PASS 后，建议打 tag：`v1.0-showcase`。
+- `v1.0-showcase` 是稳定展示版本，指向 `10904db`。
+- `main` 分支包含 `v1.0-showcase` 之后的公开前文档和面试材料补充；截至本轮公开前清理开始时为 `afed51e docs: polish interview showcase materials`，后续提交可能继续前进。
+- 不移动、删除或重建 `v1.0-showcase` 和 `v0.9.4-demo-screenshot-package` tag。
 
 完成度：
 
@@ -64,7 +64,7 @@
 - 面试演示包：v0.9.3 已新增 `docs/INTERVIEW_DEMO_PACKAGE.md`，并同步 README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT 和 DEMO_CASE，用于说明 v0.9.2 稳定演示基线、演示流程、架构讲法、项目亮点、边界和面试追问。
 - 截图/录屏素材指南：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理首页、上传、结果 dashboard、TracePanel、预览、下载和 390px 窄屏等素材清单，用于面试、简历、作品集和演示准备。
 - 真实网页截图归档：已将 2026-06-27 的 10 张真实运行截图整理到 `docs/assets/screenshots/real-web-2026-06-27/`，覆盖首页、上传、运行中、结果 dashboard、检查模块、TracePanel、在线预览和下载入口。
-- v1.0-showcase 封版候选：当前 HEAD 已包含 v0.9.5 trace UI 相关增强，文档口径统一为暑期实习展示版候选；封版 tag 尚未创建。
+- v1.0-showcase 稳定展示版：tag `v1.0-showcase` 已创建并指向 `10904db`；`main` 分支仅在其后继续补充公开前文档和面试材料。
 
 # 最近回归测试结果
 
@@ -78,7 +78,7 @@ v1.0-showcase 封版整理最小回归结果：PASS。
 - `python run_real_doc_regression.py --manifest test_documents/manifest.csv --mode local --limit 1 --run-id v1_0_showcase_manifest_smoke`：PASS，1/1。
 - `python run_real_doc_regression.py --manifest test_documents/generated_manifest.csv --mode local --limit 1 --run-id v1_0_showcase_generated_smoke`：PASS，1/1。
 - `npm run build`：PASS。
-- heavy_manifest 全量回归：本轮未执行，保留为打 tag 前可选长测；历史记录已有 heavy 1/1 PASS。
+- heavy_manifest 全量回归：本轮未执行，保留为本地脱敏样本可选长测；历史记录已有 heavy 1/1 PASS。
 
 PASS：
 
@@ -137,7 +137,7 @@ Current Bottleneck：
 
 - 当前功能层面没有阻断级 FAIL，适合进入 v1.0-showcase 封版整理。
 - 主要瓶颈已从功能修复转为版本口径、演示材料和回归记录统一。
-- 当前 HEAD 是推荐演示基线；`v0.9.4-demo-screenshot-package` 保留为上一阶段截图包 tag。
+- `v1.0-showcase` tag 是推荐稳定展示基线；`main` 分支保留 tag 之后的公开前文档补充；`v0.9.4-demo-screenshot-package` 保留为上一阶段截图包 tag。
 - 本阶段不做核心格式化算法重构，不改上传、预览、下载主流程，不破坏 local/ai 模式兼容。
 - 本阶段不能改动 tag，不能移动、删除或重建 `v0.9.4-demo-screenshot-package` tag。
 
@@ -199,12 +199,12 @@ Current Bottleneck：
 
 # 下一阶段目标
 
-## v1.0-showcase Release Candidate（当前阶段）
+## v1.0-showcase 稳定展示版
 
 - 统一 README、PROJECT_STATUS、TODO 和 docs 演示材料中的版本口径。
-- 明确当前推荐演示基线为当前 HEAD，而不是旧的 `v0.9.2` 或 `v0.9.4`。
+- 明确当前推荐稳定展示基线为 `v1.0-showcase` tag，而不是旧的 `v0.9.2` 或 `v0.9.4`。
 - 明确 `v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。
-- 明确当前 HEAD 包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。
+- 明确 `v1.0-showcase` tag 指向 `10904db`，`main` 分支包含该 tag 之后的公开前文档和面试材料补充。
 - 冻结当前可展示能力、边界说明、demo 输入输出、截图资产和回归检查清单。
 - 本阶段只做封版整理，不新增核心功能，不改后端 pipeline / formatter / analyzer / classifier / preview / download 主逻辑。
 
@@ -220,7 +220,7 @@ Current Bottleneck：
 - AI 评分与真实修改量强绑定。
 - 云端部署与多用户系统。
 
-## v0.9.5 Demo Trace UI（已纳入当前 HEAD）
+## v0.9.5 Demo Trace UI（已纳入 v1.0-showcase）
 
 - 增强 Agent Trace 可视化，让用户更清楚看到每一步处理、耗时、fallback 和任务状态摘要。
 - 增加模板规则摘要展示，让上传模板解析出的关键格式规则可以被解释和演示。
@@ -397,7 +397,7 @@ Current Bottleneck：
 
 ## v0.9.3 Interview Demo Package
 
-- 当时 v0.9.2 是面试/演示稳定代码基线，已通过 final demo check；当前 v1.0-showcase RC 推荐基线已切换为当前 HEAD。
+- 当时 v0.9.2 是面试/演示稳定代码基线，已通过 final demo check；当前稳定展示基线已切换为 `v1.0-showcase` tag。
 - 本轮主要整理展示材料，新增 `docs/INTERVIEW_DEMO_PACKAGE.md`。
 - README、DEMO_SCRIPT、INTERVIEW_QA、DEMO_RESULT、DEMO_CASE 和 DEVELOPMENT_LOG 已同步 v0.9.3 演示口径。
 - 本轮未修改后端核心逻辑、前端 UI、接口语义、依赖文件或 demo 输入输出文件。
@@ -415,7 +415,7 @@ Current Bottleneck：
 
 ## v0.9.5 Demo Trace UI
 
-- 当前 HEAD 已包含 v0.9.5 trace UI 相关增强，是 v1.0-showcase release candidate 的组成部分。
+- v0.9.5 trace UI 相关增强已纳入 `v1.0-showcase` 稳定展示版，并在 `main` 后续文档补充中继续保持一致口径。
 - 目标一：增强 Agent Trace 可视化，提升执行链路、耗时、fallback 和任务状态解释能力。
 - 目标二：增加模板规则摘要展示，让模板解析结果能以用户可理解的方式出现在结果页。
 - 目标三：增加修改前后 Diff 展示，让报告和预览更贴近真实修改量。

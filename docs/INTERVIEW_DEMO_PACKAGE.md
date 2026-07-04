@@ -2,7 +2,7 @@
 
 版本：`v1.0-showcase / 暑期实习展示版`
 
-本文档用于面试和项目演示。当前推荐演示基线是 tag `v1.0-showcase`，对应 commit `10904db docs: prepare v1.0 showcase release candidate`。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
+本文档用于面试和项目演示。当前推荐稳定演示基线是 tag `v1.0-showcase`，对应 commit `10904db`。`main` 分支包含 `v1.0-showcase` 之后的公开前文档和面试材料补充，不代表 `v1.0-showcase` tag 已移动。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag。当前项目定位是论文格式 Agent，不是论文代写工具、正式查重系统或完整工业级 Agent。
 
 ## A. 项目一句话介绍
 
@@ -63,7 +63,7 @@
 
 演示前：
 
-- 确认当前代码位于 `v1.0-showcase` 或包含 commit `10904db`。
+- 确认当前代码位于 `v1.0-showcase` tag，或位于包含 `10904db` 之后文档补充的 `main` 分支。
 - 确认后端使用 `http://127.0.0.1:8000`。
 - 确认前端 `NEXT_PUBLIC_API_BASE_URL` 未配置或指向 `http://127.0.0.1:8000`。
 - 准备 `demo_inputs/messy_paper_sample.docx`。
@@ -182,7 +182,7 @@ AI 是增强项，不是主流程唯一依赖。ai 模式下 LLM 调用失败会
 
 ### 6.1 怎么证明它不是只做了一个前端 demo？
 
-后端有真实 DOCX 处理链路，demo_outputs 中有真实 local 模式输出；测试层有 smoke、trace、manifest、generated_manifest 和 heavy_manifest 记录。v1.0-showcase 最小回归覆盖了 py_compile、前端 build、trace、smoke、manifest limit 1 和 generated_manifest limit 1。
+后端有真实 DOCX 处理链路，demo_outputs 中有真实 local 模式输出；公开 clone 后默认建议优先跑 smoke 和 trace 测试。manifest、generated_manifest 和 heavy_manifest 是本地脱敏样本/压力测试回归体系，不全部随公开仓库发布，不应被包装成外部用户 clone 后的默认必跑流程。v1.0-showcase 最小回归曾覆盖 py_compile、前端 build、trace、smoke、manifest limit 1 和 generated_manifest limit 1。
 
 ### 7. 如何避免运行产物污染 Git？
 
@@ -210,7 +210,7 @@ AI 是增强项，不是主流程唯一依赖。ai 模式下 LLM 调用失败会
 
 ### 13. v1.0-showcase 和旧 tag 是什么关系？
 
-`v0.9.4-demo-screenshot-package` 是上一阶段截图素材包 tag；`v1.0-showcase` 是当前暑期实习展示版 tag，对应 commit `10904db`。面试展示优先使用 `v1.0-showcase`。
+`v0.9.4-demo-screenshot-package` 是上一阶段截图素材包 tag；`v1.0-showcase` 是当前暑期实习展示版稳定 tag，对应 commit `10904db`。`main` 分支包含后续公开前文档和面试材料补充，但不代表 `v1.0-showcase` tag 已移动。面试展示优先使用 `v1.0-showcase` 或包含该 tag 的 main 最新提交。
 
 ### 14. v1.1 准备做什么？
 

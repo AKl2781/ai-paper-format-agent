@@ -4,7 +4,7 @@ Version: `v0.9.3-interview-demo-package`
 
 This document describes the fixed interview demo case for the AI Paper Formatting Agent. Starting from `v0.6.3-real-demo-files`, the repository includes an artificial de-identified DOCX paper sample, a DOCX template sample, and one local-mode output set. Starting from `v0.7.2-task-state-sample`, the fixed demo output set also includes a task state JSON sample.
 
-Current recommended demo baseline: `v0.9.2-ui-fetch-compat-fix`. The v0.9.2 final demo check passed with the real frontend page, ASCII temporary upload paths for browser automation, `/document/classify` 200, `/agent/run` 200, preview/download PASS, TracePanel PASS, and a clean Git worktree after the demo.
+Current stable demo baseline: tag `v1.0-showcase`, pointing to commit `10904db`. The `main` branch contains post-tag interview material and public-readiness documentation updates; those updates do not move the `v1.0-showcase` tag.
 
 ## Demo Goal
 

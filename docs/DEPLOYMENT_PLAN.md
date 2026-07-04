@@ -80,9 +80,9 @@ Backend:
 
 Frontend:
 
-- 后续建议新增 `NEXT_PUBLIC_API_BASE`
+- `NEXT_PUBLIC_API_BASE_URL`
 
-当前前端 API 地址仍写在 `app/page.tsx` 中，Docker 化前应改为环境变量，但该改动不属于本阶段文档整理任务。
+当前前端已支持通过 `NEXT_PUBLIC_API_BASE_URL` 配置后端地址；未配置时默认请求 `http://127.0.0.1:8000`。本地开发和后续部署环境可以分别配置 API base URL。本文档仍只规划部署方向，不代表项目已经具备完整生产部署方案。
 
 ## uploads/outputs 持久化
 

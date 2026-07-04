@@ -4,7 +4,7 @@
 
 本文档用于暑期实习面试时演示 AI论文格式修改Agent。演示重点是“一个可运行、可解释、有 fallback、有测试覆盖的 DOCX 格式处理 Agent”。不要把它讲成论文代写、正式查重或深度内容生成系统。
 
-当前推荐演示基线：tag `v1.0-showcase`，对应 commit `10904db docs: prepare v1.0 showcase release candidate`。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；当前版本已包含 trace UI 增强和封版文档整理。
+当前推荐演示基线：tag `v1.0-showcase`，对应 commit `10904db`。`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；`main` 分支包含 `v1.0-showcase` 之后的公开前文档和面试材料补充，不代表 `v1.0-showcase` tag 已移动。
 
 ## 0. 演示准备
 
@@ -50,7 +50,7 @@
 - 核心模块：`agent_pipeline.py`、`paper_agent.py`、`docx_formatter.py`、`docx_analyzer.py`、`language_reviewer.py`。
 - Demo 样本：`demo_inputs/` 已放入模拟论文和模板，`demo_outputs/` 已保存一次 local 模式运行输出。
 - Task State：v0.7.0 已支持每次运行生成 `task_id` 和 `task_state_path`，记录任务生命周期。
-- 演示素材：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理截图清单、录屏脚本和自动化演示注意事项；v1.0-showcase 继续沿用这组素材，并以 tag `v1.0-showcase` 作为推荐演示基线。
+- 演示素材：v0.9.4 已新增 `docs/DEMO_SCREENSHOT_GUIDE.md`，整理截图清单、录屏脚本和自动化演示注意事项；v1.0-showcase 继续沿用这组素材，并以 tag `v1.0-showcase` 作为稳定演示基线。
 - 项目边界：不是 RAG，不是 LangGraph，不是 Milvus，不是数据库系统，不是论文代写。
 
 可说：
@@ -135,6 +135,7 @@
 9. 在线预览和下载入口：停顿 5 秒，展示最终 DOCX 可预览、可下载。
 10. 390px 窄屏适配：如做作品集素材，可补一张移动端截图，说明页面没有横向溢出。
 11. 封版口径：说明当前推荐演示基线是 tag `v1.0-showcase`，旧 tag `v0.9.4-demo-screenshot-package` 只是上一阶段截图包。
+12. 公开复现口径：默认建议运行 smoke test 和 agent trace test；完整 manifest / heavy DOCX 回归依赖本地脱敏样本，不是公开 clone 后默认必跑流程。
 
 ## 5. 演示 agent_trace，约 2 分钟
 
@@ -261,7 +262,7 @@ python test_smoke_agent_flow.py
 ## 12. 常见演示风险
 
 - 不要上传隐私敏感或正式提交论文。
-- 不要承诺“查重通过”。
+- 不要承诺任何正式检测结果。
 - 不要承诺“AI 深度润色整篇论文”。
 - 如果 AI API 没配置，直接解释 fallback 设计。
 - 不要把内置模拟样本说成真实用户论文。

@@ -1,10 +1,10 @@
 # v1.0-showcase 封版摘要
 
-版本定位：`v1.0-showcase release candidate / 暑期实习展示版候选`
+版本定位：`v1.0-showcase / 暑期实习展示版`
 
-当前推荐演示基线：当前 HEAD `c73a4f8 feat: enhance agent trace visualization`
+当前稳定展示基线：tag `v1.0-showcase`，指向 commit `10904db`
 
-说明：`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；当前 HEAD 已包含 v0.9.5 trace UI 相关增强，但尚未打 `v1.0-showcase` tag。完成封版整理和最小回归 PASS 后，建议创建 tag：`v1.0-showcase`。
+说明：`v0.9.4-demo-screenshot-package` 是上一阶段截图包 tag；`v1.0-showcase` 是稳定展示版本，包含 v0.9.5 trace UI 相关增强。`main` 分支包含 `v1.0-showcase` 之后的公开前文档和面试材料补充，不代表 `v1.0-showcase` tag 已移动。
 
 ## 项目定位
 
@@ -86,7 +86,7 @@
 - `test_documents/generated_manifest.csv`：生成样本回归清单。
 - `test_documents/heavy_manifest.csv`：74.79MB heavy DOCX 压力样本清单。
 
-v1.0-showcase tag 应在最小回归 PASS 后创建。
+`v1.0-showcase` tag 已创建并指向 `10904db`；公开前不得移动、删除或重建该 tag。
 
 本轮封版整理最小回归：
 
@@ -96,7 +96,9 @@ v1.0-showcase tag 应在最小回归 PASS 后创建。
 - `python run_real_doc_regression.py --manifest test_documents/manifest.csv --mode local --limit 1 --run-id v1_0_showcase_manifest_smoke`：PASS，1/1。
 - `python run_real_doc_regression.py --manifest test_documents/generated_manifest.csv --mode local --limit 1 --run-id v1_0_showcase_generated_smoke`：PASS，1/1。
 - `npm run build`：PASS。
-- heavy_manifest 全量回归：本轮未执行，保留为打 tag 前可选长测；历史记录已有 heavy 1/1 PASS。
+- heavy_manifest 全量回归：本轮未执行，保留为本地脱敏样本可选长测；历史记录已有 heavy 1/1 PASS。
+
+公开 clone 后的默认可复现测试建议优先运行 `test_agent_orchestrator_trace.py` 和 `test_smoke_agent_flow.py`。`manifest.csv`、`generated_manifest.csv`、`heavy_manifest.csv` 对应的完整 DOCX 回归样本属于本地脱敏样本和压力测试资产，不全部随公开仓库发布；完整 manifest / heavy 回归不是公开 clone 后的默认必跑流程。
 
 ## 已知限制
 

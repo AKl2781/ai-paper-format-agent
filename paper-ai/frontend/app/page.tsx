@@ -452,7 +452,7 @@ export default function Home() {
                 <strong>相似度预检 {result.repeat_risk.score}/100</strong>
               </div>
               <div className="report-grid">
-                <ReportList title="降重建议" items={result.repeat_risk.suggestions} />
+                <ReportList title="重复风险处理建议" items={result.repeat_risk.suggestions} />
                 <ReportList title="建议人工复查项" items={result.modification_report.manual_review_items} />
               </div>
             </section>
