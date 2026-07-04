@@ -22,42 +22,42 @@
 
 ## 项目亮点
 
-- FastAPI + Next.js 完整应用闭环。
+- `FastAPI` + `Next.js` 完整应用闭环。
 - DOCX 上传、Agent 处理、在线预览、最终 DOCX 下载。
 - `local` / `ai` 双模式，支持无 API Key 的本地演示。
-- AI 不可用时 fallback 到本地规则，不中断主流程。
+- AI 不可用时 `Fallback` 到本地规则，不中断主流程。
 - `agent_trace` 记录可解释执行轨迹。
 - `modification_report` 输出修改报告、评分变化和人工复查项。
 - `reference_check` / `figure_table_check` 检查参考文献和图表编号风险。
-- 已通过 smoke test、agent trace test 和前端 build 验证。
+- 已通过 `Smoke Test`、`agent_trace` test 和前端 build 验证。
 
 ## 技术栈
 
 Backend:
 
-- Python
-- FastAPI
-- python-docx
+- `Python`
+- `FastAPI`
+- `python-docx`
 
 Frontend:
 
-- Next.js
-- React
-- TypeScript
+- `Next.js`
+- `React`
+- `TypeScript`
 
 AI 应用:
 
-- LLM API
-- Prompt
-- Agent Workflow
-- fallback
+- `LLM API`
+- `Prompt`
+- `Agent Workflow`
+- `Fallback`
 
 工程化:
 
-- Git
-- smoke test
-- regression docs
-- Git tag
+- `Git`
+- `Smoke Test`
+- `regression docs`
+- `Git Tag`
 
 ## 快速开始
 
@@ -99,7 +99,7 @@ copy .env.example .env
 $env:NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
 ```
 
-没有 API Key 时，可以使用 `local` 模式、fallback 流程和内置 demo 样本完成演示。
+没有 API Key 时，可以使用 `local` 模式、`Fallback` 流程和内置 demo 样本完成演示。
 
 ## 最小可复现测试
 
@@ -135,20 +135,6 @@ npm run build
 - 在线预览不是 Word 像素级还原。
 - 复杂 Word 对象支持有限，例如目录、脚注、批注、公式、页眉页脚和复杂图文排版。
 - 当前不是完整异步队列、多用户系统或云端生产部署方案。
-
-## GitHub About 建议
-
-Description:
-
-```text
-AI DOCX paper formatting agent with FastAPI, Next.js, python-docx, fallback workflow, reports, preview, and trace.
-```
-
-Topics:
-
-```text
-fastapi nextjs typescript python-docx ai-agent document-processing docx llm fallback thesis-formatting
-```
 
 ## License
 
