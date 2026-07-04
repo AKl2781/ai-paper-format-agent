@@ -2,6 +2,10 @@
 
 这是一个面向 DOCX 论文/报告的 AI 文档格式处理应用，支持格式检测、模板适配、修改报告、重复风险预检、参考文献/图表检查、Agent 执行轨迹、在线预览和 DOCX 下载。
 
+![AI论文格式修改 Agent Demo](docs/assets/screenshots/real-web-2026-06-27/01_home_overview_real.png)
+
+Demo 页面展示：文档上传、处理结果、修改报告与 Agent Trace。
+
 ## 项目定位
 
 本项目定位为论文格式处理 Agent / AI 文档处理应用，重点是把 DOCX 文档处理流程做成一个可运行、可解释、可展示的工程闭环。
