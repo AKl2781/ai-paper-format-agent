@@ -105,6 +105,37 @@ $env:NEXT_PUBLIC_API_BASE_URL="http://127.0.0.1:8000"
 
 没有 API Key 时，可以使用 `local` 模式、`Fallback` 流程和内置 demo 样本完成演示。
 
+## Docker部署
+
+环境要求：Docker Engine 或 Docker Desktop，以及 Docker Compose v2。安装方式见 [Docker Desktop](https://docs.docker.com/desktop/) 或 [Docker Engine](https://docs.docker.com/engine/install/) 官方文档。
+
+先准备后端环境变量：
+
+```powershell
+Copy-Item paper-ai/backend/.env.example paper-ai/backend/.env
+```
+
+没有 API Key 时可留空并使用 `local` 模式。`.env` 不会进入 Git 或 Docker 镜像构建上下文。
+
+在项目根目录一键启动：
+
+```powershell
+docker compose up --build
+```
+
+访问地址：
+
+- Frontend: `http://localhost:3000`
+- Backend health: `http://localhost:8000/health`
+
+安全检查 Compose 配置：
+
+```powershell
+docker compose config --quiet
+```
+
+常见问题：前端 API 地址使用 `NEXT_PUBLIC_API_BASE_URL` 在构建时注入，修改后需重新构建；容器中的 `127.0.0.1` 不代表宿主机。服务器 IP/Domain 的 CORS 限制、代理和数据持久化说明见 [Docker 部署文档](docs/DOCKER_DEPLOYMENT.md)。
+
 ## 最小可复现测试
 
 Backend:
